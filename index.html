@@ -641,6 +641,7 @@
       z-index: 2;
       transform: translateX(-50%) translateY(-3px) rotate(0);
       border-color: var(--indicator-color);
+      background: color-mix(in srgb, var(--indicator-color) 22%, #14141c);
       box-shadow: 0 10px 24px rgba(0,0,0,0.45), 0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
     }
 
@@ -1344,10 +1345,14 @@
       pageIndicators.forEach((indicator, idx) => {
         if (idx === currentTimelineIndex) {
           indicator.setAttribute('aria-current', 'step');
-          indicator.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         } else {
           indicator.removeAttribute('aria-current');
         }
+      });
+      const activeIndicator = pageIndicators[currentTimelineIndex];
+      pageIndicatorsEl.scrollTo({
+        left: activeIndicator.offsetLeft - (pageIndicatorsEl.clientWidth - activeIndicator.offsetWidth) / 2,
+        behavior: 'smooth'
       });
       progressEl.innerText = `DAG ${currentTimelineIndex + 1} / ${itinerary.length}`;
     }
