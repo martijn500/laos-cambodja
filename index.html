@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAOS & CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090b;
+      --neon-pink: #ff007f;
+      --neon-green: #00ff66;
+      --neon-yellow: #ffee00;
+      --neon-cyan: #00f0ff;
+      --card-bg: rgba(20, 20, 28, 0.85);
+      --font-meme: 'Press Start 2P', monospace;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: #fff;
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Ambient animated grid */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Slide container & transitions */
+    .deck {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.9) translateY(20px);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Slide Card Content Layout */
+    .card {
+      background: var(--card-bg);
+      border: 3px solid var(--neon-pink);
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.2);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 1100px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2.5rem;
+      backdrop-filter: blur(12px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      position: relative;
+    }
+
+    @media (max-width: 850px) {
+      .card {
+        grid-template-columns: 1fr;
+        max-height: 80vh;
+        padding: 1.5rem;
+      }
+    }
+
+    /* Typography styling */
+    .tag {
+      display: inline-block;
+      font-family: var(--font-meme);
+      font-size: 0.75rem;
+      color: #000;
+      background: var(--neon-yellow);
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+      letter-spacing: 1px;
+      box-shadow: 3px 3px 0px var(--neon-pink);
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 1.1;
+      color: #fff;
+      text-shadow: 3px 3px 0px var(--neon-pink);
+      margin-bottom: 1rem;
+    }
+
+    p.desc {
+      font-size: 1.15rem;
+      line-height: 1.5;
+      color: #ddd;
+      margin-bottom: 1.25rem;
+    }
+
+    blockquote {
+      background: rgba(0, 0, 0, 0.5);
+      border-left: 5px solid var(--neon-cyan);
+      padding: 0.8rem 1.2rem;
+      font-style: italic;
+      color: var(--neon-cyan);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    /* Visual Media / Meme Image Wrapper */
+    .img-box {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      border-radius: 15px;
+      overflow: hidden;
+      border: 2px solid var(--neon-green);
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+    }
+
+    .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .card:hover .img-box img {
+      transform: scale(1.05);
+    }
+
+    .meme-overlay-text {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: var(--neon-yellow);
+      font-family: var(--font-meme);
+      font-size: 0.65rem;
+      padding: 8px;
+      text-align: center;
+      border-radius: 8px;
+      line-height: 1.4;
+      border: 1px solid var(--neon-yellow);
+    }
+
+    /* Aura / Stats Widget */
+    .stats-bar {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-meme);
+      color: var(--neon-green);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    /* Audio FX Button */
+    .sound-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--neon-pink);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      font-family: var(--font-meme);
+      font-size: 0.7rem;
+      border-radius: 20px;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 0 10px var(--neon-pink);
+    }
+
+    /* Navigation Overlay */
+    .nav-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      z-index: 10;
+      background: rgba(0,0,0,0.8);
+      padding: 10px 20px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .nav-btn {
+      background: var(--neon-cyan);
+      color: #000;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-family: var(--font-meme);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .nav-btn:active {
+      transform: scale(0.9);
+    }
+
+    .progress-text {
+      font-family: var(--font-meme);
+      font-size: 0.8rem;
+      color: var(--neon-yellow);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
+
+  <div class="deck">
+
+    <!-- SLIDE 1: INTRO -->
+    <div class="slide active">
+      <div class="card" style="border-color: var(--neon-pink);">
+        <div>
+          <span class="tag">STOP 1 🛫 THAILAND</span>
+          <h2>CHIANG RAI START 💥</h2>
+          <p class="desc">We vliegen erin op Chiang Rai! Geen genade. Witte tempels, immens grote draken en meteen 100.000% aura opbouwen voordat we de grens over steken.</p>
+          <blockquote>"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Vlieguren<div class="stat-value">12H+</div></div>
+            <div class="stat-item">Aura Level<div class="stat-value">+9999</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-pink);">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg" alt="Wat Rong Khun Chiang Rai">
+          <div class="meme-overlay-text">CHIANG RAI: BRO IS ALREADY AT THE WHITE TEMPLE 💀</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: MEKONG BOAT -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-yellow);">
+        <div>
+          <span class="tag">STOP 2 🚤 GRENS OVERSTEEK</span>
+          <h2>MEKONG SLOWBOAT 🌊</h2>
+          <p class="desc">Twee dagen chillon op een langgerekte houten boot over de Mekong rivier richting Luang Prabang. Nul stress, wel intense rivertown vibes.</p>
+          <blockquote>"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Snelheid<div class="stat-value">15 km/h</div></div>
+            <div class="stat-item">Vibe<div class="stat-value">Unstoppable</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-yellow);">
+          <img src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg" alt="Mekong Slowboat Laos">
+          <div class="meme-overlay-text">SLOOWBOAT MODE: NO WIFI, JUST CHILL 🛶</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: GIBBON EXPERIENCE -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-green);">
+        <div>
+          <span class="tag">STOP 3 🌲 JUNGLE ACTION</span>
+          <h2>GIBBON ZIPLINE 🐒</h2>
+          <p class="desc">Slapen in de hoogste boomhutten ter wereld en met 60 km/u aan ziplines door het bladerdak van Nam Kan zweven. Tarzan droomt hiervan.</p>
+
+          <blockquote>"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Hoogte<div class="stat-value">40 Meter</div></div>
+            <div class="stat-item">Adrenaline<div class="stat-value">OVER 9000</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-green);">
+          <img src="https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg" alt="Gibbon Experience Zipline">
+          <div class="meme-overlay-text">FLYING THROUGH THE JUNGLE LIKE A CHAD 🌴</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: LUANG PRABANG -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-cyan);">
+        <div>
+          <span class="tag">STOP 4 ⛩️ LAOS CULTUUR</span>
+          <h2>LUANG PRABANG 🏮</h2>
+          <p class="desc">Monniken in oranje gewaden bij het ochtendgloren, Franse bakkerijen en de meest giga nachtmarkt van Zuidoost-Azië.</p>
+          <blockquote>"Peace comes from within. Do not seek it without... except at the Night Market." — Buddha</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Croissants<div class="stat-value">10/10</div></div>
+            <div class="stat-item">Inner Zen<div class="stat-value">100%</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-cyan);">
+          <img src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/4cc2da3f-4b64-4035-89b8-a620a77ccea1/kuang-si-falls-laos-dry-season.jpg" alt="Kuang Si Waterfall">
+          <div class="meme-overlay-text">BLUE WATERFALLS = IMMEDIATE DOPAMINE HIT 💦</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: VANG VIENG -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-pink);">
+        <div>
+          <span class="tag">STOP 5 🎈 AVONTUUR</span>
+          <h2>VANG VIENG 🎈</h2>
+          <p class="desc">Luchtballonnen boven karstbergen, kajakken over de rivier en chillen in turquoise lagoons. Pure adrenaline ontmoet de beste zonsondergangen.</p>
+          <blockquote>"The sky is not the limit, it's just the view from my balloon." — Amelia Earhart</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Uitzicht<div class="stat-value">Unreal</div></div>
+            <div class="stat-item">Vibe<div class="stat-value">Peak</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-pink);">
+          <img src="https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original" alt="Vang Vieng Hot Air Balloon">
+          <div class="meme-overlay-text">WE ARE GOING UP & WE ARE NOT COMING DOWN 🎈</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: 4000 ISLANDS -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-yellow);">
+        <div>
+          <span class="tag">STOP 6 🏝️ ZUID-LAOS</span>
+          <h2>4000 ISLANDS 🌴</h2>
+          <p class="desc">Si Phan Don. Hangmatten, dolfijnen spotten in de Mekong en keihard niksen op het water. Dit is de ultieme ontprikkeling.</p>
+          <blockquote>"Time you enjoy wasting is not wasted time." — Bertrand Russell</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Chill Factor<div class="stat-value">∞</div></div>
+            <div class="stat-item">Stress Level<div class="stat-value">0%</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-yellow);">
+          <img src="https://www.27vakantiedagen.nl/wp-content/uploads/2022/10/si-phan-don.jpg" alt="4000 Islands Sunset">
+          <div class="meme-overlay-text">HANGMAT LEVEL: MAXIMUM LEVEL ACHIEVED 🍹</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: ANGKOR WAT -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-cyan);">
+        <div>
+          <span class="tag">STOP 7 🇰🇭 CAMBODJA</span>
+          <h2>ANGKOR WAT SUNRISE 🌅</h2>
+          <p class="desc">De grens over naar Cambodja! Om 04:30 uur uit bed voor de meest epische zonsopkomst op aarde met de beroemde spiegeling in de vijver.</p>
+          <blockquote>"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander the Great</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Wekker<div class="stat-value">04:30 AM</div></div>
+            <div class="stat-item">Wonder Factor<div class="stat-value">7/7</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-cyan);">
+          <img src="https://images.locationscout.net/2020/02/angkor-wat-reflecting-pool-cambodia-6s6z.webp?h=1400&q=80" alt="Angkor Wat Reflection Pool Sunrise">
+          <div class="meme-overlay-text">ANGKOR WAT AT SUNRISE = UNREAL REFLECTION 👑</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: TA PROHM -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-green);">
+        <div>
+          <span class="tag">STOP 8 🗿 TOMB RAIDER</span>
+          <h2>TA PROHM TEMPEL 🌿</h2>
+          <p class="desc">Giga bomen die hun wortels dwars door eeuwenoude steenformaties hebben gegroeid. Echte Tomb Raider & Indiana Jones vibes.</p>
+          <blockquote>"Nature always wins. Especially tree roots." — Charles Darwin</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Lara Croft<div class="stat-value">Approved</div></div>
+            <div class="stat-item">Jungle Power<div class="stat-value">100%</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-green);">
+          <img src="https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg" alt="Ta Prohm Tree Roots">
+          <div class="meme-overlay-text">TREES TAKING OVER THE TEMPLES LIKE A BOSS 🪵</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: PHNOM PENH -->
+    <div class="slide">
+      <div class="card" style="border-color: var(--neon-pink);">
+        <div>
+          <span class="tag">STOP 9 ✈️ FINALE</span>
+          <h2>PHNOM PENH & TERUG 🏛️</h2>
+          <p class="desc">Koninklijk Paleis, bruisende Riverside, heerlijk eten en daarna voldaan de vlieger in terug naar huis. De reis van je leven is compleet!</p>
+          <blockquote>"Don't cry because it's over, smile because it was absolutely legendary." — Dr. Seuss</blockquote>
+          <div class="stats-bar">
+            <div class="stat-item">Memories<div class="stat-value">∞</div></div>
+            <div class="stat-item">Status<div class="stat-value">COMPLETED</div></div>
+          </div>
+        </div>
+        <div class="img-box" style="border-color: var(--neon-pink);">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG" alt="Phnom Penh Royal Palace">
+          <div class="meme-overlay-text">MISSION ACCOMPLISHED: RETURNING WITH 100K AURA ✈️</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAVIGATION CONTROLS -->
+  <div class="nav-controls">
+    <button class="nav-btn" onclick="prevSlide()">◄</button>
+    <span class="progress-text" id="progress">1 / 9</span>
+    <button class="nav-btn" onclick="nextSlide()">►</button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const progressEl = document.getElementById('progress');
+    let soundEnabled = true;
+
+    // Web Audio Synthesizer for 8-bit sound effects
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playBeep(freq = 440, type = 'sine', duration = 0.1) {
+      if (!soundEnabled) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function toggleAudio() {
+      soundEnabled = !soundEnabled;
+      const btn = document.querySelector('.sound-btn');
+      btn.innerText = soundEnabled ? 'SFX: ON 🔊' : 'SFX: OFF 🔇';
+      if (soundEnabled) playBeep(880, 'square', 0.15);
+    }
+
+    function updateDeck() {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === currentSlide);
+      });
+      progressEl.innerText = `${currentSlide + 1} / ${slides.length}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        playBeep(587.33, 'triangle', 0.12);
+      } else {
+        currentSlide = 0;
+        playBeep(880, 'sawtooth', 0.2);
+      }
+      updateDeck();
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        playBeep(349.23, 'triangle', 0.12);
+        updateDeck();
+      }
+    }
+
+    // Keyboard Arrow Controls
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Touch Swipe Controls for Mobile
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+    document.addEventListener('touchend', e => {
+      let touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) nextSlide();
+      if (touchEndX - touchStartX > 50) prevSlide();
+    });
+  </script>
+</body>
+</html>
