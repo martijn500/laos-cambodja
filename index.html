@@ -455,9 +455,11 @@
     }
 
     .page-indicators {
+      --timeline-gap: 8px;
       position: relative;
       display: flex;
       align-items: center;
+      gap: var(--timeline-gap);
       width: 100%;
       height: 230px;
       margin: 0 auto;
@@ -467,16 +469,6 @@
       scroll-snap-type: x proximity;
       scrollbar-color: var(--neon-cyan) rgba(255,255,255,0.1);
       scrollbar-width: thin;
-    }
-
-    .page-indicators::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      right: 28px;
-      left: 28px;
-      border-top: 2px dashed rgba(255,255,255,0.3);
-      pointer-events: none;
     }
 
     .page-indicator {
@@ -592,15 +584,38 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 2px;
-      height: 12px;
-      background: var(--indicator-color);
-      opacity: 0.7;
-      transform: translateX(-50%);
+      z-index: 0;
+      width: calc(100% + var(--timeline-gap));
+      height: 0;
+      border-top: 2px dashed rgba(255,255,255,0.42);
+      pointer-events: none;
     }
 
-    .page-indicator:nth-child(even) .timeline-connector {
-      top: calc(50% - 12px);
+    .page-indicator:last-child .timeline-connector {
+      width: 50%;
+    }
+
+    .timeline-action-icon {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      z-index: 1;
+      transform: translate(-50%, -50%);
+      color: var(--neon-yellow);
+      font-size: 1.15rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.95));
+      pointer-events: none;
+      animation: timeline-icon-bob 2.4s ease-in-out infinite;
+    }
+
+    .page-indicator:nth-child(3n) .timeline-action-icon {
+      animation-delay: -0.8s;
+    }
+
+    @keyframes timeline-icon-bob {
+      0%, 100% { margin-top: 0; }
+      50% { margin-top: -4px; }
     }
 
     .timeline-node {
@@ -690,6 +705,10 @@
         flex-basis: 178px;
       }
 
+      .page-indicators {
+        --timeline-gap: 8px;
+      }
+
       .timeline-heading {
         font-size: 0.7rem;
       }
@@ -705,6 +724,12 @@
       .nav-btn {
         width: 32px;
         height: 32px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .timeline-action-icon {
+        animation: none;
       }
     }
   </style>
@@ -950,9 +975,12 @@
         date: 'MA · 15 FEB',
         flags: '🇳🇱',
         title: 'Vertrek uit Amsterdam',
+        quote: '"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu',
         detail: 'Start van de reis; vlucht met eventuele overstap naar Thailand.',
         sleep: 'Slaap: aan boord',
         mascotAction: 'takeoff',
+        icon: '✈️',
+        iconLabel: 'Vlucht',
         photo: 'flight',
         slideIndex: 0
       },
@@ -960,9 +988,12 @@
         date: 'DI · 16 FEB',
         flags: '🇹🇭',
         title: 'Aankomst Chiang Rai',
+        quote: '"Bro is geland. Direct 100.000% aura opgebouwd bij de Witte Tempel." — Sun Tzu',
         detail: 'Aankomen, rustig inchecken en bijkomen van de lange vlucht.',
         sleep: 'Slaap: Chiang Rai',
         mascotAction: 'landing',
+        icon: '🛬',
+        iconLabel: 'Aankomst',
         photo: 'chiangRai',
         slideIndex: 0
       },
@@ -970,9 +1001,12 @@
         date: 'WO · 17 FEB',
         flags: '🇹🇭 → 🇱🇦',
         title: 'Grens over naar Huay Xai',
+        quote: '"Niemand kan de grens oversteken zonder een vleugje chaos." — Julius Caesar',
         detail: 'Rit via Chiang Khong; reken op ±100 km, 2–3 uur plus grensformaliteiten.',
         sleep: 'Slaap: Huay Xai',
         mascotAction: 'crossing',
+        icon: '🚐',
+        iconLabel: 'Grensovergang per transfer',
         photo: 'mekong',
         slideIndex: 1
       },
@@ -980,9 +1014,12 @@
         date: 'DO · 18 FEB',
         flags: '🇱🇦',
         title: 'Gibbon Experience · dag 1',
+        quote: '"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson',
         detail: 'Vroeg naar het Nam Kan-reservaat; trek en ziplines naar de boomhut.',
         sleep: 'Slaap: boomhut in de jungle',
         mascotAction: 'zipline',
+        icon: '🪢',
+        iconLabel: 'Zipline',
         photo: 'jungle',
         slideIndex: 1
       },
@@ -990,9 +1027,12 @@
         date: 'VR · 19 FEB',
         flags: '🇱🇦',
         title: 'Gibbon Experience · dag 2',
+        quote: '"Tarzan droomt hiervan. Adrenaline niveau: OVER 9000." — Charles Darwin',
         detail: 'Laatste jungletocht en terug naar Huay Xai; aankomsttijd hangt af van de tour.',
         sleep: 'Slaap: Huay Xai',
         mascotAction: 'climbing',
+        icon: '🥾',
+        iconLabel: 'Jungletocht',
         photo: 'jungle',
         slideIndex: 2
       },
@@ -1000,9 +1040,12 @@
         date: 'ZA · 20 FEB',
         flags: '🇱🇦',
         title: 'Slowboat naar Pakbeng',
+        quote: '"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame',
         detail: 'Aan boord in Huay Xai; een volle dag varen over de Mekong.',
         sleep: 'Slaap: Pakbeng',
         mascotAction: 'sailing',
+        icon: '🚤',
+        iconLabel: 'Slowboat',
         photo: 'mekong',
         slideIndex: 2
       },
@@ -1010,9 +1053,12 @@
         date: 'ZO · 21 FEB',
         flags: '🇱🇦',
         title: 'Slowboat naar Luang Prabang',
+        quote: '"Slowboat mode: nul wifi, puur chillon op de stroom van de rivier." — Confucius',
         detail: 'Tweede vaardag; aankomst in Luang Prabang meestal later op de dag.',
         sleep: 'Slaap: Luang Prabang',
         mascotAction: 'docking',
+        icon: '🚤',
+        iconLabel: 'Slowboat',
         photo: 'mekong',
         slideIndex: 2
       },
@@ -1020,9 +1066,12 @@
         date: 'MA · 22 FEB',
         flags: '🇱🇦',
         title: 'Luang Prabang · oude stad',
+        quote: '"There\'s a sunrise and a sunset every single day, especially from Phousi Hill." — Jo Walton',
         detail: 'Tempels, avondmarkt en zonsondergang vanaf Phousi Hill.',
         sleep: 'Slaap: Luang Prabang',
         mascotAction: 'meditating',
+        icon: '🛕',
+        iconLabel: 'Tempelbezoek',
         photo: 'luangPrabang',
         slideIndex: 3
       },
@@ -1030,9 +1079,12 @@
         date: 'DI · 23 FEB',
         flags: '🇱🇦',
         title: 'Kuang Si-watervallen',
+        quote: '"Turquoise waterfijnheid levert een instant dopamine-hit op." — Aristoteles',
         detail: 'Dagtrip naar de watervallen, ongeveer 30 km buiten Luang Prabang.',
         sleep: 'Slaap: Luang Prabang',
         mascotAction: 'splashing',
+        icon: '💦',
+        iconLabel: 'Watervallen',
         photo: 'waterfall',
         slideIndex: 3
       },
@@ -1040,9 +1092,12 @@
         date: 'WO · 24 FEB',
         flags: '🇱🇦',
         title: 'Trein naar Vang Vieng',
+        quote: '"Sneller dan de rivier, strakker dan de karstbergen." — Marco Polo',
         detail: 'Luang Prabang → Vang Vieng: ±185 km; treinrit circa 1–1,5 uur.',
         sleep: 'Slaap: Vang Vieng',
         mascotAction: 'boarding',
+        icon: '🚆',
+        iconLabel: 'Trein',
         photo: 'train',
         slideIndex: 4
       },
@@ -1050,9 +1105,12 @@
         date: 'DO · 25 FEB',
         flags: '🇱🇦',
         title: 'Vang Vieng · natuurdag',
+        quote: '"The sky is not the limit, it\'s just the view from my balloon." — Amelia Earhart',
         detail: 'Kies een luchtballon (weerafhankelijk), kajak, grot of Blue Lagoon.',
         sleep: 'Slaap: Vang Vieng',
         mascotAction: 'ballooning',
+        icon: '🎈',
+        iconLabel: 'Ballonvaart of outdoor-avontuur',
         photo: 'vangVieng',
         slideIndex: 4
       },
@@ -1060,9 +1118,12 @@
         date: 'VR · 26 FEB',
         flags: '🇱🇦',
         title: 'Trein naar Vientiane',
+        quote: '"Op weg naar de hoofdstad met 100% zendag-energie." — Gautama Boeddha',
         detail: 'Vang Vieng → Vientiane: ±110 km; treinrit circa 1 uur.',
         sleep: 'Slaap: Vientiane',
         mascotAction: 'riding',
+        icon: '🚆',
+        iconLabel: 'Trein',
         photo: 'train',
         slideIndex: 4
       },
@@ -1070,9 +1131,12 @@
         date: 'ZA · 27 FEB',
         flags: '🇱🇦 → 🇰🇭',
         title: 'Vlucht naar Siem Reap',
+        quote: '"Grenzen oversteken is makkelijk als de tempels op je wachten." — Genghis Khan',
         detail: 'Vlieg vanuit Vientiane; controleer of de gekozen vlucht een overstap heeft.',
         sleep: 'Slaap: Siem Reap',
         mascotAction: 'flying',
+        icon: '✈️',
+        iconLabel: 'Vlucht',
         photo: 'flight',
         slideIndex: 5
       },
@@ -1080,9 +1144,12 @@
         date: 'ZO · 28 FEB',
         flags: '🇰🇭',
         title: 'Angkor Wat & Ta Prohm',
+        quote: '"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander de Grote',
         detail: 'Vroeg op voor zonsopkomst; combineer met Ta Prohm voor een volle tempeldag.',
         sleep: 'Slaap: Siem Reap',
         mascotAction: 'bowing',
+        icon: '🌅',
+        iconLabel: 'Tempels bij zonsopkomst',
         photo: 'angkor',
         slideIndex: 5
       },
@@ -1090,9 +1157,12 @@
         date: 'MA · 1 MRT',
         flags: '🇰🇭',
         title: 'Siem Reap · extra dag',
+        quote: '"Nature always wins. Especially tree roots in ancient stones." — Charles Darwin',
         detail: 'Rustdag of bezoek aan een andere tempel; zo hoeft Angkor niet gehaast.',
         sleep: 'Slaap: Siem Reap',
         mascotAction: 'floating',
+        icon: '🌿',
+        iconLabel: 'Rust- of tempeldag',
         photo: 'taProhm',
         slideIndex: 6
       },
@@ -1100,9 +1170,12 @@
         date: 'DI · 2 MRT',
         flags: '🇰🇭',
         title: 'Bus naar Phnom Penh',
+        quote: '"Het gaat niet om de busrit, het gaat om de aura waarmee je aankomt." — Napoleon Bonaparte',
         detail: 'Siem Reap → Phnom Penh: ±320 km; reken op ongeveer 5–6 uur onderweg.',
         sleep: 'Slaap: Phnom Penh · nacht 1/2',
         mascotAction: 'driving',
+        icon: '🚌',
+        iconLabel: 'Bus',
         photo: 'bus',
         slideIndex: 7
       },
@@ -1110,9 +1183,12 @@
         date: 'WO · 3 MRT',
         flags: '🇰🇭',
         title: 'Phnom Penh · volle dag',
+        quote: '"Koninklijke paleisen, rivierviews en keihard genieten op de finale avond." — Sisi',
         detail: 'Een dag in de stad; houd de avond rustig voor de vroege vlucht.',
         sleep: 'Slaap: Phnom Penh · nacht 2/2',
         mascotAction: 'strolling',
+        icon: '🏙️',
+        iconLabel: 'Stadsdag',
         photo: 'phnomPenh',
         slideIndex: 7
       },
@@ -1120,9 +1196,12 @@
         date: 'DO · 4 MRT',
         flags: '🇰🇭 → 🇳🇱',
         title: 'Terug naar Amsterdam',
+        quote: '"Don\'t cry because it\'s over, smile because it was absolutely legendary." — Dr. Seuss',
         detail: 'Vroege transfer naar de luchthaven · vlucht 08:15 · aankomst 18:30.',
         sleep: 'Slaap: thuis in Amsterdam',
         mascotAction: 'transferring',
+        icon: '✈️',
+        iconLabel: 'Terugvlucht',
         photo: 'flight',
         slideIndex: 7
       }
@@ -1150,7 +1229,7 @@
       tag.textContent = `${stop.date} · ${stop.flags}`;
       heading.textContent = stop.title;
       description.textContent = stop.detail;
-      quote.textContent = `🛏️ ${stop.sleep}`;
+      quote.textContent = stop.quote;
       meme.textContent = `MISSION: ${stop.title.toUpperCase()} ⚡`;
       routeStat.firstChild.textContent = 'REISDAG';
       routeStat.querySelector('.stat-value').textContent = stop.date.replace(/^[A-Z]{2} · /, '');
@@ -1191,12 +1270,13 @@
       const sleep = document.createElement('span');
       const card = document.createElement('span');
       const connector = document.createElement('span');
+      const actionIcon = document.createElement('span');
       const node = document.createElement('span');
 
       button.type = 'button';
       button.className = 'page-indicator';
-      button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.detail} ${stop.sleep} Open ${title}.`);
-      button.title = `${stop.date} · ${stop.flags} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
+      button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`);
+      button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
       image.className = 'timeline-thumb';
       image.src = slide.querySelector('.img-box img').src;
@@ -1216,10 +1296,15 @@
       sleep.textContent = stop.sleep;
       card.className = 'timeline-card';
       connector.className = 'timeline-connector';
+      actionIcon.className = 'timeline-action-icon';
+      actionIcon.textContent = stop.icon;
+      actionIcon.title = stop.iconLabel;
+      actionIcon.setAttribute('aria-hidden', 'true');
       node.className = 'timeline-node';
       node.textContent = stop.flags.split(' → ').at(-1);
 
       card.append(image, date, stopTitle, detail, sleep);
+      connector.append(actionIcon);
       button.append(connector, node, card);
       button.addEventListener('click', () => goToSlide(stop.slideIndex, idx));
       pageIndicatorsEl.append(button);
