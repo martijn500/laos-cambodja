@@ -82,6 +82,187 @@
       transform: scale(1) translateY(0);
     }
 
+    .slide-mascot-position {
+      position: absolute;
+      top: max(calc(50% - 190px), 4px);
+      right: max(calc((100vw - 1100px) / 2 - 48px), 4px);
+      z-index: 4;
+      width: clamp(82px, 10vw, 132px);
+      pointer-events: none;
+      filter: drop-shadow(0 0 12px rgba(255, 174, 66, 0.48));
+    }
+
+    .slide-mascot {
+      display: block;
+      width: 100%;
+      overflow: visible;
+      transform-origin: 60px 70px;
+    }
+
+    .mascot-halo {
+      fill: none;
+      stroke: #ffee00;
+      stroke-width: 3;
+      stroke-dasharray: 4 5;
+      transform-origin: 60px 34px;
+      animation: halo-spin 14s linear infinite;
+    }
+
+    .mascot-glow {
+      fill: #ffb347;
+      opacity: 0.24;
+    }
+
+    .mascot-skin {
+      fill: #ffb347;
+      stroke: #ff7b32;
+      stroke-width: 2;
+      stroke-linejoin: round;
+    }
+
+    .mascot-robe {
+      fill: #ff7b32;
+      stroke: #ffb347;
+      stroke-width: 2;
+      stroke-linejoin: round;
+    }
+
+    .mascot-detail {
+      fill: none;
+      stroke: #ffee00;
+      stroke-linecap: round;
+      stroke-width: 2;
+    }
+
+    .action-takeoff { animation: mascot-takeoff 2.8s ease-in-out infinite; }
+    .action-landing { animation: mascot-landing 3s ease-in-out infinite; }
+    .action-crossing { animation: mascot-walk 1.6s ease-in-out infinite; }
+    .action-zipline { animation: mascot-zipline 2.2s ease-in-out infinite; }
+    .action-climbing { animation: mascot-climb 1.8s ease-in-out infinite; }
+    .action-sailing { animation: mascot-sail 3s ease-in-out infinite; }
+    .action-docking { animation: mascot-dock 2.1s ease-in-out infinite; }
+    .action-meditating { animation: mascot-meditate 3.4s ease-in-out infinite; }
+    .action-splashing { animation: mascot-splash 1.8s ease-in-out infinite; }
+    .action-boarding { animation: mascot-step 1.5s ease-in-out infinite; }
+    .action-ballooning { animation: mascot-balloon 3.5s ease-in-out infinite; }
+    .action-riding { animation: mascot-rail 2s ease-in-out infinite; }
+    .action-flying { animation: mascot-fly 2.6s ease-in-out infinite; }
+    .action-bowing { animation: mascot-bow 2.6s ease-in-out infinite; }
+    .action-floating { animation: mascot-float 3s ease-in-out infinite; }
+    .action-driving { animation: mascot-road 1.7s ease-in-out infinite; }
+    .action-strolling { animation: mascot-stroll 2s ease-in-out infinite; }
+    .action-transferring { animation: mascot-transfer 1.8s ease-in-out infinite; }
+    .action-drifting { animation: mascot-drift 3.4s ease-in-out infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide-mascot,
+      .mascot-halo {
+        animation: none !important;
+      }
+    }
+
+    @keyframes halo-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes mascot-takeoff {
+      0%, 100% { transform: translate(0, 0) rotate(0); }
+      50% { transform: translate(-10px, -20px) rotate(-8deg); }
+    }
+
+    @keyframes mascot-landing {
+      0%, 100% { transform: translateY(-12px) rotate(4deg); }
+      60% { transform: translateY(3px) rotate(-2deg); }
+      75% { transform: translateY(-4px) rotate(1deg); }
+    }
+
+    @keyframes mascot-walk {
+      0%, 100% { transform: translateX(-5px) rotate(-3deg); }
+      50% { transform: translateX(5px) rotate(3deg); }
+    }
+
+    @keyframes mascot-zipline {
+      0%, 100% { transform: translate(-14px, -10px) rotate(-12deg); }
+      50% { transform: translate(15px, 12px) rotate(12deg); }
+    }
+
+    @keyframes mascot-climb {
+      0%, 100% { transform: translateY(5px) rotate(-6deg); }
+      50% { transform: translateY(-9px) rotate(6deg); }
+    }
+
+    @keyframes mascot-sail {
+      0%, 100% { transform: translateY(0) rotate(-4deg); }
+      50% { transform: translateY(8px) rotate(4deg); }
+    }
+
+    @keyframes mascot-dock {
+      0%, 100% { transform: translateY(0) scale(1); }
+      35% { transform: translateY(-12px) scale(1.02); }
+      55% { transform: translateY(2px) scale(0.98); }
+    }
+
+    @keyframes mascot-meditate {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-5px) scale(1.03); }
+    }
+
+    @keyframes mascot-splash {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      30% { transform: translateY(8px) rotate(-8deg); }
+      65% { transform: translateY(-12px) rotate(8deg); }
+    }
+
+    @keyframes mascot-step {
+      0%, 100% { transform: translateX(-4px) rotate(-4deg); }
+      50% { transform: translateX(7px) rotate(4deg); }
+    }
+
+    @keyframes mascot-balloon {
+      0%, 100% { transform: translateY(5px); }
+      50% { transform: translateY(-18px); }
+    }
+
+    @keyframes mascot-rail {
+      0%, 100% { transform: translateX(-8px) rotate(-2deg); }
+      50% { transform: translateX(8px) rotate(2deg); }
+    }
+
+    @keyframes mascot-fly {
+      0%, 100% { transform: translate(-8px, 5px) rotate(-5deg); }
+      50% { transform: translate(10px, -13px) rotate(7deg); }
+    }
+
+    @keyframes mascot-bow {
+      0%, 100% { transform: rotate(0); }
+      40%, 65% { transform: rotate(12deg); }
+    }
+
+    @keyframes mascot-float {
+      0%, 100% { transform: translateY(4px) rotate(-3deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+
+    @keyframes mascot-road {
+      0%, 100% { transform: translateX(-5px) rotate(-2deg); }
+      50% { transform: translateX(5px) rotate(2deg); }
+    }
+
+    @keyframes mascot-stroll {
+      0%, 100% { transform: translateX(-6px) rotate(-4deg); }
+      50% { transform: translateX(6px) rotate(4deg); }
+    }
+
+    @keyframes mascot-transfer {
+      0%, 100% { transform: translate(0, 2px) rotate(-3deg); }
+      50% { transform: translate(8px, -7px) rotate(5deg); }
+    }
+
+    @keyframes mascot-drift {
+      0%, 100% { transform: translate(-5px, 4px) rotate(-5deg); }
+      50% { transform: translate(7px, -6px) rotate(5deg); }
+    }
+
     /* Slide Card Content Layout */
     .card {
       background: var(--card-bg);
@@ -466,14 +647,6 @@
       border-radius: 12px;
     }
 
-    .page-indicator.is-optional {
-      opacity: 0.72;
-    }
-
-    .page-indicator.is-optional .timeline-card {
-      border-style: dashed;
-    }
-
     .nav-actions {
       display: flex;
       align-items: center;
@@ -643,27 +816,7 @@
       </div>
     </div>
 
-    <!-- SLIDE 6: 4000 ISLANDS -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-yellow);">
-        <div>
-          <span class="tag">OPTIONEEL ➕ ZUID-LAOS</span>
-          <h2>4000 ISLANDS 🌴</h2>
-          <p class="desc">Si Phan Don is prachtig, maar met de terugvlucht op 4 maart past deze zuidelijke omweg niet ontspannen in de route. Reken op minimaal 3–4 extra dagen via Pakse; voeg dit alleen toe met een latere terugvlucht of door andere stops te schrappen.</p>
-          <blockquote>"Time you enjoy wasting is not wasted time." — Bertrand Russell</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Chill Factor<div class="stat-value">∞</div></div>
-            <div class="stat-item">Stress Level<div class="stat-value">0%</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-yellow);">
-          <img src="https://www.27vakantiedagen.nl/wp-content/uploads/2022/10/si-phan-don.jpg" alt="4000 Islands Sunset">
-          <div class="meme-overlay-text">HANGMAT LEVEL: MAXIMUM LEVEL ACHIEVED 🍹</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 7: ANGKOR WAT -->
+    <!-- SLIDE 6: ANGKOR WAT -->
     <div class="slide">
       <div class="card" style="border-color: var(--neon-cyan);">
         <div>
@@ -677,13 +830,13 @@
           </div>
         </div>
         <div class="img-box" style="border-color: var(--neon-cyan);">
-          <img src="https://images.locationscout.net/2020/02/angkor-wat-reflecting-pool-cambodia-6s6z.webp?h=1400&q=80" alt="Angkor Wat Reflection Pool Sunrise">
+          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg" alt="Angkor Wat bij zonsopkomst">
           <div class="meme-overlay-text">ANGKOR WAT AT SUNRISE = UNREAL REFLECTION 👑</div>
         </div>
       </div>
     </div>
 
-    <!-- SLIDE 8: TA PROHM -->
+    <!-- SLIDE 7: TA PROHM -->
     <div class="slide">
       <div class="card" style="border-color: var(--neon-green);">
         <div>
@@ -703,7 +856,7 @@
       </div>
     </div>
 
-    <!-- SLIDE 9: PHNOM PENH -->
+    <!-- SLIDE 8: PHNOM PENH -->
     <div class="slide">
       <div class="card" style="border-color: var(--neon-pink);">
         <div>
@@ -738,10 +891,60 @@
 
   <script>
     let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
+    let slides = Array.from(document.querySelectorAll('.slide'));
     const progressEl = document.getElementById('progress');
     const pageIndicatorsEl = document.getElementById('page-indicators');
     let currentTimelineIndex = 0;
+    const photos = {
+      flight: {
+        src: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
+        alt: 'Vliegtuig boven de wolken'
+      },
+      chiangRai: {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg',
+        alt: 'Witte tempel Wat Rong Khun in Chiang Rai'
+      },
+      mekong: {
+        src: 'https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg',
+        alt: 'Slowboat op de Mekong in Laos'
+      },
+      jungle: {
+        src: 'https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg',
+        alt: 'Zipline tussen de bomen van de Laotiaanse jungle'
+      },
+      luangPrabang: {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original',
+        alt: 'Wat Xiengthong in Luang Prabang'
+      },
+      waterfall: {
+        src: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
+        alt: 'Waterval tussen groen tropisch woud'
+      },
+      train: {
+        src: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80',
+        alt: 'Spoorlijn door een groen landschap'
+      },
+      vangVieng: {
+        src: 'https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original',
+        alt: 'Luchtballon boven het karstlandschap van Vang Vieng'
+      },
+      angkor: {
+        src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg',
+        alt: 'Angkor Wat bij zonsopkomst met spiegeling in het water'
+      },
+      taProhm: {
+        src: 'https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg',
+        alt: 'Boomwortels groeien over de tempel Ta Prohm'
+      },
+      bus: {
+        src: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
+        alt: 'Bus voor de rit naar Phnom Penh'
+      },
+      phnomPenh: {
+        src: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG',
+        alt: 'Koninklijk Paleis in Phnom Penh in de avond'
+      }
+    };
     const itinerary = [
       {
         date: 'MA · 15 FEB',
@@ -749,6 +952,8 @@
         title: 'Vertrek uit Amsterdam',
         detail: 'Start van de reis; vlucht met eventuele overstap naar Thailand.',
         sleep: 'Slaap: aan boord',
+        mascotAction: 'takeoff',
+        photo: 'flight',
         slideIndex: 0
       },
       {
@@ -757,6 +962,8 @@
         title: 'Aankomst Chiang Rai',
         detail: 'Aankomen, rustig inchecken en bijkomen van de lange vlucht.',
         sleep: 'Slaap: Chiang Rai',
+        mascotAction: 'landing',
+        photo: 'chiangRai',
         slideIndex: 0
       },
       {
@@ -765,6 +972,8 @@
         title: 'Grens over naar Huay Xai',
         detail: 'Rit via Chiang Khong; reken op ±100 km, 2–3 uur plus grensformaliteiten.',
         sleep: 'Slaap: Huay Xai',
+        mascotAction: 'crossing',
+        photo: 'mekong',
         slideIndex: 1
       },
       {
@@ -773,6 +982,8 @@
         title: 'Gibbon Experience · dag 1',
         detail: 'Vroeg naar het Nam Kan-reservaat; trek en ziplines naar de boomhut.',
         sleep: 'Slaap: boomhut in de jungle',
+        mascotAction: 'zipline',
+        photo: 'jungle',
         slideIndex: 1
       },
       {
@@ -781,6 +992,8 @@
         title: 'Gibbon Experience · dag 2',
         detail: 'Laatste jungletocht en terug naar Huay Xai; aankomsttijd hangt af van de tour.',
         sleep: 'Slaap: Huay Xai',
+        mascotAction: 'climbing',
+        photo: 'jungle',
         slideIndex: 2
       },
       {
@@ -789,6 +1002,8 @@
         title: 'Slowboat naar Pakbeng',
         detail: 'Aan boord in Huay Xai; een volle dag varen over de Mekong.',
         sleep: 'Slaap: Pakbeng',
+        mascotAction: 'sailing',
+        photo: 'mekong',
         slideIndex: 2
       },
       {
@@ -797,6 +1012,8 @@
         title: 'Slowboat naar Luang Prabang',
         detail: 'Tweede vaardag; aankomst in Luang Prabang meestal later op de dag.',
         sleep: 'Slaap: Luang Prabang',
+        mascotAction: 'docking',
+        photo: 'mekong',
         slideIndex: 2
       },
       {
@@ -805,6 +1022,8 @@
         title: 'Luang Prabang · oude stad',
         detail: 'Tempels, avondmarkt en zonsondergang vanaf Phousi Hill.',
         sleep: 'Slaap: Luang Prabang',
+        mascotAction: 'meditating',
+        photo: 'luangPrabang',
         slideIndex: 3
       },
       {
@@ -813,6 +1032,8 @@
         title: 'Kuang Si-watervallen',
         detail: 'Dagtrip naar de watervallen, ongeveer 30 km buiten Luang Prabang.',
         sleep: 'Slaap: Luang Prabang',
+        mascotAction: 'splashing',
+        photo: 'waterfall',
         slideIndex: 3
       },
       {
@@ -821,6 +1042,8 @@
         title: 'Trein naar Vang Vieng',
         detail: 'Luang Prabang → Vang Vieng: ±185 km; treinrit circa 1–1,5 uur.',
         sleep: 'Slaap: Vang Vieng',
+        mascotAction: 'boarding',
+        photo: 'train',
         slideIndex: 4
       },
       {
@@ -829,6 +1052,8 @@
         title: 'Vang Vieng · natuurdag',
         detail: 'Kies een luchtballon (weerafhankelijk), kajak, grot of Blue Lagoon.',
         sleep: 'Slaap: Vang Vieng',
+        mascotAction: 'ballooning',
+        photo: 'vangVieng',
         slideIndex: 4
       },
       {
@@ -837,6 +1062,8 @@
         title: 'Trein naar Vientiane',
         detail: 'Vang Vieng → Vientiane: ±110 km; treinrit circa 1 uur.',
         sleep: 'Slaap: Vientiane',
+        mascotAction: 'riding',
+        photo: 'train',
         slideIndex: 4
       },
       {
@@ -845,7 +1072,9 @@
         title: 'Vlucht naar Siem Reap',
         detail: 'Vlieg vanuit Vientiane; controleer of de gekozen vlucht een overstap heeft.',
         sleep: 'Slaap: Siem Reap',
-        slideIndex: 6
+        mascotAction: 'flying',
+        photo: 'flight',
+        slideIndex: 5
       },
       {
         date: 'ZO · 28 FEB',
@@ -853,7 +1082,9 @@
         title: 'Angkor Wat & Ta Prohm',
         detail: 'Vroeg op voor zonsopkomst; combineer met Ta Prohm voor een volle tempeldag.',
         sleep: 'Slaap: Siem Reap',
-        slideIndex: 7
+        mascotAction: 'bowing',
+        photo: 'angkor',
+        slideIndex: 5
       },
       {
         date: 'MA · 1 MRT',
@@ -861,6 +1092,8 @@
         title: 'Siem Reap · extra dag',
         detail: 'Rustdag of bezoek aan een andere tempel; zo hoeft Angkor niet gehaast.',
         sleep: 'Slaap: Siem Reap',
+        mascotAction: 'floating',
+        photo: 'taProhm',
         slideIndex: 6
       },
       {
@@ -869,7 +1102,9 @@
         title: 'Bus naar Phnom Penh',
         detail: 'Siem Reap → Phnom Penh: ±320 km; reken op ongeveer 5–6 uur onderweg.',
         sleep: 'Slaap: Phnom Penh · nacht 1/2',
-        slideIndex: 8
+        mascotAction: 'driving',
+        photo: 'bus',
+        slideIndex: 7
       },
       {
         date: 'WO · 3 MRT',
@@ -877,7 +1112,9 @@
         title: 'Phnom Penh · volle dag',
         detail: 'Een dag in de stad; houd de avond rustig voor de vroege vlucht.',
         sleep: 'Slaap: Phnom Penh · nacht 2/2',
-        slideIndex: 8
+        mascotAction: 'strolling',
+        photo: 'phnomPenh',
+        slideIndex: 7
       },
       {
         date: 'DO · 4 MRT',
@@ -885,20 +1122,63 @@
         title: 'Terug naar Amsterdam',
         detail: 'Vroege transfer naar de luchthaven · vlucht 08:15 · aankomst 18:30.',
         sleep: 'Slaap: thuis in Amsterdam',
-        slideIndex: 8
-      },
-      {
-        date: 'EXTRA · OPTIONEEL',
-        flags: '🇱🇦',
-        title: '4000 Islands · Don Det',
-        detail: 'Niet in deze route: voeg minimaal 3–4 dagen toe via Pakse of schrap andere stops.',
-        sleep: 'Niet inbegrepen in de nachten',
-        slideIndex: 5,
-        optional: true
+        mascotAction: 'transferring',
+        photo: 'flight',
+        slideIndex: 7
       }
     ];
-    const plannedStops = itinerary.filter(stop => !stop.optional);
     let soundEnabled = true;
+
+    const slideTemplates = slides;
+    const deck = document.querySelector('.deck');
+    slides = itinerary.map((stop, idx) => {
+      const slide = slideTemplates[stop.slideIndex].cloneNode(true);
+      const tag = slide.querySelector('.tag');
+      const heading = slide.querySelector('h2');
+      const description = slide.querySelector('.desc');
+      const quote = slide.querySelector('blockquote');
+      const meme = slide.querySelector('.meme-overlay-text');
+      const photo = photos[stop.photo];
+      const slideImage = slide.querySelector('.img-box img');
+      const [routeStat, sleepStat] = slide.querySelectorAll('.stat-item');
+      const mascot = document.createElement('span');
+
+      stop.slideIndex = idx;
+      slideImage.src = photo.src;
+      slideImage.alt = photo.alt;
+      slide.classList.toggle('active', idx === currentSlide);
+      tag.textContent = `${stop.date} · ${stop.flags}`;
+      heading.textContent = stop.title;
+      description.textContent = stop.detail;
+      quote.textContent = `🛏️ ${stop.sleep}`;
+      meme.textContent = `MISSION: ${stop.title.toUpperCase()} ⚡`;
+      routeStat.firstChild.textContent = 'REISDAG';
+      routeStat.querySelector('.stat-value').textContent = stop.date.replace(/^[A-Z]{2} · /, '');
+      sleepStat.firstChild.textContent = 'OVERNACHTING';
+      sleepStat.querySelector('.stat-value').textContent = stop.sleep.replace(/^Slaap: /, '');
+      mascot.className = 'slide-mascot-position';
+      mascot.setAttribute('aria-hidden', 'true');
+      mascot.innerHTML = `
+        <svg class="slide-mascot action-${stop.mascotAction}" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <circle class="mascot-glow" cx="60" cy="68" r="41"/>
+          <circle class="mascot-halo" cx="60" cy="35" r="25"/>
+          <path class="mascot-detail" d="M60 4v7M31 35h-7M96 35h-7M39 14l5 6M81 14l-5 6"/>
+          <path class="mascot-skin" d="M49 38c0-9 5-15 11-15s11 6 11 15v4H49z"/>
+          <circle cx="56" cy="37" r="1.4" fill="#14141c"/>
+          <circle cx="64" cy="37" r="1.4" fill="#14141c"/>
+          <path class="mascot-detail" d="M57 43c2 2 4 2 6 0"/>
+          <path class="mascot-robe" d="M47 52c3-5 8-7 13-7s10 2 13 7l7 21H40z"/>
+          <path class="mascot-skin" d="M48 53c-7 3-12 9-14 16l5 3c5-5 10-7 16-8M72 53c7 3 12 9 14 16l-5 3c-5-5-10-7-16-8"/>
+          <path class="mascot-robe" d="M43 69c5 4 11 6 17 6s12-2 17-6l8 13c-7 7-15 10-25 10S42 89 35 82z"/>
+          <path class="mascot-skin" d="M43 81c-10 1-15 5-15 10 0 4 8 6 20 6h12v-8H48c-4 0-5-2-5-4zM77 81c10 1 15 5 15 10 0 4-8 6-20 6H60v-8h12c4 0 5-2 5-4z"/>
+          <path class="mascot-detail" d="M60 50v25M48 59c3 3 7 4 12 4s9-1 12-4"/>
+          <path class="mascot-robe" d="M29 101c7-6 17-9 31-9s24 3 31 9l-5 7H34z"/>
+        </svg>`;
+      slide.append(mascot);
+      return slide;
+    });
+    slideTemplates.forEach(slide => slide.remove());
+    deck.append(...slides);
 
     const pageIndicators = itinerary.map((stop, idx) => {
       const slide = slides[stop.slideIndex];
@@ -914,7 +1194,7 @@
       const node = document.createElement('span');
 
       button.type = 'button';
-      button.className = stop.optional ? 'page-indicator is-optional' : 'page-indicator';
+      button.className = 'page-indicator';
       button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.detail} ${stop.sleep} Open ${title}.`);
       button.title = `${stop.date} · ${stop.flags} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
@@ -984,10 +1264,7 @@
           indicator.removeAttribute('aria-current');
         }
       });
-      const currentStop = itinerary[currentTimelineIndex];
-      progressEl.innerText = currentStop.optional
-        ? `EXTRA · ${currentSlide + 1} / ${slides.length}`
-        : `DAG ${currentTimelineIndex + 1} / ${plannedStops.length}`;
+      progressEl.innerText = `DAG ${currentTimelineIndex + 1} / ${itinerary.length}`;
     }
 
     function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
