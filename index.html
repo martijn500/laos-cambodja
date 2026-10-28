@@ -12,6 +12,7 @@
   <style>
     :root {
       --bg: #09090b;
+      --timeline-height: 310px;
       --neon-pink: #ff007f;
       --neon-green: #00ff66;
       --neon-yellow: #ffee00;
@@ -54,7 +55,7 @@
     .deck {
       position: relative;
       width: 100%;
-      height: 100vh;
+      height: calc(100vh - var(--timeline-height));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,7 +69,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
+      padding: 1rem;
       opacity: 0;
       visibility: hidden;
       transform: scale(0.9) translateY(20px);
@@ -89,7 +90,7 @@
       border-radius: 20px;
       width: 100%;
       max-width: 1100px;
-      max-height: 85vh;
+      max-height: min(85vh, calc(100vh - var(--timeline-height) - 2rem));
       overflow-y: auto;
       padding: 2.5rem;
       backdrop-filter: blur(12px);
@@ -103,7 +104,7 @@
     @media (max-width: 850px) {
       .card {
         grid-template-columns: 1fr;
-        max-height: 80vh;
+        max-height: calc(100vh - var(--timeline-height) - 2rem);
         padding: 1.5rem;
       }
     }
@@ -232,20 +233,253 @@
       box-shadow: 0 0 10px var(--neon-pink);
     }
 
-    /* Navigation Overlay */
+    /* Clickable trip timeline */
     .nav-controls {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      position: fixed;
+      inset: auto 0 0;
+      height: var(--timeline-height);
+      z-index: 10;
+      padding: 9px 16px 5px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 12% 100%, rgba(255, 0, 127, 0.12), transparent 40%),
+        radial-gradient(ellipse at 88% 0%, rgba(0, 240, 255, 0.1), transparent 40%),
+        rgba(8, 8, 14, 0.96);
+      border-top: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+
+    .timeline-heading {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      z-index: 10;
-      background: rgba(0,0,0,0.8);
-      padding: 10px 20px;
-      border-radius: 30px;
-      border: 1px solid rgba(255,255,255,0.2);
+      justify-content: space-between;
+      max-width: 1500px;
+      height: 24px;
+      margin: 0 auto 3px;
+      padding: 0 8px;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .timeline-heading span {
+      color: var(--neon-yellow);
+      font-family: var(--font-meme);
+      font-size: 0.5rem;
+      letter-spacing: 0;
+    }
+
+    .page-indicators {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 230px;
+      margin: 0 auto;
+      padding: 0 16px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-color: var(--neon-cyan) rgba(255,255,255,0.1);
+      scrollbar-width: thin;
+    }
+
+    .page-indicators::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 28px;
+      left: 28px;
+      border-top: 2px dashed rgba(255,255,255,0.3);
+      pointer-events: none;
+    }
+
+    .page-indicator {
+      --indicator-color: #fff;
+      position: relative;
+      display: block;
+      flex: 0 0 190px;
+      height: 230px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      scroll-snap-align: start;
+      text-align: left;
+    }
+
+    .timeline-card {
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      display: flex;
+      width: 170px;
+      height: 103px;
+      flex-direction: column;
+      gap: 2px;
+      padding: 5px;
+      overflow: hidden;
+      transform: translateX(-50%) rotate(-1.5deg);
+      border: 1px solid color-mix(in srgb, var(--indicator-color) 45%, transparent);
+      border-radius: 13px 13px 18px 12px;
+      background: linear-gradient(145deg, rgba(38, 38, 50, 0.98), rgba(15, 15, 22, 0.98));
+      box-shadow: 0 7px 18px rgba(0,0,0,0.35), 0 0 14px color-mix(in srgb, var(--indicator-color) 12%, transparent);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .page-indicator:nth-child(even) .timeline-card {
+      top: auto;
+      bottom: 4px;
+      transform: translateX(-50%) rotate(1.5deg);
+      border-radius: 13px 12px 13px 18px;
+    }
+
+    .timeline-thumb {
+      width: 100%;
+      height: 37px;
+      flex: 0 0 37px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      object-fit: cover;
+    }
+
+    .timeline-date {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      color: var(--indicator-color);
+      font-family: var(--font-meme);
+      font-size: 0.43rem;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .timeline-title {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 0.62rem;
+      font-weight: 800;
+      line-height: 1.15;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
+
+    .timeline-detail {
+      display: -webkit-box;
+      overflow: hidden;
+      color: #bbb;
+      font-size: 0.52rem;
+      line-height: 1.15;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 1;
+    }
+
+    .timeline-sleep {
+      display: block;
+      overflow: hidden;
+      color: #c9c4ff;
+      font-size: 0.49rem;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .page-indicator:nth-child(4n + 1) {
+      --indicator-color: var(--neon-pink);
+    }
+
+    .page-indicator:nth-child(4n + 2) {
+      --indicator-color: var(--neon-green);
+    }
+
+    .page-indicator:nth-child(4n + 3) {
+      --indicator-color: var(--neon-yellow);
+    }
+
+    .page-indicator:nth-child(4n) {
+      --indicator-color: var(--neon-cyan);
+    }
+
+    .timeline-connector {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 12px;
+      background: var(--indicator-color);
+      opacity: 0.7;
+      transform: translateX(-50%);
+    }
+
+    .page-indicator:nth-child(even) .timeline-connector {
+      top: calc(50% - 12px);
+    }
+
+    .timeline-node {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      transform: translate(-50%, -50%);
+      border: 2px solid var(--indicator-color);
+      border-radius: 50%;
+      background: #111119;
+      box-shadow: 0 0 14px color-mix(in srgb, var(--indicator-color) 45%, transparent);
+      font-size: 0.9rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .page-indicator:hover .timeline-card,
+    .page-indicator[aria-current="step"] .timeline-card {
+      z-index: 2;
+      transform: translateX(-50%) translateY(-3px) rotate(0);
+      border-color: var(--indicator-color);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.45), 0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
+    }
+
+    .page-indicator:nth-child(even):hover .timeline-card,
+    .page-indicator:nth-child(even)[aria-current="step"] .timeline-card {
+      transform: translateX(-50%) translateY(3px) rotate(0);
+    }
+
+    .page-indicator:hover .timeline-node,
+    .page-indicator[aria-current="step"] .timeline-node {
+      transform: translate(-50%, -50%) scale(1.16);
+      background: var(--indicator-color);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--indicator-color) 65%, transparent);
+    }
+
+    .page-indicator:focus-visible {
+      outline: 2px solid var(--neon-cyan);
+      outline-offset: -4px;
+      border-radius: 12px;
+    }
+
+    .page-indicator.is-optional {
+      opacity: 0.72;
+    }
+
+    .page-indicator.is-optional .timeline-card {
+      border-style: dashed;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      height: 34px;
     }
 
     .nav-btn {
@@ -272,6 +506,33 @@
       font-family: var(--font-meme);
       font-size: 0.8rem;
       color: var(--neon-yellow);
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --timeline-height: 310px;
+      }
+
+      .page-indicator {
+        flex-basis: 178px;
+      }
+
+      .timeline-heading {
+        font-size: 0.7rem;
+      }
+
+      .timeline-heading span {
+        font-size: 0.4rem;
+      }
+
+      .page-indicators {
+        height: 230px;
+      }
+
+      .nav-btn {
+        width: 32px;
+        height: 32px;
+      }
     }
   </style>
 </head>
@@ -386,9 +647,9 @@
     <div class="slide">
       <div class="card" style="border-color: var(--neon-yellow);">
         <div>
-          <span class="tag">STOP 6 🏝️ ZUID-LAOS</span>
+          <span class="tag">OPTIONEEL ➕ ZUID-LAOS</span>
           <h2>4000 ISLANDS 🌴</h2>
-          <p class="desc">Si Phan Don. Hangmatten, Irrawaddy dolfijnen spotten in de Mekong en keihard niksen op het water. Dit is de ultieme ontprikkeling.</p>
+          <p class="desc">Si Phan Don is prachtig, maar met de terugvlucht op 4 maart past deze zuidelijke omweg niet ontspannen in de route. Reken op minimaal 3–4 extra dagen via Pakse; voeg dit alleen toe met een latere terugvlucht of door andere stops te schrappen.</p>
           <blockquote>"Time you enjoy wasting is not wasted time." — Bertrand Russell</blockquote>
           <div class="stats-bar">
             <div class="stat-item">Chill Factor<div class="stat-value">∞</div></div>
@@ -408,7 +669,7 @@
         <div>
           <span class="tag">STOP 7 🇰🇭 CAMBODJA</span>
           <h2>ANGKOR WAT SUNRISE 🌅</h2>
-          <p class="desc">De grens over naar Cambodja! Om 04:30 uur uit bed voor de meest epische zonsopkomst op aarde met de beroemde spiegeling in de vijver.</p>
+          <p class="desc">Vlieg vanuit Vientiane naar Siem Reap, waarschijnlijk met een overstap. Op 28 februari om 04:30 uur uit bed voor de zonsopkomst bij Angkor Wat en de beroemde spiegeling in de vijver.</p>
           <blockquote>"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander the Great</blockquote>
           <div class="stats-bar">
             <div class="stat-item">Wekker<div class="stat-value">04:30 AM</div></div>
@@ -448,7 +709,7 @@
         <div>
           <span class="tag">STOP 9 ✈️ FINALE</span>
           <h2>PHNOM PENH & TERUG 🏛️</h2>
-          <p class="desc">Koninklijk Paleis, bruisende Riverside, heerlijk eten en daarna voldaan de vlieger in terug naar huis. De reis van je leven is compleet!</p>
+          <p class="desc">Reis op 2 maart van Siem Reap naar Phnom Penh (ongeveer 5–6 uur) en houd 3 maart vrij voor de stad. Na twee nachten in Phnom Penh vertrek je op donderdag 4 maart om 08:15 uur naar Amsterdam, waar je diezelfde avond om 18:30 uur aankomt.</p>
           <blockquote>"Don't cry because it's over, smile because it was absolutely legendary." — Dr. Seuss</blockquote>
           <div class="stats-bar">
             <div class="stat-item">Memories<div class="stat-value">∞</div></div>
@@ -466,16 +727,224 @@
 
   <!-- NAVIGATION CONTROLS -->
   <div class="nav-controls">
-    <button class="nav-btn" onclick="prevSlide()">◄</button>
-    <span class="progress-text" id="progress">1 / 9</span>
-    <button class="nav-btn" onclick="nextSlide()">►</button>
+    <div class="timeline-heading">✦ JULLIE REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
+    <nav class="page-indicators" id="page-indicators" aria-label="Klikbare reistijdlijn"></nav>
+    <div class="nav-actions">
+      <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◄</button>
+      <span class="progress-text" id="progress">DAG 1 / 18</span>
+      <button class="nav-btn" onclick="nextSlide()" aria-label="Volgende pagina">►</button>
+    </div>
   </div>
 
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const progressEl = document.getElementById('progress');
+    const pageIndicatorsEl = document.getElementById('page-indicators');
+    let currentTimelineIndex = 0;
+    const itinerary = [
+      {
+        date: 'MA · 15 FEB',
+        flags: '🇳🇱',
+        title: 'Vertrek uit Amsterdam',
+        detail: 'Start van de reis; vlucht met eventuele overstap naar Thailand.',
+        sleep: 'Slaap: aan boord',
+        slideIndex: 0
+      },
+      {
+        date: 'DI · 16 FEB',
+        flags: '🇹🇭',
+        title: 'Aankomst Chiang Rai',
+        detail: 'Aankomen, rustig inchecken en bijkomen van de lange vlucht.',
+        sleep: 'Slaap: Chiang Rai',
+        slideIndex: 0
+      },
+      {
+        date: 'WO · 17 FEB',
+        flags: '🇹🇭 → 🇱🇦',
+        title: 'Grens over naar Huay Xai',
+        detail: 'Rit via Chiang Khong; reken op ±100 km, 2–3 uur plus grensformaliteiten.',
+        sleep: 'Slaap: Huay Xai',
+        slideIndex: 1
+      },
+      {
+        date: 'DO · 18 FEB',
+        flags: '🇱🇦',
+        title: 'Gibbon Experience · dag 1',
+        detail: 'Vroeg naar het Nam Kan-reservaat; trek en ziplines naar de boomhut.',
+        sleep: 'Slaap: boomhut in de jungle',
+        slideIndex: 1
+      },
+      {
+        date: 'VR · 19 FEB',
+        flags: '🇱🇦',
+        title: 'Gibbon Experience · dag 2',
+        detail: 'Laatste jungletocht en terug naar Huay Xai; aankomsttijd hangt af van de tour.',
+        sleep: 'Slaap: Huay Xai',
+        slideIndex: 2
+      },
+      {
+        date: 'ZA · 20 FEB',
+        flags: '🇱🇦',
+        title: 'Slowboat naar Pakbeng',
+        detail: 'Aan boord in Huay Xai; een volle dag varen over de Mekong.',
+        sleep: 'Slaap: Pakbeng',
+        slideIndex: 2
+      },
+      {
+        date: 'ZO · 21 FEB',
+        flags: '🇱🇦',
+        title: 'Slowboat naar Luang Prabang',
+        detail: 'Tweede vaardag; aankomst in Luang Prabang meestal later op de dag.',
+        sleep: 'Slaap: Luang Prabang',
+        slideIndex: 2
+      },
+      {
+        date: 'MA · 22 FEB',
+        flags: '🇱🇦',
+        title: 'Luang Prabang · oude stad',
+        detail: 'Tempels, avondmarkt en zonsondergang vanaf Phousi Hill.',
+        sleep: 'Slaap: Luang Prabang',
+        slideIndex: 3
+      },
+      {
+        date: 'DI · 23 FEB',
+        flags: '🇱🇦',
+        title: 'Kuang Si-watervallen',
+        detail: 'Dagtrip naar de watervallen, ongeveer 30 km buiten Luang Prabang.',
+        sleep: 'Slaap: Luang Prabang',
+        slideIndex: 3
+      },
+      {
+        date: 'WO · 24 FEB',
+        flags: '🇱🇦',
+        title: 'Trein naar Vang Vieng',
+        detail: 'Luang Prabang → Vang Vieng: ±185 km; treinrit circa 1–1,5 uur.',
+        sleep: 'Slaap: Vang Vieng',
+        slideIndex: 4
+      },
+      {
+        date: 'DO · 25 FEB',
+        flags: '🇱🇦',
+        title: 'Vang Vieng · natuurdag',
+        detail: 'Kies een luchtballon (weerafhankelijk), kajak, grot of Blue Lagoon.',
+        sleep: 'Slaap: Vang Vieng',
+        slideIndex: 4
+      },
+      {
+        date: 'VR · 26 FEB',
+        flags: '🇱🇦',
+        title: 'Trein naar Vientiane',
+        detail: 'Vang Vieng → Vientiane: ±110 km; treinrit circa 1 uur.',
+        sleep: 'Slaap: Vientiane',
+        slideIndex: 4
+      },
+      {
+        date: 'ZA · 27 FEB',
+        flags: '🇱🇦 → 🇰🇭',
+        title: 'Vlucht naar Siem Reap',
+        detail: 'Vlieg vanuit Vientiane; controleer of de gekozen vlucht een overstap heeft.',
+        sleep: 'Slaap: Siem Reap',
+        slideIndex: 6
+      },
+      {
+        date: 'ZO · 28 FEB',
+        flags: '🇰🇭',
+        title: 'Angkor Wat & Ta Prohm',
+        detail: 'Vroeg op voor zonsopkomst; combineer met Ta Prohm voor een volle tempeldag.',
+        sleep: 'Slaap: Siem Reap',
+        slideIndex: 7
+      },
+      {
+        date: 'MA · 1 MRT',
+        flags: '🇰🇭',
+        title: 'Siem Reap · extra dag',
+        detail: 'Rustdag of bezoek aan een andere tempel; zo hoeft Angkor niet gehaast.',
+        sleep: 'Slaap: Siem Reap',
+        slideIndex: 6
+      },
+      {
+        date: 'DI · 2 MRT',
+        flags: '🇰🇭',
+        title: 'Bus naar Phnom Penh',
+        detail: 'Siem Reap → Phnom Penh: ±320 km; reken op ongeveer 5–6 uur onderweg.',
+        sleep: 'Slaap: Phnom Penh · nacht 1/2',
+        slideIndex: 8
+      },
+      {
+        date: 'WO · 3 MRT',
+        flags: '🇰🇭',
+        title: 'Phnom Penh · volle dag',
+        detail: 'Een dag in de stad; houd de avond rustig voor de vroege vlucht.',
+        sleep: 'Slaap: Phnom Penh · nacht 2/2',
+        slideIndex: 8
+      },
+      {
+        date: 'DO · 4 MRT',
+        flags: '🇰🇭 → 🇳🇱',
+        title: 'Terug naar Amsterdam',
+        detail: 'Vroege transfer naar de luchthaven · vlucht 08:15 · aankomst 18:30.',
+        sleep: 'Slaap: thuis in Amsterdam',
+        slideIndex: 8
+      },
+      {
+        date: 'EXTRA · OPTIONEEL',
+        flags: '🇱🇦',
+        title: '4000 Islands · Don Det',
+        detail: 'Niet in deze route: voeg minimaal 3–4 dagen toe via Pakse of schrap andere stops.',
+        sleep: 'Niet inbegrepen in de nachten',
+        slideIndex: 5,
+        optional: true
+      }
+    ];
+    const plannedStops = itinerary.filter(stop => !stop.optional);
     let soundEnabled = true;
+
+    const pageIndicators = itinerary.map((stop, idx) => {
+      const slide = slides[stop.slideIndex];
+      const button = document.createElement('button');
+      const title = slide.querySelector('h2').textContent.trim();
+      const image = document.createElement('img');
+      const date = document.createElement('span');
+      const stopTitle = document.createElement('span');
+      const detail = document.createElement('span');
+      const sleep = document.createElement('span');
+      const card = document.createElement('span');
+      const connector = document.createElement('span');
+      const node = document.createElement('span');
+
+      button.type = 'button';
+      button.className = stop.optional ? 'page-indicator is-optional' : 'page-indicator';
+      button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.detail} ${stop.sleep} Open ${title}.`);
+      button.title = `${stop.date} · ${stop.flags} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
+
+      image.className = 'timeline-thumb';
+      image.src = slide.querySelector('.img-box img').src;
+      image.alt = '';
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      date.className = 'timeline-date';
+      date.textContent = stop.date;
+      const flags = document.createElement('span');
+      flags.textContent = stop.flags;
+      date.prepend(flags);
+      stopTitle.className = 'timeline-title';
+      stopTitle.textContent = stop.title;
+      detail.className = 'timeline-detail';
+      detail.textContent = stop.detail;
+      sleep.className = 'timeline-sleep';
+      sleep.textContent = stop.sleep;
+      card.className = 'timeline-card';
+      connector.className = 'timeline-connector';
+      node.className = 'timeline-node';
+      node.textContent = stop.flags.split(' → ').at(-1);
+
+      card.append(image, date, stopTitle, detail, sleep);
+      button.append(connector, node, card);
+      button.addEventListener('click', () => goToSlide(stop.slideIndex, idx));
+      pageIndicatorsEl.append(button);
+      return button;
+    });
 
     // Web Audio Synthesizer for 8-bit sound effects
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -507,7 +976,27 @@
       slides.forEach((slide, idx) => {
         slide.classList.toggle('active', idx === currentSlide);
       });
-      progressEl.innerText = `${currentSlide + 1} / ${slides.length}`;
+      pageIndicators.forEach((indicator, idx) => {
+        if (idx === currentTimelineIndex) {
+          indicator.setAttribute('aria-current', 'step');
+          indicator.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        } else {
+          indicator.removeAttribute('aria-current');
+        }
+      });
+      const currentStop = itinerary[currentTimelineIndex];
+      progressEl.innerText = currentStop.optional
+        ? `EXTRA · ${currentSlide + 1} / ${slides.length}`
+        : `DAG ${currentTimelineIndex + 1} / ${plannedStops.length}`;
+    }
+
+    function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
+      if (index === currentSlide && timelineIndex === currentTimelineIndex) return;
+      const slideChanged = index !== currentSlide;
+      currentSlide = index;
+      currentTimelineIndex = timelineIndex;
+      if (slideChanged) playBeep(587.33, 'triangle', 0.12);
+      updateDeck();
     }
 
     function nextSlide() {
@@ -518,6 +1007,7 @@
         currentSlide = 0;
         playBeep(880, 'sawtooth', 0.2);
       }
+      currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
       updateDeck();
     }
 
@@ -525,9 +1015,12 @@
       if (currentSlide > 0) {
         currentSlide--;
         playBeep(349.23, 'triangle', 0.12);
+        currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
         updateDeck();
       }
     }
+
+    updateDeck();
 
     // Keyboard Arrow Controls
     document.addEventListener('keydown', (e) => {
