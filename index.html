@@ -101,18 +101,12 @@
 
     .map-origin-beam {
       fill: url(#map-origin-fill);
-      stroke: var(--map-origin-color, #75d8c8);
-      stroke-opacity: 0.42;
-      stroke-width: 1.5;
-      vector-effect: non-scaling-stroke;
     }
 
-    .map-origin-edge {
-      fill: none;
-      stroke: var(--map-origin-color, #75d8c8);
-      stroke-opacity: 0.54;
-      stroke-width: 1.5;
-      vector-effect: non-scaling-stroke;
+    .map-origin-beam-glow {
+      fill: var(--map-origin-color, #75d8c8);
+      opacity: 0.2;
+      filter: url(#map-origin-glow);
     }
 
     @keyframes map-pulse {
@@ -719,12 +713,34 @@
       left: 50%;
       z-index: 0;
       width: calc(100% + var(--timeline-gap));
-      border-top: 1px dashed rgba(156, 185, 188, 0.52);
+      height: 2px;
+      background: linear-gradient(90deg, var(--indicator-color), var(--next-indicator-color, var(--indicator-color)));
+      -webkit-mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+      mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
       pointer-events: none;
     }
 
-    .page-indicator:last-child .timeline-connector {
-      display: none;
+    .page-indicator:first-child::before,
+    .page-indicator:last-child::after {
+      position: absolute;
+      top: 24px;
+      z-index: 0;
+      width: 50vw;
+      height: 2px;
+      -webkit-mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+      mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+      content: '';
+      pointer-events: none;
+    }
+
+    .page-indicator:first-child::before {
+      right: 50%;
+      background: linear-gradient(90deg, transparent, var(--indicator-color));
+    }
+
+    .page-indicator:last-child::after {
+      left: 50%;
+      background: linear-gradient(90deg, var(--indicator-color), transparent);
     }
 
     .timeline-node {
@@ -771,25 +787,40 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
+      width: max-content;
+      margin: 0 auto;
       height: 34px;
+      padding: 2px 7px;
+      border: 1px solid rgba(183, 233, 225, 0.18);
+      border-radius: 999px;
+      background: rgba(183, 233, 225, 0.07);
     }
 
     .nav-btn {
+      display: grid;
+      flex: 0 0 28px;
+      place-items: center;
+      width: 28px;
+      height: 28px;
       background: #b7e9e1;
       color: #102124;
       border: none;
-      width: 30px;
-      height: 30px;
       border-radius: 50%;
       font-family: var(--font-sans);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 800;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       transition: transform 0.15s, background 0.15s;
+    }
+
+    .nav-arrow {
+      display: block;
+      line-height: 1;
+    }
+
+    .nav-btn-prev .nav-arrow {
+      transform: rotate(180deg);
     }
 
     .nav-btn:hover {
@@ -802,16 +833,25 @@
 
     .progress-text {
       display: flex;
+      flex: 0 0 auto;
       align-items: center;
-      gap: 7px;
-      padding: 5px 11px;
-      border: 1px solid rgba(183, 233, 225, 0.18);
-      border-radius: 999px;
-      background: rgba(183, 233, 225, 0.07);
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+      height: 100%;
+      padding: 0 4px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
       color: #dce8e8;
       font-family: var(--font-sans);
       font-size: 0.72rem;
       font-weight: 800;
+    }
+
+    .progress-day {
+      font-size: 0.68rem;
+      white-space: nowrap;
     }
 
     .progress-icon {
@@ -834,12 +874,14 @@
       }
 
       .nav-btn {
-        width: 28px;
-        height: 28px;
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
       }
 
       .nav-actions {
         height: 28px;
+        padding: 1px 5px;
       }
     }
 
@@ -851,15 +893,17 @@
   <div class="map-shade" aria-hidden="true"></div>
   <svg class="map-origin-effect" id="map-origin-effect" aria-hidden="true" focusable="false">
     <defs>
+      <filter id="map-origin-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="14"></feGaussianBlur>
+      </filter>
       <linearGradient id="map-origin-fill" x1="0" y1="1" x2="0" y2="0">
         <stop offset="0" stop-color="#0b1820" stop-opacity="0"></stop>
-        <stop offset="0.48" stop-color="#0b1820" stop-opacity="0.18"></stop>
-        <stop offset="1" stop-color="#0b1820" stop-opacity="0.56"></stop>
+        <stop offset="0.62" stop-color="#0b1820" stop-opacity="0.08"></stop>
+        <stop offset="1" stop-color="#0b1820" stop-opacity="0.38"></stop>
       </linearGradient>
     </defs>
+    <path class="map-origin-beam-glow"></path>
     <path class="map-origin-beam"></path>
-    <path class="map-origin-edge map-origin-edge-left"></path>
-    <path class="map-origin-edge map-origin-edge-right"></path>
   </svg>
   <div class="map-focus-marker" id="map-focus-marker" aria-hidden="true"></div>
   <div class="map-attribution"><a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
@@ -1035,11 +1079,12 @@
     <div class="timeline-heading">✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
     <nav class="page-indicators" id="page-indicators" aria-label="Klikbare reistijdlijn"></nav>
     <div class="nav-actions">
-      <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◀</button>
+      <button class="nav-btn nav-btn-prev" onclick="prevSlide()" aria-label="Vorige pagina"><span class="nav-arrow" aria-hidden="true">▶</span></button>
       <span class="progress-text" id="progress" aria-live="polite" aria-atomic="true">
+        <span class="progress-day">Dag 1</span>
         <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
       </span>
-      <button class="nav-btn" onclick="nextSlide()" aria-label="Volgende pagina">►</button>
+      <button class="nav-btn nav-btn-next" onclick="nextSlide()" aria-label="Volgende pagina"><span class="nav-arrow" aria-hidden="true">▶</span></button>
     </div>
   </div>
 
@@ -1048,6 +1093,7 @@
     let currentSlide = 0;
     let slides = Array.from(document.querySelectorAll('.slide'));
     const progressEl = document.getElementById('progress');
+    const progressDayEl = progressEl.querySelector('.progress-day');
     const progressIconEl = progressEl.querySelector('.progress-icon');
     const pageIndicatorsEl = document.getElementById('page-indicators');
     let currentTimelineIndex = 0;
@@ -1412,14 +1458,19 @@
         slideIndex: 7
       }
     ];
+    const tripDayNumbers = new Map();
+    itinerary.forEach(stop => {
+      if (!tripDayNumbers.has(stop.date)) {
+        tripDayNumbers.set(stop.date, tripDayNumbers.size + 1);
+      }
+    });
     let soundEnabled = true;
     const mapStatusEl = document.getElementById('map-status');
     const mapContainerEl = document.getElementById('trip-map');
     const mapFocusMarkerEl = document.getElementById('map-focus-marker');
     const mapOriginEffectEl = document.getElementById('map-origin-effect');
     const mapOriginBeamEl = mapOriginEffectEl.querySelector('.map-origin-beam');
-    const mapOriginLeftEdgeEl = mapOriginEffectEl.querySelector('.map-origin-edge-left');
-    const mapOriginRightEdgeEl = mapOriginEffectEl.querySelector('.map-origin-edge-right');
+    const mapOriginBeamGlowEl = mapOriginEffectEl.querySelector('.map-origin-beam-glow');
     let tripMap = null;
     let mapTargetKey = '';
 
@@ -1442,19 +1493,17 @@
       const leftBase = { x: baseLeft, y: baseY };
       const rightBase = { x: baseRight, y: baseY };
       const leftControl1 = { x: source.x, y: source.y };
-      const leftControl2 = { x: source.x - (source.x - baseLeft) * 0.01, y: baseY + gap * 0.08 };
+      const leftControl2 = { x: source.x - (source.x - baseLeft) * 0.002, y: baseY + gap * 0.08 };
       const rightControl1 = { x: source.x, y: source.y };
-      const rightControl2 = { x: source.x + (baseRight - source.x) * 0.01, y: baseY + gap * 0.08 };
+      const rightControl2 = { x: source.x + (baseRight - source.x) * 0.002, y: baseY + gap * 0.08 };
       const pathPoint = point => `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
 
       mapOriginEffectEl.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
-      mapOriginBeamEl.setAttribute('d',
+      const beamPath =
         `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)} ` +
-        `L ${pathPoint(rightBase)} C ${pathPoint(rightControl2)} ${pathPoint(rightControl1)} ${pathPoint(source)} Z`);
-      mapOriginLeftEdgeEl.setAttribute('d',
-        `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)}`);
-      mapOriginRightEdgeEl.setAttribute('d',
-        `M ${pathPoint(source)} C ${pathPoint(rightControl1)} ${pathPoint(rightControl2)} ${pathPoint(rightBase)}`);
+        `L ${pathPoint(rightBase)} C ${pathPoint(rightControl2)} ${pathPoint(rightControl1)} ${pathPoint(source)} Z`;
+      mapOriginBeamEl.setAttribute('d', beamPath);
+      mapOriginBeamGlowEl.setAttribute('d', beamPath);
 
       mapFocusMarkerEl.style.setProperty('--map-focus-y', `${focusY}px`);
       mapFocusMarkerEl.style.setProperty('--map-origin-color', originColor);
@@ -1607,7 +1656,12 @@
 
       button.type = 'button';
       button.className = 'page-indicator';
-      button.style.setProperty('--indicator-color', getComputedStyle(slide.querySelector('.card')).borderTopColor);
+      const indicatorColor = getComputedStyle(slide.querySelector('.card')).borderTopColor;
+      const nextStop = itinerary[idx + 1];
+      const nextSlide = nextStop ? slides[nextStop.slideIndex] : slide;
+      const nextIndicatorColor = getComputedStyle(nextSlide.querySelector('.card')).borderTopColor;
+      button.style.setProperty('--indicator-color', indicatorColor);
+      button.style.setProperty('--next-indicator-color', nextIndicatorColor);
       if (stop.sideQuest) {
         button.classList.add('side-quest');
       }
@@ -1695,6 +1749,7 @@
         });
       }
       const currentStop = itinerary[currentTimelineIndex];
+      progressDayEl.textContent = `Dag ${tripDayNumbers.get(currentStop.date)}`;
       progressIconEl.textContent = currentStop.icon;
       progressIconEl.setAttribute('aria-label', currentStop.iconLabel);
       showMapLocation(currentStop);
