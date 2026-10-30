@@ -12,7 +12,7 @@
   <style>
     :root {
       --bg: #09090b;
-      --timeline-height: 240px;
+      --timeline-height: 190px;
       --neon-pink: #ff007f;
       --neon-green: #00ff66;
       --neon-yellow: #ffee00;
@@ -158,6 +158,12 @@
       .slide-mascot,
       .mascot-halo {
         animation: none !important;
+      }
+
+      .timeline-card,
+      .timeline-node,
+      .nav-btn {
+        transition: none;
       }
     }
 
@@ -420,15 +426,13 @@
       inset: auto 0 0;
       height: var(--timeline-height);
       z-index: 10;
-      padding: 9px 16px 5px;
+      padding: 7px 18px 5px;
       overflow: hidden;
       background:
-        radial-gradient(ellipse at 12% 100%, rgba(255, 0, 127, 0.12), transparent 40%),
-        radial-gradient(ellipse at 88% 0%, rgba(0, 240, 255, 0.1), transparent 40%),
-        rgba(8, 8, 14, 0.96);
-      border-top: 1px solid rgba(255,255,255,0.16);
-      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(16px);
+        linear-gradient(180deg, rgba(17, 24, 31, 0.98), rgba(8, 13, 18, 0.99));
+      border-top: 1px solid rgba(154, 190, 197, 0.2);
+      box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.36);
+      backdrop-filter: blur(18px);
     }
 
     .timeline-heading {
@@ -436,47 +440,48 @@
       align-items: center;
       justify-content: space-between;
       max-width: 1500px;
-      height: 24px;
-      margin: 0 auto 3px;
-      padding: 0 8px;
-      color: #fff;
+      height: 25px;
+      margin: 0 auto 2px;
+      padding: 0 2px;
+      color: #e9f2f3;
       font-family: var(--font-display);
-      font-size: 0.8rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
     .timeline-heading span {
-      color: var(--neon-yellow);
-      font-family: var(--font-meme);
-      font-size: 0.5rem;
-      letter-spacing: 0;
+      color: #94a8ad;
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
     }
 
     .page-indicators {
-      --timeline-gap: 8px;
+      --timeline-gap: 12px;
+      --timeline-half-gap: 6px;
       position: relative;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: var(--timeline-gap);
       width: 100%;
-      height: 160px;
+      height: 116px;
       margin: 0 auto;
-      padding: 0 16px;
+      padding: 0 12px;
       overflow-x: auto;
       overscroll-behavior-x: contain;
       scroll-snap-type: x proximity;
-      scrollbar-color: var(--neon-cyan) rgba(255,255,255,0.1);
+      scrollbar-color: rgba(130, 170, 176, 0.45) transparent;
       scrollbar-width: thin;
     }
 
     .page-indicator {
-      --indicator-color: #fff;
+      --indicator-color: #75d8c8;
       position: relative;
       display: block;
-      flex: 0 0 190px;
-      height: 160px;
+      flex: 0 0 176px;
+      height: 112px;
       z-index: 1;
       padding: 0;
       border: 0;
@@ -489,32 +494,32 @@
 
     .timeline-card {
       position: absolute;
-      top: 0;
-      left: 50%;
-      display: flex;
-      width: 170px;
-      height: 84px;
-      flex-direction: column;
-      gap: 2px;
-      padding: 5px;
+      top: 46px;
+      left: 0;
+      display: block;
+      width: 100%;
+      height: 65px;
       overflow: hidden;
-      transform: translateX(-50%) rotate(-1.5deg);
-      border: 1px solid color-mix(in srgb, var(--indicator-color) 45%, transparent);
-      border-radius: 13px 13px 18px 12px;
-      background: linear-gradient(145deg, rgba(38, 38, 50, 0.98), rgba(15, 15, 22, 0.98));
-      box-shadow: 0 7px 18px rgba(0,0,0,0.35), 0 0 14px color-mix(in srgb, var(--indicator-color) 12%, transparent);
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      border: 1px solid rgba(174, 197, 200, 0.16);
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(29, 41, 47, 0.96), rgba(15, 23, 29, 0.98));
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
     }
 
     .timeline-thumb-wrap {
-      position: relative;
+      position: absolute;
+      inset: 0;
       display: block;
-      width: 100%;
-      height: 54px;
-      flex: 0 0 54px;
       overflow: hidden;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .timeline-thumb-wrap::after {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(7, 13, 17, 0.52), rgba(7, 13, 17, 0.08) 40%, rgba(7, 13, 17, 0.92));
+      content: '';
     }
 
     .timeline-thumb {
@@ -524,91 +529,85 @@
       object-fit: cover;
     }
 
-    .timeline-flags {
+    .timeline-meta {
       position: absolute;
-      top: 3px;
-      right: 4px;
-      padding: 2px 4px;
-      border: 1px solid rgba(255,255,255,0.28);
-      border-radius: 5px;
-      background: rgba(9,9,11,0.82);
-      font-size: 0.75rem;
-      line-height: 1;
+      top: 5px;
+      left: 50%;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: max-content;
+      max-width: 100%;
+      min-height: 19px;
+      padding: 2px 7px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(156, 185, 188, 0.2);
+      border-radius: 999px;
+      background: rgba(8, 15, 19, 0.86);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
     }
 
-    .timeline-date {
-      position: absolute;
-      left: 50%;
-      z-index: 2;
-      transform: translateX(-50%);
-      max-width: 90%;
+    .timeline-flags {
       overflow: hidden;
-      color: var(--indicator-color);
-      font-family: var(--font-meme);
-      font-size: 0.85rem;
-      line-height: 1.4;
-      text-shadow: 0 0 8px color-mix(in srgb, var(--indicator-color) 55%, transparent);
+      color: #d7e5e6;
+      font-size: 0.75rem;
+      line-height: 1;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .page-indicator.thumbnail-above-node .timeline-card {
-      top: 0;
-    }
-
-    .page-indicator.thumbnail-above-node .timeline-date {
-      top: calc(var(--node-y) - 34px);
-    }
-
-    .page-indicator.thumbnail-above-node .timeline-connector {
-      top: 84px;
-      height: calc(var(--node-y) - 84px);
-    }
-
-    .page-indicator.thumbnail-below-node .timeline-card {
-      top: auto;
-      bottom: 0;
-      transform: translateX(-50%) rotate(1.5deg);
-      border-radius: 13px 12px 13px 18px;
-    }
-
-    .page-indicator.thumbnail-below-node .timeline-date {
-      top: calc(var(--node-y) + 18px);
-    }
-
-    .page-indicator.thumbnail-below-node .timeline-connector {
-      top: var(--node-y);
-      height: calc(76px - var(--node-y));
+    .timeline-date {
+      overflow: hidden;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-size: 0.61rem;
+      font-weight: 800;
+      letter-spacing: 0.035em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .timeline-title {
       display: -webkit-box;
       overflow: hidden;
-      font-size: 0.62rem;
+      color: #ffffff;
+      font-size: 0.72rem;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1.2;
+      text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
+      -webkit-line-clamp: 2;
     }
 
-    .page-indicator:nth-of-type(4n + 1) {
-      --indicator-color: var(--neon-pink);
+    .timeline-copy {
+      position: absolute;
+      right: 8px;
+      bottom: 6px;
+      left: 8px;
+      z-index: 1;
+      display: block;
+      min-width: 0;
     }
 
-    .page-indicator:nth-of-type(4n + 2) {
-      --indicator-color: var(--neon-green);
-    }
-
-    .page-indicator:nth-of-type(4n + 3) {
-      --indicator-color: var(--neon-yellow);
-    }
-
-    .page-indicator:nth-of-type(4n) {
-      --indicator-color: var(--neon-cyan);
+    .timeline-kind {
+      display: block;
+      overflow: hidden;
+      margin-top: 3px;
+      color: #c1d0d1;
+      font-size: 0.56rem;
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .page-indicator.side-quest {
-      --indicator-color: var(--neon-yellow);
+      --indicator-color: #edbd72;
     }
 
     .page-indicator.side-quest .timeline-node {
@@ -616,78 +615,73 @@
     }
 
     .page-indicator.side-quest .timeline-card {
-      background:
-        linear-gradient(
-          145deg,
-          rgba(55, 45, 12, 0.98),
-          rgba(15, 15, 22, 0.98)
-        );
+      background: linear-gradient(135deg, rgba(51, 41, 27, 0.96), rgba(23, 22, 19, 0.98));
     }
 
     .timeline-connector {
       position: absolute;
-      top: 0;
+      top: 24px;
       left: 50%;
       z-index: 0;
-      border-left: 2px dashed rgba(255,255,255,0.42);
+      width: calc(100% + var(--timeline-gap));
+      border-top: 1px dashed rgba(156, 185, 188, 0.52);
       pointer-events: none;
     }
 
-    .timeline-wave {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
-      overflow: visible;
-      pointer-events: none;
-    }
-
-    .timeline-wave path {
-      fill: none;
-      stroke: rgba(255,255,255,0.42);
-      stroke-dasharray: 6 6;
-      stroke-width: 2;
+    .page-indicator:last-child .timeline-connector {
+      display: none;
     }
 
     .timeline-node {
       position: absolute;
-      top: var(--node-y);
+      top: 24px;
       left: 50%;
       z-index: 1;
       display: grid;
-      width: 31px;
-      height: 31px;
+      width: 30px;
+      height: 30px;
       place-items: center;
       transform: translate(-50%, -50%);
       border: 2px solid var(--indicator-color);
       border-radius: 50%;
-      background: #111119;
-      box-shadow: 0 0 14px color-mix(in srgb, var(--indicator-color) 45%, transparent);
-      font-size: 1rem;
-      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.95));
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: #111b20;
+      box-shadow: 0 0 0 4px rgba(11, 18, 22, 0.96);
+      font-size: 0.92rem;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
     }
 
-    .page-indicator:hover .timeline-card,
-    .page-indicator[aria-current="step"] .timeline-card {
+    .page-indicator:hover .timeline-card {
       z-index: 2;
-      transform: translateX(-50%) translateY(-3px) rotate(0);
-      border-color: var(--indicator-color);
-      background: color-mix(in srgb, var(--indicator-color) 22%, #14141c);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.45), 0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--indicator-color) 72%, transparent);
+      background: color-mix(in srgb, var(--indicator-color) 12%, #172127);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+    }
+
+    .page-indicator[aria-current="step"] .timeline-card {
+      z-index: 3;
+      transform: translateY(-3px) scale(1.08);
+      transform-origin: center center;
+      border-color: color-mix(in srgb, var(--indicator-color) 78%, transparent);
+      background: color-mix(in srgb, var(--indicator-color) 14%, #172127);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 18px color-mix(in srgb, var(--indicator-color) 16%, transparent);
+    }
+
+    .page-indicator[aria-current="step"] .timeline-title {
+      color: #ffffff;
     }
 
     .page-indicator:hover .timeline-node,
     .page-indicator[aria-current="step"] .timeline-node {
-      transform: translate(-50%, -50%) scale(1.16);
-      background: var(--indicator-color);
-      box-shadow: 0 0 20px color-mix(in srgb, var(--indicator-color) 65%, transparent);
+      transform: translate(-50%, -50%) scale(1.12);
+      background: color-mix(in srgb, var(--indicator-color) 22%, #111b20);
+      box-shadow: 0 0 0 4px rgba(11, 18, 22, 0.96), 0 0 15px color-mix(in srgb, var(--indicator-color) 38%, transparent);
     }
 
     .page-indicator:focus-visible {
-      outline: 2px solid var(--neon-cyan);
-      outline-offset: -4px;
-      border-radius: 12px;
+      outline: 2px solid #9de7dc;
+      outline-offset: 2px;
+      border-radius: 10px;
     }
 
     .nav-actions {
@@ -699,19 +693,24 @@
     }
 
     .nav-btn {
-      background: var(--neon-cyan);
-      color: #000;
+      background: #b7e9e1;
+      color: #102124;
       border: none;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      font-family: var(--font-meme);
-      font-size: 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.1s;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    .nav-btn:hover {
+      background: #e4f8f4;
     }
 
     .nav-btn:active {
@@ -719,39 +718,73 @@
     }
 
     .progress-text {
-      font-family: var(--font-meme);
-      font-size: 0.8rem;
-      color: var(--neon-yellow);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 11px;
+      border: 1px solid rgba(183, 233, 225, 0.18);
+      border-radius: 999px;
+      background: rgba(183, 233, 225, 0.07);
+      color: #dce8e8;
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .progress-flags {
+      font-size: 0.9rem;
+      line-height: 1;
     }
 
     @media (max-width: 600px) {
       :root {
-        --timeline-height: 240px;
+        --timeline-height: 176px;
       }
 
       .page-indicator {
-        flex-basis: 178px;
+        flex-basis: 158px;
       }
 
       .page-indicators {
-        --timeline-gap: 8px;
+        --timeline-gap: 10px;
+        --timeline-half-gap: 5px;
+        height: 104px;
+        padding: 0 10px 5px;
       }
 
       .timeline-heading {
-        font-size: 0.7rem;
+        height: 23px;
+        font-size: 0.72rem;
       }
 
       .timeline-heading span {
-        font-size: 0.4rem;
-      }
-
-      .page-indicators {
-        height: 160px;
+        font-size: 0.58rem;
       }
 
       .nav-btn {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
+      }
+
+      .nav-actions {
+        height: 28px;
+      }
+
+      .timeline-card {
+        top: 46px;
+        height: 58px;
+      }
+
+      .timeline-copy {
+        bottom: 4px;
+      }
+
+      .timeline-title {
+        font-size: 0.67rem;
+      }
+
+      .timeline-kind {
+        font-size: 0.52rem;
       }
     }
 
@@ -931,8 +964,11 @@
     <div class="timeline-heading">✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
     <nav class="page-indicators" id="page-indicators" aria-label="Klikbare reistijdlijn"></nav>
     <div class="nav-actions">
-      <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◄</button>
-      <span class="progress-text" id="progress">DAG 1 / 18</span>
+      <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◀</button>
+      <span class="progress-text" id="progress" aria-live="polite" aria-atomic="true">
+        <span class="progress-date">MA · 15 FEB</span>
+        <span class="progress-flags" aria-hidden="true">🇳🇱</span>
+      </span>
       <button class="nav-btn" onclick="nextSlide()" aria-label="Volgende pagina">►</button>
     </div>
   </div>
@@ -941,6 +977,8 @@
     let currentSlide = 0;
     let slides = Array.from(document.querySelectorAll('.slide'));
     const progressEl = document.getElementById('progress');
+    const progressDateEl = progressEl.querySelector('.progress-date');
+    const progressFlagsEl = progressEl.querySelector('.progress-flags');
     const pageIndicatorsEl = document.getElementById('page-indicators');
     let currentTimelineIndex = 0;
     const photos = {
@@ -1344,14 +1382,16 @@
       const thumbnail = document.createElement('span');
       const date = document.createElement('span');
       const flags = document.createElement('span');
+      const meta = document.createElement('span');
       const stopTitle = document.createElement('span');
+      const stopKind = document.createElement('span');
+      const copy = document.createElement('span');
       const card = document.createElement('span');
       const connector = document.createElement('span');
       const node = document.createElement('span');
 
       button.type = 'button';
-      button.className = `page-indicator ${idx % 2 === 0 ? 'thumbnail-below-node' : 'thumbnail-above-node'}`;
-      button.style.setProperty('--node-y', idx % 2 === 0 ? '34px' : '130px');
+      button.className = 'page-indicator';
       if (stop.sideQuest) {
         button.classList.add('side-quest');
       }
@@ -1366,12 +1406,18 @@
       thumbnail.className = 'timeline-thumb-wrap';
       date.className = 'timeline-date';
       date.textContent = stop.date;
+      meta.className = 'timeline-meta';
       flags.className = 'timeline-flags';
       flags.textContent = stop.flags;
       flags.setAttribute('aria-hidden', 'true');
-      thumbnail.append(image, flags);
+      meta.append(date, flags);
+      thumbnail.append(image, meta);
       stopTitle.className = 'timeline-title';
       stopTitle.textContent = stop.title;
+      stopKind.className = 'timeline-kind';
+      stopKind.textContent = stop.iconLabel;
+      copy.className = 'timeline-copy';
+      copy.append(stopTitle, stopKind);
       card.className = 'timeline-card';
       connector.className = 'timeline-connector';
       node.className = 'timeline-node';
@@ -1379,41 +1425,12 @@
       node.title = stop.iconLabel;
       node.setAttribute('aria-hidden', 'true');
 
-      card.append(thumbnail, stopTitle);
-      button.append(connector, node, date, card);
+      card.append(thumbnail, copy);
+      button.append(connector, node, card);
       button.addEventListener('click', () => goToSlide(stop.slideIndex, idx));
       pageIndicatorsEl.append(button);
       return button;
     });
-
-    const timelineWave = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    const timelineWavePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    timelineWave.classList.add('timeline-wave');
-    timelineWave.setAttribute('aria-hidden', 'true');
-    timelineWave.append(timelineWavePath);
-    pageIndicatorsEl.prepend(timelineWave);
-
-    function updateTimelineWave() {
-      const width = pageIndicatorsEl.scrollWidth;
-      const height = pageIndicatorsEl.clientHeight;
-      const points = pageIndicators.map((indicator, idx) => ({
-        x: indicator.offsetLeft + indicator.offsetWidth / 2,
-        y: idx % 2 === 0 ? 34 : 130
-      }));
-
-      timelineWave.setAttribute('width', width);
-      timelineWave.setAttribute('height', height);
-      timelineWave.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      timelineWavePath.setAttribute('d', points.reduce((path, point, idx) => {
-        if (idx === 0) return `M ${point.x} ${point.y}`;
-        const previous = points[idx - 1];
-        const segment = point.x - previous.x;
-        return `${path} C ${previous.x + segment / 3} ${previous.y}, ${point.x - segment / 3} ${point.y}, ${point.x} ${point.y}`;
-      }, ''));
-    }
-
-    updateTimelineWave();
-    window.addEventListener('resize', updateTimelineWave);
 
     // Web Audio Synthesizer for 8-bit sound effects
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1455,10 +1472,11 @@
       const activeIndicator = pageIndicators[currentTimelineIndex];
       pageIndicatorsEl.scrollTo({
         left: activeIndicator.offsetLeft - (pageIndicatorsEl.clientWidth - activeIndicator.offsetWidth) / 2,
-        behavior: 'smooth'
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
       });
-      progressEl.innerText =
-        `DAG ${currentTimelineIndex + 1} / ${itinerary.length}`;
+      const currentStop = itinerary[currentTimelineIndex];
+      progressDateEl.textContent = currentStop.date;
+      progressFlagsEl.textContent = currentStop.flags;
     }
 
     function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
