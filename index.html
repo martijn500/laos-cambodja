@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
     :root {
       --bg: #09090b;
@@ -17,7 +18,7 @@
       --neon-green: #00ff66;
       --neon-yellow: #ffee00;
       --neon-cyan: #00f0ff;
-      --card-bg: rgba(20, 20, 28, 0.85);
+      --card-bg: rgba(15, 18, 26, 0.77);
       --font-meme: 'Press Start 2P', monospace;
       --font-sans: 'Plus Jakarta Sans', sans-serif;
       --font-display: 'Space Grotesk', sans-serif;
@@ -39,6 +40,107 @@
       width: 100vw;
     }
 
+    .map-background {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: #10191d;
+    }
+
+    .map-background .leaflet-tile-pane {
+      filter: grayscale(0.82) saturate(0.62) brightness(0.58) contrast(1.08);
+    }
+
+    .map-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(7, 9, 14, 0.22), rgba(7, 9, 14, 0.08) 45%, rgba(7, 9, 14, 0.36)),
+        radial-gradient(ellipse at center, transparent 10%, rgba(7, 9, 14, 0.2) 100%);
+      pointer-events: none;
+    }
+
+    .map-location {
+      position: fixed;
+      bottom: calc(var(--timeline-height) + 10px);
+      left: 50%;
+      z-index: 5;
+      display: flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 8px;
+      max-width: min(70vw, 360px);
+      padding: 6px 12px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(151, 221, 210, 0.42);
+      border-radius: 999px;
+      background: rgba(8, 15, 19, 0.88);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.42), 0 0 18px rgba(117, 216, 200, 0.12);
+      color: #f0f7f6;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .map-location-dot {
+      position: relative;
+      width: 9px;
+      height: 9px;
+      flex: 0 0 9px;
+      border-radius: 50%;
+      background: #75d8c8;
+      box-shadow: 0 0 12px rgba(117, 216, 200, 0.8);
+    }
+
+    .map-location-dot::after {
+      position: absolute;
+      inset: -5px;
+      border: 1px solid rgba(117, 216, 200, 0.65);
+      border-radius: 50%;
+      animation: map-pulse 2s ease-out infinite;
+      content: '';
+    }
+
+    @keyframes map-pulse {
+      0% { transform: scale(0.55); opacity: 0.85; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .map-attribution {
+      position: fixed;
+      bottom: calc(var(--timeline-height) + 12px);
+      left: 12px;
+      z-index: 5;
+      padding: 4px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      background: rgba(8, 15, 19, 0.82);
+      color: #dce8e8;
+      font-size: 0.6rem;
+      line-height: 1.3;
+    }
+
+    .map-attribution a {
+      color: #b7e9e1;
+    }
+
+    .map-status {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 5;
+      padding: 6px 9px;
+      border-radius: 7px;
+      background: rgba(8, 15, 19, 0.78);
+      color: #dce8e8;
+      font-size: 0.68rem;
+    }
+
     /* Ambient animated grid */
     .grid-bg {
       position: absolute;
@@ -47,7 +149,7 @@
       background-image: 
         linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-      z-index: 0;
+      z-index: 1;
       pointer-events: none;
     }
 
@@ -59,7 +161,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 1;
+      z-index: 2;
     }
 
     .slide {
@@ -277,7 +379,7 @@
       border-radius: 20px;
       width: 100%;
       max-width: 1100px;
-      max-height: min(85vh, calc(100vh - var(--timeline-height) - 2rem));
+      max-height: min(85vh, max(180px, calc(100vh - var(--timeline-height) - 6.5rem)));
       overflow-y: auto;
       padding: 2.5rem;
       backdrop-filter: blur(12px);
@@ -291,8 +393,30 @@
     @media (max-width: 850px) {
       .card {
         grid-template-columns: 1fr;
-        max-height: calc(100vh - var(--timeline-height) - 2rem);
+        max-height: max(180px, calc(100vh - var(--timeline-height) - 6.5rem));
         padding: 1.5rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .map-location {
+        bottom: calc(var(--timeline-height) + 8px);
+        min-height: 30px;
+        padding: 5px 10px;
+        font-size: 0.65rem;
+      }
+
+      .map-attribution {
+        bottom: calc(var(--timeline-height) + 7px);
+        left: 7px;
+        padding: 3px 5px;
+        font-size: 0.54rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .map-location-dot::after {
+        animation: none;
       }
     }
 
@@ -429,7 +553,7 @@
       padding: 7px 18px 5px;
       overflow: hidden;
       background:
-        linear-gradient(180deg, rgba(17, 24, 31, 0.98), rgba(8, 13, 18, 0.99));
+        linear-gradient(180deg, rgba(17, 24, 31, 0.88), rgba(8, 13, 18, 0.91));
       border-top: 1px solid rgba(154, 190, 197, 0.2);
       box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.36);
       backdrop-filter: blur(18px);
@@ -792,6 +916,14 @@
 </head>
 <body>
 
+  <div class="map-background" id="trip-map" role="img" aria-label="Kaart met de actuele locatie van de reis"></div>
+  <div class="map-shade" aria-hidden="true"></div>
+  <div class="map-location" id="map-location" aria-live="polite">
+    <span class="map-location-dot" aria-hidden="true"></span>
+    <span id="map-location-name">Amsterdam · Nederland</span>
+  </div>
+  <div class="map-attribution">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>-bijdragers</div>
+  <div class="map-status" id="map-status" role="status">Kaart laden…</div>
   <div class="grid-bg"></div>
   <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
 
@@ -973,6 +1105,7 @@
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     let currentSlide = 0;
     let slides = Array.from(document.querySelectorAll('.slide'));
@@ -1048,6 +1181,7 @@
         date: 'MA · 15 FEB',
         flags: '🇳🇱',
         title: 'Vertrek uit Amsterdam',
+        location: { name: 'Amsterdam · Nederland', coordinates: [52.3105, 4.7683], zoom: 6 },
         quote: '"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu',
         detail: 'Instappen, stoelriem vast en 12 uur lang onbeperkt vliegzeug-snacks bouwen op 10 km hoogte.',
         sleep: 'Slaap: aan boord',
@@ -1061,6 +1195,7 @@
         date: 'DI · 16 FEB',
         flags: '🇹🇭',
         title: 'Aankomst Chiang Rai',
+        location: { name: 'Chiang Rai · Thailand', coordinates: [19.9072, 99.8325], zoom: 8 },
         quote: '"Bro is geland. Direct 100.000% aura opgebouwd bij de Witte Tempel." — Sun Tzu',
         detail: 'Inchecken, jetlag wegblazen en meteen flexen bij de felwitte tempels en gigantische draken.',
         sleep: 'Slaap: Chiang Rai',
@@ -1074,6 +1209,7 @@
         date: 'WO · 17 FEB',
         flags: '🇹🇭 → 🇱🇦',
         title: 'Grens over naar Huay Xai',
+        location: { name: 'Huay Xai · Laos', coordinates: [20.2761, 100.4134], zoom: 9 },
         quote: '"Niemand kan de grens oversteken zonder een vleugje chaos." — Julius Caesar',
         detail: 'Border-crossing madness! Stempels jagen, busje pakken en de Laotiaanse grens invallen.',
         sleep: 'Slaap: Huay Xai',
@@ -1087,6 +1223,7 @@
         date: 'DO · 18 FEB',
         flags: '🇱🇦',
         title: 'Gibbon Experience · dag 1',
+        location: { name: 'Bokeo Nature Reserve · Laos', coordinates: [20.337, 100.618], zoom: 9 },
         quote: '"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson',
         detail: 'Vlieg als een absolute gigachad met 60 km/u over de jungletoppen en slaap in giga boomhutten.',
         sleep: 'Slaap: boomhut in de jungle',
@@ -1100,6 +1237,7 @@
         date: 'VR · 19 FEB',
         flags: '🇱🇦',
         title: 'Gibbon Experience · dag 2',
+        location: { name: 'Huay Xai · Laos', coordinates: [20.2761, 100.4134], zoom: 9 },
         quote: '"Tarzan droomt hiervan. Adrenaline niveau: OVER 9000." — Charles Darwin',
         detail: 'Wakker worden boven de wolken, keihard ziplinen door de ochtendmist en terug hiken.',
         sleep: 'Slaap: Huay Xai',
@@ -1113,6 +1251,7 @@
         date: 'ZA · 20 FEB',
         flags: '🇱🇦',
         title: 'Slowboat naar Pakbeng',
+        location: { name: 'Pakbeng · Laos', coordinates: [19.8938, 101.1357], zoom: 9 },
         quote: '"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame',
         detail: 'De ultieme ontprikkeling: houten slowboat op de Mekong, staren naar bergen en verstand op nul.',
         sleep: 'Slaap: Pakbeng',
@@ -1126,6 +1265,7 @@
         date: 'ZO · 21 FEB',
         flags: '🇱🇦',
         title: 'Slowboat naar Luang Prabang',
+        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 9 },
         quote: '"Slowboat mode: nul wifi, puur chillon op de stroom van de rivier." — Confucius',
         detail: 'Dag twee op het water, rivierdorpjes spotten en in de namiddag binnenglijden bij Luang Prabang.',
         sleep: 'Slaap: Luang Prabang',
@@ -1139,6 +1279,7 @@
         date: 'MA · 22 FEB',
         flags: '🇱🇦',
         title: 'Luang Prabang · oude stad',
+        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 10 },
         quote: '"There\'s a sunrise and a sunset every single day, especially from Phousi Hill." — Jo Walton',
         detail: 'Gouden tempels, 355 treden Phousi Hill climben voor de zonsondergang en de nachtmarkt leegkopen.',
         sleep: 'Slaap: Luang Prabang',
@@ -1152,6 +1293,7 @@
         date: 'MA · 22 FEB',
         flags: '🇱🇦',
         title: 'SIDE QUEST: NAGINI BAR 🐍',
+        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 10 },
         sideQuest: true,
         quote: '"After enlightenment comes happy hour." — De innerlijke monnik',
         detail: 'Na de tempels en Phousi Hill is het tijd voor een classy side quest. Cocktails met Lao-invloeden, een koloniaal mansion en uitzicht over de Mekong. BRO UNLOCKED THE LUXURY SKIN 🍸',
@@ -1166,6 +1308,7 @@
         date: 'DI · 23 FEB',
         flags: '🇱🇦',
         title: 'Kuang Si-watervallen',
+        location: { name: 'Kuang Si · Laos', coordinates: [19.7492, 101.9914], zoom: 10 },
         quote: '"Turquoise waterfijnheid levert een instant dopamine-hit op." — Aristoteles',
         detail: 'Plonzen in de meest onwerkelijk blauwe waterval-pools ooit. Pure natuurlijk gekoelde adrenaline.',
         sleep: 'Slaap: Luang Prabang',
@@ -1179,6 +1322,7 @@
         date: 'WO · 24 FEB',
         flags: '🇱🇦',
         title: 'Trein naar Vang Vieng',
+        location: { name: 'Vang Vieng · Laos', coordinates: [18.925, 102.447], zoom: 9 },
         quote: '"Sneller dan de rivier, strakker dan de karstbergen." — Marco Polo',
         detail: 'In sneltreinvaart door de bergen knallen richting het outdoor-walhalla van Laos.',
         sleep: 'Slaap: Vang Vieng',
@@ -1192,6 +1336,7 @@
         date: 'DO · 25 FEB',
         flags: '🇱🇦',
         title: 'Vang Vieng · natuurdag',
+        location: { name: 'Vang Vieng · Laos', coordinates: [18.925, 102.447], zoom: 10 },
         quote: '"The sky is not the limit, it\'s just the view from my balloon." — Amelia Earhart',
         detail: 'Zweven in een luchtballon boven bizarre karstbergen, kajakken of loungen bij Blue Lagoons.',
         sleep: 'Slaap: Vang Vieng',
@@ -1205,6 +1350,7 @@
         date: 'VR · 26 FEB',
         flags: '🇱🇦',
         title: 'Trein naar Vientiane',
+        location: { name: 'Vientiane · Laos', coordinates: [17.9757, 102.6331], zoom: 9 },
         quote: '"Op weg naar de hoofdstad met 100% zendag-energie." — Gautama Boeddha',
         detail: 'Soepel doorzoeven naar de hoofdstad voor boulevard-vibes en epische avondsnacks.',
         sleep: 'Slaap: Vientiane',
@@ -1218,6 +1364,7 @@
         date: 'VR · 26 FEB',
         flags: '🇱🇦',
         title: 'SIDE QUEST: BUDDHA PARK 🗿',
+        location: { name: 'Buddha Park · Laos', coordinates: [17.9751, 102.7645], zoom: 11 },
         sideQuest: true,
         quote: '"The universe is full of mysteries. Some are made of concrete." — Gautama Broddha',
         detail: 'Meer dan 200 bizarre beelden uit de boeddhistische en hindoeïstische mythologie. Een gigantische fantasywereld van beton. BRO ENTERED THE BUDDHA MULTIVERSE 💀',
@@ -1232,6 +1379,7 @@
         date: 'ZA · 27 FEB',
         flags: '🇱🇦 → 🇰🇭',
         title: 'Vlucht naar Siem Reap',
+        location: { name: 'Siem Reap · Cambodja', coordinates: [13.3633, 103.8564], zoom: 9 },
         quote: '"Grenzen oversteken is makkelijk als de tempels op je wachten." — Genghis Khan',
         detail: 'Vleugels uitslaan, Laos inruilen voor Cambodja en klaarmaken voor het wereldwonder.',
         sleep: 'Slaap: Siem Reap',
@@ -1245,6 +1393,7 @@
         date: 'ZO · 28 FEB',
         flags: '🇰🇭',
         title: 'Angkor Wat & Ta Prohm',
+        location: { name: 'Angkor Wat · Cambodja', coordinates: [13.4125, 103.867], zoom: 10 },
         quote: '"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander de Grote',
         detail: '04:30 wekker: sunrise bij de spiegelvijver van Angkor Wat & Tomb Raider spelen tussen de bomen.',
         sleep: 'Slaap: Siem Reap',
@@ -1258,6 +1407,7 @@
         date: 'MA · 1 MRT',
         flags: '🇰🇭',
         title: 'Siem Reap · extra dag',
+        location: { name: 'Siem Reap · Cambodja', coordinates: [13.3633, 103.8564], zoom: 9 },
         quote: '"Nature always wins. Especially tree roots in ancient stones." — Charles Darwin',
         detail: 'No-stress chilldag: rustig nog een verborgen tempel meepakken of keihard chillen aan het zwembad.',
         sleep: 'Slaap: Siem Reap',
@@ -1271,6 +1421,7 @@
         date: 'MA · 1 MRT',
         flags: '🇰🇭',
         title: 'SIDE QUEST: STREET 08 🌃',
+        location: { name: 'Siem Reap · Cambodja', coordinates: [13.355, 103.854], zoom: 11 },
         sideQuest: true,
         quote: '"Work hard, play hard. Especially after 1000 years of temple grinding." — Confucius',
         detail: 'De zon gaat onder, de neonlichten springen aan en Pub Street ontwaakt. Cocktails, bars, muziek en totale chaos. ANGKOR WAT BY DAY, ABSOLUTE MENACE BY NIGHT 🔥',
@@ -1285,6 +1436,7 @@
         date: 'DI · 2 MRT',
         flags: '🇰🇭',
         title: 'Bus naar Phnom Penh',
+        location: { name: 'Phnom Penh · Cambodja', coordinates: [11.5564, 104.9282], zoom: 9 },
         quote: '"Het gaat niet om de busrit, het gaat om de aura waarmee je aankomt." — Napoleon Bonaparte',
         detail: 'Roadtrip door het Cambodjaanse platteland op weg naar de bruisende hoofdstad.',
         sleep: 'Slaap: Phnom Penh · nacht 1/2',
@@ -1298,6 +1450,7 @@
         date: 'WO · 3 MRT',
         flags: '🇰🇭',
         title: 'Phnom Penh · volle dag',
+        location: { name: 'Phnom Penh · Cambodja', coordinates: [11.5564, 104.9282], zoom: 10 },
         quote: '"Koninklijke paleisen, rivierviews en keihard genieten op de finale avond." — Sisi',
         detail: 'Koninklijk Paleis uitchecken, slenteren langs de Riverside en de allerlaatste avond groots vieren.',
         sleep: 'Slaap: Phnom Penh · nacht 2/2',
@@ -1311,6 +1464,7 @@
         date: 'DO · 4 MRT',
         flags: '🇰🇭 → 🇳🇱',
         title: 'Terug naar Amsterdam',
+        location: { name: 'Amsterdam · Nederland', coordinates: [52.3105, 4.7683], zoom: 6 },
         quote: '"Don\'t cry because it\'s over, smile because it was absolutely legendary." — Dr. Seuss',
         detail: 'Vroeg de koffers dichtrammen, vlieger in en met een vrachtlading aan memories en aura naar huis.',
         sleep: 'Slaap: thuis in Amsterdam',
@@ -1322,6 +1476,86 @@
       }
     ];
     let soundEnabled = true;
+    const mapLocationNameEl = document.getElementById('map-location-name');
+    const mapStatusEl = document.getElementById('map-status');
+    const mapContainerEl = document.getElementById('trip-map');
+    let tripMap = null;
+    let mapTargetKey = '';
+    let alignMapFocus = () => {};
+
+    if (window.L) {
+      const reduceMapMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      tripMap = L.map(mapContainerEl, {
+        attributionControl: false,
+        boxZoom: false,
+        doubleClickZoom: false,
+        dragging: false,
+        keyboard: false,
+        scrollWheelZoom: false,
+        touchZoom: false,
+        zoomControl: false
+      }).setView(itinerary[0].location.coordinates, itinerary[0].location.zoom);
+
+      const mapTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(tripMap);
+
+      mapTiles.on('load', () => {
+        mapStatusEl.hidden = true;
+      });
+      mapTiles.on('tileerror', () => {
+        if (!mapStatusEl.hidden) {
+          mapStatusEl.textContent = 'Kaarttegels niet beschikbaar';
+        }
+      });
+
+      alignMapFocus = () => {
+        const activeLocation = itinerary[currentTimelineIndex].location;
+        const activePoint = tripMap.latLngToContainerPoint(activeLocation.coordinates);
+        const mapBounds = mapContainerEl.getBoundingClientRect();
+        const badgeBounds = document.getElementById('map-location').getBoundingClientRect();
+        const targetPoint = L.point(
+          badgeBounds.left + badgeBounds.width / 2 - mapBounds.left,
+          badgeBounds.top + badgeBounds.height / 2 - mapBounds.top
+        );
+        const offset = targetPoint.subtract(activePoint);
+
+        if (Math.abs(offset.x) > 1 || Math.abs(offset.y) > 1) {
+          tripMap.panBy(offset, {
+            animate: !reduceMapMotion,
+            duration: reduceMapMotion ? 0 : 0.55
+          });
+        }
+      };
+      tripMap.on('moveend', () => requestAnimationFrame(alignMapFocus));
+      mapTargetKey = `${itinerary[0].location.coordinates.join(',')}:${itinerary[0].location.zoom}`;
+
+      window.addEventListener('resize', () => {
+        tripMap.invalidateSize({ animate: false });
+        requestAnimationFrame(() => alignMapFocus());
+      });
+    } else {
+      mapStatusEl.textContent = 'Kaartbibliotheek kon niet laden';
+    }
+
+    function showMapLocation(stop) {
+      mapLocationNameEl.textContent = stop.location.name;
+      if (!tripMap) return;
+
+      const { coordinates, zoom } = stop.location;
+      const targetKey = `${coordinates.join(',')}:${zoom}`;
+      if (targetKey === mapTargetKey) {
+        alignMapFocus();
+        return;
+      }
+
+      mapTargetKey = targetKey;
+      tripMap.flyTo(coordinates, zoom, {
+        animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        duration: 1.35
+      });
+    }
 
     const slideTemplates = slides;
     const deck = document.querySelector('.deck');
@@ -1477,6 +1711,7 @@
       const currentStop = itinerary[currentTimelineIndex];
       progressDateEl.textContent = currentStop.date;
       progressFlagsEl.textContent = currentStop.flags;
+      showMapLocation(currentStop);
     }
 
     function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
