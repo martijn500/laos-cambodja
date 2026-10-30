@@ -250,6 +250,10 @@
         pointer-events: none;
       }
 
+      body.map-popup-transition .deck {
+        visibility: hidden;
+      }
+
       .slide,
       .slide .card {
         pointer-events: none;
@@ -343,6 +347,13 @@
         transform: scale(1) translateY(0);
       }
 
+      .slide.map-popup-pending {
+        opacity: 0;
+        visibility: hidden;
+        transform: none;
+        transition: none;
+      }
+
       .slide-caricature {
         position: absolute;
         right: 55px;
@@ -423,11 +434,16 @@
           grid-template-columns: minmax(0, 1fr);
           gap: 0.75rem;
           max-height: 100%;
-          padding: 0;
-          overflow: visible;
-          border: 0;
-          background: transparent;
-          box-shadow: none;
+          padding: 0.75rem;
+          overflow: hidden;
+          border: 3px solid var(--popup-color, var(--neon-pink));
+          border-radius: 20px;
+          background: var(--card-bg);
+          box-shadow:
+            0 0 25px
+              color-mix(in srgb, var(--popup-color, var(--neon-pink)) 40%, transparent),
+            inset 0 0 15px
+              color-mix(in srgb, var(--popup-color, var(--neon-pink)) 20%, transparent);
           backdrop-filter: none;
         }
 
@@ -436,11 +452,10 @@
           z-index: 1;
           max-height: none;
           overflow: visible;
-          padding: 1.5rem 1rem 1rem;
-          border: 1px solid rgba(255, 255, 255, 0.24);
-          border-radius: 16px;
-          background: rgba(7, 9, 14, 0.76);
-          backdrop-filter: blur(6px);
+          padding: 1rem 0.25rem 0.25rem;
+          border: 0;
+          border-radius: 0;
+          background: transparent;
         }
 
         .slide-caricature {
@@ -466,10 +481,9 @@
           width: 100%;
           height: clamp(180px, 32vh, 260px);
           margin-bottom: 0;
-          border: 2px solid var(--popup-color, var(--neon-pink));
-          border-radius: 16px;
-          box-shadow: 0 0 18px
-            color-mix(in srgb, var(--popup-color, var(--neon-pink)) 35%, transparent);
+          border: 0;
+          border-radius: 12px;
+          box-shadow: none;
           pointer-events: none;
         }
 
@@ -2201,6 +2215,13 @@
         requestedPopupIndex = stop ? stop.slideIndex : null;
         if (!tripMap || !mapStyleReady) return;
 
+        if (requestedPopupIndex !== null) {
+          if (activeMapPopup?.slideIndex !== requestedPopupIndex) {
+            slides[requestedPopupIndex].classList.add("map-popup-pending");
+          }
+          document.body.classList.add("map-popup-transition");
+        }
+
         if (activeMapPopup) {
           if (
             activeMapPopup.slideIndex === requestedPopupIndex &&
@@ -2220,7 +2241,11 @@
           return;
         }
 
-        if (requestedPopupIndex !== null) openRequestedMapPopup();
+        if (requestedPopupIndex !== null) {
+          openRequestedMapPopup();
+        } else {
+          document.body.classList.remove("map-popup-transition");
+        }
       }
 
       function openRequestedMapPopup() {
@@ -2292,6 +2317,8 @@
             },
           );
         }
+        slide.classList.remove("map-popup-pending");
+        document.body.classList.remove("map-popup-transition");
       }
 
       function closeActiveMapPopup() {
@@ -2314,6 +2341,8 @@
             !document.body.classList.contains("popup-closed")
           ) {
             requestAnimationFrame(openRequestedMapPopup);
+          } else {
+            document.body.classList.remove("map-popup-transition");
           }
         };
 
@@ -2600,7 +2629,19 @@
       }
 
       function updateDeck() {
+        const popupPending =
+          mapStyleReady &&
+          !document.body.classList.contains("popup-closed") &&
+          activeMapPopup?.slideIndex !== currentSlide;
+        if (popupPending) {
+          document.body.classList.add("map-popup-transition");
+        }
+
         slides.forEach((slide, idx) => {
+          slide.classList.toggle(
+            "map-popup-pending",
+            popupPending && idx === currentSlide,
+          );
           slide.classList.toggle("active", idx === currentSlide);
         });
         pageIndicators.forEach((indicator, idx) => {
