@@ -12,7 +12,7 @@
   <style>
     :root {
       --bg: #09090b;
-      --timeline-height: 310px;
+      --timeline-height: 240px;
       --neon-pink: #ff007f;
       --neon-green: #00ff66;
       --neon-yellow: #ffee00;
@@ -461,7 +461,7 @@
       align-items: center;
       gap: var(--timeline-gap);
       width: 100%;
-      height: 230px;
+      height: 160px;
       margin: 0 auto;
       padding: 0 16px;
       overflow-x: auto;
@@ -476,7 +476,8 @@
       position: relative;
       display: block;
       flex: 0 0 190px;
-      height: 230px;
+      height: 160px;
+      z-index: 1;
       padding: 0;
       border: 0;
       background: transparent;
@@ -488,11 +489,11 @@
 
     .timeline-card {
       position: absolute;
-      top: 4px;
+      top: 0;
       left: 50%;
       display: flex;
       width: 170px;
-      height: 103px;
+      height: 84px;
       flex-direction: column;
       gap: 2px;
       padding: 5px;
@@ -505,33 +506,79 @@
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
 
-    .page-indicator:nth-child(even) .timeline-card {
+    .timeline-thumb-wrap {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 54px;
+      flex: 0 0 54px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+    }
+
+    .timeline-thumb {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .timeline-flags {
+      position: absolute;
+      top: 3px;
+      right: 4px;
+      padding: 2px 4px;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 5px;
+      background: rgba(9,9,11,0.82);
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+
+    .timeline-date {
+      position: absolute;
+      left: 50%;
+      z-index: 2;
+      transform: translateX(-50%);
+      max-width: 90%;
+      overflow: hidden;
+      color: var(--indicator-color);
+      font-family: var(--font-meme);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      text-shadow: 0 0 8px color-mix(in srgb, var(--indicator-color) 55%, transparent);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .page-indicator.thumbnail-above-node .timeline-card {
+      top: 0;
+    }
+
+    .page-indicator.thumbnail-above-node .timeline-date {
+      top: calc(var(--node-y) - 34px);
+    }
+
+    .page-indicator.thumbnail-above-node .timeline-connector {
+      top: 84px;
+      height: calc(var(--node-y) - 84px);
+    }
+
+    .page-indicator.thumbnail-below-node .timeline-card {
       top: auto;
-      bottom: 4px;
+      bottom: 0;
       transform: translateX(-50%) rotate(1.5deg);
       border-radius: 13px 12px 13px 18px;
     }
 
-    .timeline-thumb {
-      width: 100%;
-      height: 37px;
-      flex: 0 0 37px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.08);
-      object-fit: cover;
+    .page-indicator.thumbnail-below-node .timeline-date {
+      top: calc(var(--node-y) + 18px);
     }
 
-    .timeline-date {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      overflow: hidden;
-      color: var(--indicator-color);
-      font-family: var(--font-meme);
-      font-size: 0.43rem;
-      line-height: 1.3;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .page-indicator.thumbnail-below-node .timeline-connector {
+      top: var(--node-y);
+      height: calc(76px - var(--node-y));
     }
 
     .timeline-title {
@@ -544,83 +591,67 @@
       -webkit-line-clamp: 1;
     }
 
-    .timeline-detail {
-      display: -webkit-box;
-      overflow: hidden;
-      color: #bbb;
-      font-size: 0.52rem;
-      line-height: 1.15;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
-    }
-
-    .timeline-sleep {
-      display: block;
-      overflow: hidden;
-      color: #c9c4ff;
-      font-size: 0.49rem;
-      font-weight: 700;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .page-indicator:nth-child(4n + 1) {
+    .page-indicator:nth-of-type(4n + 1) {
       --indicator-color: var(--neon-pink);
     }
 
-    .page-indicator:nth-child(4n + 2) {
+    .page-indicator:nth-of-type(4n + 2) {
       --indicator-color: var(--neon-green);
     }
 
-    .page-indicator:nth-child(4n + 3) {
+    .page-indicator:nth-of-type(4n + 3) {
       --indicator-color: var(--neon-yellow);
     }
 
-    .page-indicator:nth-child(4n) {
+    .page-indicator:nth-of-type(4n) {
       --indicator-color: var(--neon-cyan);
+    }
+
+    .page-indicator.side-quest {
+      --indicator-color: var(--neon-yellow);
+    }
+
+    .page-indicator.side-quest .timeline-node {
+      border-style: dashed;
+    }
+
+    .page-indicator.side-quest .timeline-card {
+      background:
+        linear-gradient(
+          145deg,
+          rgba(55, 45, 12, 0.98),
+          rgba(15, 15, 22, 0.98)
+        );
     }
 
     .timeline-connector {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      z-index: 0;
-      width: calc(100% + var(--timeline-gap));
-      height: 0;
-      border-top: 2px dashed rgba(255,255,255,0.42);
-      pointer-events: none;
-    }
-
-    .page-indicator:last-child .timeline-connector {
-      width: 50%;
-    }
-
-    .timeline-action-icon {
-      position: absolute;
       top: 0;
       left: 50%;
-      z-index: 1;
-      transform: translate(-50%, -50%);
-      color: var(--neon-yellow);
-      font-size: 1.15rem;
-      line-height: 1;
-      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.95));
+      z-index: 0;
+      border-left: 2px dashed rgba(255,255,255,0.42);
       pointer-events: none;
-      animation: timeline-icon-bob 2.4s ease-in-out infinite;
     }
 
-    .page-indicator:nth-child(3n) .timeline-action-icon {
-      animation-delay: -0.8s;
+    .timeline-wave {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      overflow: visible;
+      pointer-events: none;
     }
 
-    @keyframes timeline-icon-bob {
-      0%, 100% { margin-top: 0; }
-      50% { margin-top: -4px; }
+    .timeline-wave path {
+      fill: none;
+      stroke: rgba(255,255,255,0.42);
+      stroke-dasharray: 6 6;
+      stroke-width: 2;
     }
 
     .timeline-node {
       position: absolute;
-      top: 50%;
+      top: var(--node-y);
       left: 50%;
       z-index: 1;
       display: grid;
@@ -632,7 +663,8 @@
       border-radius: 50%;
       background: #111119;
       box-shadow: 0 0 14px color-mix(in srgb, var(--indicator-color) 45%, transparent);
-      font-size: 0.9rem;
+      font-size: 1rem;
+      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.95));
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
@@ -643,11 +675,6 @@
       border-color: var(--indicator-color);
       background: color-mix(in srgb, var(--indicator-color) 22%, #14141c);
       box-shadow: 0 10px 24px rgba(0,0,0,0.45), 0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
-    }
-
-    .page-indicator:nth-child(even):hover .timeline-card,
-    .page-indicator:nth-child(even)[aria-current="step"] .timeline-card {
-      transform: translateX(-50%) translateY(3px) rotate(0);
     }
 
     .page-indicator:hover .timeline-node,
@@ -699,7 +726,7 @@
 
     @media (max-width: 600px) {
       :root {
-        --timeline-height: 310px;
+        --timeline-height: 240px;
       }
 
       .page-indicator {
@@ -719,7 +746,7 @@
       }
 
       .page-indicators {
-        height: 230px;
+        height: 160px;
       }
 
       .nav-btn {
@@ -728,11 +755,6 @@
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .timeline-action-icon {
-        animation: none;
-      }
-    }
   </style>
 </head>
 <body>
@@ -906,7 +928,7 @@
 
   <!-- NAVIGATION CONTROLS -->
   <div class="nav-controls">
-    <div class="timeline-heading">✦ JULLIE REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
+    <div class="timeline-heading">✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
     <nav class="page-indicators" id="page-indicators" aria-label="Klikbare reistijdlijn"></nav>
     <div class="nav-actions">
       <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◄</button>
@@ -969,6 +991,18 @@
       phnomPenh: {
         src: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG',
         alt: 'Koninklijk Paleis in Phnom Penh in de avond'
+      },
+      nagini: {
+        src: 'https://d2e5ushqwiltxm.cloudfront.net/wp-content/uploads/sites/46/2025/08/22084652/Snack-at-Nagini-Bar-922x615.jpg',
+        alt: 'Nagini Bar bij 3 Nagas in Luang Prabang'
+      },
+      buddhaPark: {
+        src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Buddha_Park_01.jpg',
+        alt: 'Buddha Park Xieng Khuan in Vientiane'
+      },
+      street08: {
+        src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Street_scene,_Siem_Reap,_2018_(08).jpg',
+        alt: 'Street 08 nightlife area in Siem Reap'
       }
     };
     const itinerary = [
@@ -1077,6 +1111,20 @@
         slideIndex: 3
       },
       {
+        date: 'MA · 22 FEB',
+        flags: '🇱🇦',
+        title: 'SIDE QUEST: NAGINI BAR 🐍',
+        sideQuest: true,
+        quote: '"After enlightenment comes happy hour." — De innerlijke monnik',
+        detail: 'Na de tempels en Phousi Hill is het tijd voor een classy side quest. Cocktails met Lao-invloeden, een koloniaal mansion en uitzicht over de Mekong. BRO UNLOCKED THE LUXURY SKIN 🍸',
+        sleep: 'Slaap: Luang Prabang',
+        mascotAction: 'meditating',
+        icon: '🍸',
+        iconLabel: 'Cocktails',
+        photo: 'nagini',
+        slideIndex: 3
+      },
+      {
         date: 'DI · 23 FEB',
         flags: '🇱🇦',
         title: 'Kuang Si-watervallen',
@@ -1129,6 +1177,20 @@
         slideIndex: 4
       },
       {
+        date: 'VR · 26 FEB',
+        flags: '🇱🇦',
+        title: 'SIDE QUEST: BUDDHA PARK 🗿',
+        sideQuest: true,
+        quote: '"The universe is full of mysteries. Some are made of concrete." — Gautama Broddha',
+        detail: 'Meer dan 200 bizarre beelden uit de boeddhistische en hindoeïstische mythologie. Een gigantische fantasywereld van beton. BRO ENTERED THE BUDDHA MULTIVERSE 💀',
+        sleep: 'Slaap: Vientiane',
+        mascotAction: 'meditating',
+        icon: '🗿',
+        iconLabel: 'Buddha Park',
+        photo: 'buddhaPark',
+        slideIndex: 3
+      },
+      {
         date: 'ZA · 27 FEB',
         flags: '🇱🇦 → 🇰🇭',
         title: 'Vlucht naar Siem Reap',
@@ -1166,6 +1228,20 @@
         iconLabel: 'Rust- of tempeldag',
         photo: 'taProhm',
         slideIndex: 6
+      },
+      {
+        date: 'MA · 1 MRT',
+        flags: '🇰🇭',
+        title: 'SIDE QUEST: STREET 08 🌃',
+        sideQuest: true,
+        quote: '"Work hard, play hard. Especially after 1000 years of temple grinding." — Confucius',
+        detail: 'De zon gaat onder, de neonlichten springen aan en Pub Street ontwaakt. Cocktails, bars, muziek en totale chaos. ANGKOR WAT BY DAY, ABSOLUTE MENACE BY NIGHT 🔥',
+        sleep: 'Slaap: Siem Reap',
+        mascotAction: 'strolling',
+        icon: '🌃',
+        iconLabel: 'Nightlife',
+        photo: 'street08',
+        slideIndex: 7
       },
       {
         date: 'DI · 2 MRT',
@@ -1265,17 +1341,20 @@
       const button = document.createElement('button');
       const title = slide.querySelector('h2').textContent.trim();
       const image = document.createElement('img');
+      const thumbnail = document.createElement('span');
       const date = document.createElement('span');
+      const flags = document.createElement('span');
       const stopTitle = document.createElement('span');
-      const detail = document.createElement('span');
-      const sleep = document.createElement('span');
       const card = document.createElement('span');
       const connector = document.createElement('span');
-      const actionIcon = document.createElement('span');
       const node = document.createElement('span');
 
       button.type = 'button';
-      button.className = 'page-indicator';
+      button.className = `page-indicator ${idx % 2 === 0 ? 'thumbnail-below-node' : 'thumbnail-above-node'}`;
+      button.style.setProperty('--node-y', idx % 2 === 0 ? '34px' : '130px');
+      if (stop.sideQuest) {
+        button.classList.add('side-quest');
+      }
       button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`);
       button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
@@ -1284,33 +1363,57 @@
       image.alt = '';
       image.loading = 'lazy';
       image.decoding = 'async';
+      thumbnail.className = 'timeline-thumb-wrap';
       date.className = 'timeline-date';
       date.textContent = stop.date;
-      const flags = document.createElement('span');
+      flags.className = 'timeline-flags';
       flags.textContent = stop.flags;
-      date.prepend(flags);
+      flags.setAttribute('aria-hidden', 'true');
+      thumbnail.append(image, flags);
       stopTitle.className = 'timeline-title';
       stopTitle.textContent = stop.title;
-      detail.className = 'timeline-detail';
-      detail.textContent = stop.detail;
-      sleep.className = 'timeline-sleep';
-      sleep.textContent = stop.sleep;
       card.className = 'timeline-card';
       connector.className = 'timeline-connector';
-      actionIcon.className = 'timeline-action-icon';
-      actionIcon.textContent = stop.icon;
-      actionIcon.title = stop.iconLabel;
-      actionIcon.setAttribute('aria-hidden', 'true');
       node.className = 'timeline-node';
-      node.textContent = stop.flags.split(' → ').at(-1);
+      node.textContent = stop.icon;
+      node.title = stop.iconLabel;
+      node.setAttribute('aria-hidden', 'true');
 
-      card.append(image, date, stopTitle, detail, sleep);
-      connector.append(actionIcon);
-      button.append(connector, node, card);
+      card.append(thumbnail, stopTitle);
+      button.append(connector, node, date, card);
       button.addEventListener('click', () => goToSlide(stop.slideIndex, idx));
       pageIndicatorsEl.append(button);
       return button;
     });
+
+    const timelineWave = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const timelineWavePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    timelineWave.classList.add('timeline-wave');
+    timelineWave.setAttribute('aria-hidden', 'true');
+    timelineWave.append(timelineWavePath);
+    pageIndicatorsEl.prepend(timelineWave);
+
+    function updateTimelineWave() {
+      const width = pageIndicatorsEl.scrollWidth;
+      const height = pageIndicatorsEl.clientHeight;
+      const points = pageIndicators.map((indicator, idx) => ({
+        x: indicator.offsetLeft + indicator.offsetWidth / 2,
+        y: idx % 2 === 0 ? 34 : 130
+      }));
+
+      timelineWave.setAttribute('width', width);
+      timelineWave.setAttribute('height', height);
+      timelineWave.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      timelineWavePath.setAttribute('d', points.reduce((path, point, idx) => {
+        if (idx === 0) return `M ${point.x} ${point.y}`;
+        const previous = points[idx - 1];
+        const segment = point.x - previous.x;
+        return `${path} C ${previous.x + segment / 3} ${previous.y}, ${point.x - segment / 3} ${point.y}, ${point.x} ${point.y}`;
+      }, ''));
+    }
+
+    updateTimelineWave();
+    window.addEventListener('resize', updateTimelineWave);
 
     // Web Audio Synthesizer for 8-bit sound effects
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1354,7 +1457,8 @@
         left: activeIndicator.offsetLeft - (pageIndicatorsEl.clientWidth - activeIndicator.offsetWidth) / 2,
         behavior: 'smooth'
       });
-      progressEl.innerText = `DAG ${currentTimelineIndex + 1} / ${itinerary.length}`;
+      progressEl.innerText =
+        `DAG ${currentTimelineIndex + 1} / ${itinerary.length}`;
     }
 
     function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
