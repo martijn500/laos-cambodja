@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" integrity="sha256-Q8HYhrX98KrE5xNb1vhLgj2fSCg6ZIASZl+b5SwBOJ8=" crossorigin="">
   <style>
     :root {
       --bg: #09090b;
@@ -48,8 +48,12 @@
       background: #10191d;
     }
 
-    .map-background .leaflet-tile-pane {
-      filter: grayscale(0.82) saturate(0.62) brightness(0.58) contrast(1.08);
+    .map-background .maplibregl-canvas {
+      filter: grayscale(0.42) saturate(0.88) brightness(0.78) contrast(1.04);
+    }
+
+    .map-background .maplibregl-canvas:focus {
+      outline: none;
     }
 
     .map-shade {
@@ -57,53 +61,58 @@
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(180deg, rgba(7, 9, 14, 0.22), rgba(7, 9, 14, 0.08) 45%, rgba(7, 9, 14, 0.36)),
-        radial-gradient(ellipse at center, transparent 10%, rgba(7, 9, 14, 0.2) 100%);
+        linear-gradient(180deg, rgba(7, 9, 14, 0.12), rgba(7, 9, 14, 0.02) 45%, rgba(7, 9, 14, 0.24)),
+        radial-gradient(ellipse at center, transparent 18%, rgba(7, 9, 14, 0.1) 100%);
       pointer-events: none;
     }
 
-    .map-location {
+    .map-focus-marker {
       position: fixed;
-      bottom: calc(var(--timeline-height) + 10px);
+      top: var(--map-focus-y, 50%);
       left: 50%;
-      z-index: 5;
-      display: flex;
-      min-height: 32px;
-      align-items: center;
-      gap: 8px;
-      max-width: min(70vw, 360px);
-      padding: 6px 12px;
-      transform: translateX(-50%);
-      border: 1px solid rgba(151, 221, 210, 0.42);
-      border-radius: 999px;
-      background: rgba(8, 15, 19, 0.88);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.42), 0 0 18px rgba(117, 216, 200, 0.12);
-      color: #f0f7f6;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      backdrop-filter: blur(8px);
+      z-index: 4;
+      width: 18px;
+      height: 18px;
+      transform: translate(-50%, -50%);
+      border: 3px solid color-mix(in srgb, var(--map-origin-color, #75d8c8) 44%, #ffffff);
+      border-radius: 50%;
+      background: var(--map-origin-color, #75d8c8);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--map-origin-color, #75d8c8) 30%, transparent), 0 0 22px color-mix(in srgb, var(--map-origin-color, #75d8c8) 74%, transparent);
       pointer-events: none;
     }
 
-    .map-location-dot {
-      position: relative;
-      width: 9px;
-      height: 9px;
-      flex: 0 0 9px;
-      border-radius: 50%;
-      background: #75d8c8;
-      box-shadow: 0 0 12px rgba(117, 216, 200, 0.8);
-    }
-
-    .map-location-dot::after {
+    .map-focus-marker::after {
       position: absolute;
-      inset: -5px;
-      border: 1px solid rgba(117, 216, 200, 0.65);
+      inset: -9px;
+      border: 1px solid color-mix(in srgb, var(--map-origin-color, #75d8c8) 82%, transparent);
       border-radius: 50%;
       animation: map-pulse 2s ease-out infinite;
       content: '';
+    }
+
+    .map-origin-effect {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .map-origin-beam {
+      fill: url(#map-origin-fill);
+      stroke: var(--map-origin-color, #75d8c8);
+      stroke-opacity: 0.42;
+      stroke-width: 1.5;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .map-origin-edge {
+      fill: none;
+      stroke: var(--map-origin-color, #75d8c8);
+      stroke-opacity: 0.54;
+      stroke-width: 1.5;
+      vector-effect: non-scaling-stroke;
     }
 
     @keyframes map-pulse {
@@ -139,18 +148,6 @@
       background: rgba(8, 15, 19, 0.78);
       color: #dce8e8;
       font-size: 0.68rem;
-    }
-
-    /* Ambient animated grid */
-    .grid-bg {
-      position: absolute;
-      inset: 0;
-      background-size: 40px 40px;
-      background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-      z-index: 1;
-      pointer-events: none;
     }
 
     /* Slide container & transitions */
@@ -263,7 +260,6 @@
       }
 
       .timeline-card,
-      .timeline-node,
       .nav-btn {
         transition: none;
       }
@@ -399,11 +395,9 @@
     }
 
     @media (max-width: 600px) {
-      .map-location {
-        bottom: calc(var(--timeline-height) + 8px);
-        min-height: 30px;
-        padding: 5px 10px;
-        font-size: 0.65rem;
+      .map-status {
+        top: 10px;
+        left: 8px;
       }
 
       .map-attribution {
@@ -415,7 +409,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .map-location-dot::after {
+      .map-focus-marker::after {
         animation: none;
       }
     }
@@ -624,11 +618,19 @@
       width: 100%;
       height: 65px;
       overflow: hidden;
-      border: 1px solid rgba(174, 197, 200, 0.16);
+      border: 1px solid color-mix(in srgb, var(--indicator-color) 34%, rgba(174, 197, 200, 0.16));
       border-radius: 11px;
       background: linear-gradient(135deg, rgba(29, 41, 47, 0.96), rgba(15, 23, 29, 0.98));
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .page-indicator[aria-current="step"] .timeline-card {
+      top: 30px;
+    }
+
+    .page-indicator[aria-current="step"] .timeline-node {
+      height: 6px;
     }
 
     .timeline-thumb-wrap {
@@ -683,17 +685,6 @@
       white-space: nowrap;
     }
 
-    .timeline-date {
-      overflow: hidden;
-      color: #ffffff;
-      font-family: var(--font-sans);
-      font-size: 0.61rem;
-      font-weight: 800;
-      letter-spacing: 0.035em;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
     .timeline-title {
       display: -webkit-box;
       overflow: hidden;
@@ -730,18 +721,6 @@
       white-space: nowrap;
     }
 
-    .page-indicator.side-quest {
-      --indicator-color: #edbd72;
-    }
-
-    .page-indicator.side-quest .timeline-node {
-      border-style: dashed;
-    }
-
-    .page-indicator.side-quest .timeline-card {
-      background: linear-gradient(135deg, rgba(51, 41, 27, 0.96), rgba(23, 22, 19, 0.98));
-    }
-
     .timeline-connector {
       position: absolute;
       top: 24px;
@@ -760,18 +739,14 @@
       position: absolute;
       top: 24px;
       left: 50%;
-      z-index: 1;
-      display: grid;
-      width: 30px;
-      height: 30px;
-      place-items: center;
-      transform: translate(-50%, -50%);
-      border: 2px solid var(--indicator-color);
-      border-radius: 50%;
-      background: #111b20;
-      box-shadow: 0 0 0 4px rgba(11, 18, 22, 0.96);
-      font-size: 0.92rem;
-      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      z-index: 4;
+      width: 2px;
+      height: 22px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: var(--indicator-color);
+      box-shadow: 0 0 8px color-mix(in srgb, var(--indicator-color) 42%, transparent);
+      pointer-events: none;
     }
 
     .page-indicator:hover .timeline-card {
@@ -783,7 +758,7 @@
     }
 
     .page-indicator[aria-current="step"] .timeline-card {
-      z-index: 3;
+      z-index: 2;
       transform: translateY(-3px) scale(1.08);
       transform-origin: center center;
       border-color: color-mix(in srgb, var(--indicator-color) 78%, transparent);
@@ -793,13 +768,6 @@
 
     .page-indicator[aria-current="step"] .timeline-title {
       color: #ffffff;
-    }
-
-    .page-indicator:hover .timeline-node,
-    .page-indicator[aria-current="step"] .timeline-node {
-      transform: translate(-50%, -50%) scale(1.12);
-      background: color-mix(in srgb, var(--indicator-color) 22%, #111b20);
-      box-shadow: 0 0 0 4px rgba(11, 18, 22, 0.96), 0 0 15px color-mix(in srgb, var(--indicator-color) 38%, transparent);
     }
 
     .page-indicator:focus-visible {
@@ -855,34 +823,23 @@
       font-weight: 800;
     }
 
-    .progress-flags {
-      font-size: 0.9rem;
+    .progress-icon {
+      font-size: 1.15rem;
       line-height: 1;
     }
 
     @media (max-width: 600px) {
       :root {
-        --timeline-height: 176px;
+        --timeline-height: 56px;
       }
 
-      .page-indicator {
-        flex-basis: 158px;
+      .nav-controls {
+        padding: 4px 12px;
       }
 
+      .timeline-heading,
       .page-indicators {
-        --timeline-gap: 10px;
-        --timeline-half-gap: 5px;
-        height: 104px;
-        padding: 0 10px 5px;
-      }
-
-      .timeline-heading {
-        height: 23px;
-        font-size: 0.72rem;
-      }
-
-      .timeline-heading span {
-        font-size: 0.58rem;
+        display: none;
       }
 
       .nav-btn {
@@ -893,23 +850,6 @@
       .nav-actions {
         height: 28px;
       }
-
-      .timeline-card {
-        top: 46px;
-        height: 58px;
-      }
-
-      .timeline-copy {
-        bottom: 4px;
-      }
-
-      .timeline-title {
-        font-size: 0.67rem;
-      }
-
-      .timeline-kind {
-        font-size: 0.52rem;
-      }
     }
 
   </style>
@@ -918,13 +858,21 @@
 
   <div class="map-background" id="trip-map" role="img" aria-label="Kaart met de actuele locatie van de reis"></div>
   <div class="map-shade" aria-hidden="true"></div>
-  <div class="map-location" id="map-location" aria-live="polite">
-    <span class="map-location-dot" aria-hidden="true"></span>
-    <span id="map-location-name">Amsterdam · Nederland</span>
-  </div>
-  <div class="map-attribution">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>-bijdragers</div>
+  <svg class="map-origin-effect" id="map-origin-effect" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="map-origin-fill" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#0b1820" stop-opacity="0"></stop>
+        <stop offset="0.48" stop-color="#0b1820" stop-opacity="0.18"></stop>
+        <stop offset="1" stop-color="#0b1820" stop-opacity="0.56"></stop>
+      </linearGradient>
+    </defs>
+    <path class="map-origin-beam"></path>
+    <path class="map-origin-edge map-origin-edge-left"></path>
+    <path class="map-origin-edge map-origin-edge-right"></path>
+  </svg>
+  <div class="map-focus-marker" id="map-focus-marker" aria-hidden="true"></div>
+  <div class="map-attribution"><a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
   <div class="map-status" id="map-status" role="status">Kaart laden…</div>
-  <div class="grid-bg"></div>
   <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
 
   <div class="deck">
@@ -1098,20 +1046,18 @@
     <div class="nav-actions">
       <button class="nav-btn" onclick="prevSlide()" aria-label="Vorige pagina">◀</button>
       <span class="progress-text" id="progress" aria-live="polite" aria-atomic="true">
-        <span class="progress-date">MA · 15 FEB</span>
-        <span class="progress-flags" aria-hidden="true">🇳🇱</span>
+        <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
       </span>
       <button class="nav-btn" onclick="nextSlide()" aria-label="Volgende pagina">►</button>
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js" integrity="sha256-FSX5cSI9gfFp8EnxzlAIPm8WQ6prDqBxZlOlUNLVf8I=" crossorigin=""></script>
   <script>
     let currentSlide = 0;
     let slides = Array.from(document.querySelectorAll('.slide'));
     const progressEl = document.getElementById('progress');
-    const progressDateEl = progressEl.querySelector('.progress-date');
-    const progressFlagsEl = progressEl.querySelector('.progress-flags');
+    const progressIconEl = progressEl.querySelector('.progress-icon');
     const pageIndicatorsEl = document.getElementById('page-indicators');
     let currentTimelineIndex = 0;
     const photos = {
@@ -1476,85 +1422,123 @@
       }
     ];
     let soundEnabled = true;
-    const mapLocationNameEl = document.getElementById('map-location-name');
     const mapStatusEl = document.getElementById('map-status');
     const mapContainerEl = document.getElementById('trip-map');
+    const mapFocusMarkerEl = document.getElementById('map-focus-marker');
+    const mapOriginEffectEl = document.getElementById('map-origin-effect');
+    const mapOriginBeamEl = mapOriginEffectEl.querySelector('.map-origin-beam');
+    const mapOriginLeftEdgeEl = mapOriginEffectEl.querySelector('.map-origin-edge-left');
+    const mapOriginRightEdgeEl = mapOriginEffectEl.querySelector('.map-origin-edge-right');
     let tripMap = null;
     let mapTargetKey = '';
-    let alignMapFocus = () => {};
 
-    if (window.L) {
+    function mapFocusOffset() {
+      const mapBounds = mapContainerEl.getBoundingClientRect();
+      const activeCard = document.querySelector('.slide.active .card');
+      const timelineBounds = document.querySelector('.nav-controls').getBoundingClientRect();
+      const cardBounds = activeCard?.getBoundingClientRect();
+      const cardBottom = cardBounds ? cardBounds.bottom : mapBounds.top;
+      const availableGap = timelineBounds.top - cardBottom;
+      const focusY = availableGap >= 28
+        ? cardBottom + availableGap / 2
+        : timelineBounds.top - 18;
+      const originColor = activeCard ? getComputedStyle(activeCard).borderTopColor : '#75d8c8';
+      const source = { x: window.innerWidth / 2, y: focusY };
+      const baseY = Math.min(cardBounds?.bottom ?? source.y, source.y - 20);
+      const baseLeft = activeCard ? cardBounds.left + 18 : source.x - 180;
+      const baseRight = activeCard ? cardBounds.right - 18 : source.x + 180;
+      const gap = Math.max(0, source.y - baseY);
+      const leftBase = { x: baseLeft, y: baseY };
+      const rightBase = { x: baseRight, y: baseY };
+      const leftControl1 = { x: source.x, y: source.y };
+      const leftControl2 = { x: source.x - (source.x - baseLeft) * 0.01, y: baseY + gap * 0.08 };
+      const rightControl1 = { x: source.x, y: source.y };
+      const rightControl2 = { x: source.x + (baseRight - source.x) * 0.01, y: baseY + gap * 0.08 };
+      const pathPoint = point => `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+
+      mapOriginEffectEl.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+      mapOriginBeamEl.setAttribute('d',
+        `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)} ` +
+        `L ${pathPoint(rightBase)} C ${pathPoint(rightControl2)} ${pathPoint(rightControl1)} ${pathPoint(source)} Z`);
+      mapOriginLeftEdgeEl.setAttribute('d',
+        `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)}`);
+      mapOriginRightEdgeEl.setAttribute('d',
+        `M ${pathPoint(source)} C ${pathPoint(rightControl1)} ${pathPoint(rightControl2)} ${pathPoint(rightBase)}`);
+
+      mapFocusMarkerEl.style.setProperty('--map-focus-y', `${focusY}px`);
+      mapFocusMarkerEl.style.setProperty('--map-origin-color', originColor);
+      mapOriginEffectEl.style.setProperty('--map-origin-color', originColor);
+      const markerBounds = mapFocusMarkerEl.getBoundingClientRect();
+      return [
+        markerBounds.left + markerBounds.width / 2 - mapBounds.left - mapBounds.width / 2,
+        markerBounds.top + markerBounds.height / 2 - mapBounds.top - mapBounds.height / 2
+      ];
+    }
+
+    if (window.maplibregl) {
       const reduceMapMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      tripMap = L.map(mapContainerEl, {
+      const initialLocation = itinerary[0].location;
+      const initialCenter = [initialLocation.coordinates[1], initialLocation.coordinates[0]];
+      tripMap = new maplibregl.Map({
         attributionControl: false,
         boxZoom: false,
+        center: initialCenter,
+        container: mapContainerEl,
         doubleClickZoom: false,
-        dragging: false,
+        dragPan: false,
+        interactive: false,
         keyboard: false,
-        scrollWheelZoom: false,
-        touchZoom: false,
-        zoomControl: false
-      }).setView(itinerary[0].location.coordinates, itinerary[0].location.zoom);
-
-      const mapTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(tripMap);
-
-      mapTiles.on('load', () => {
-        mapStatusEl.hidden = true;
+        scrollZoom: false,
+        style: 'https://tiles.openfreemap.org/styles/positron',
+        touchZoomRotate: false,
+        zoom: initialLocation.zoom
       });
-      mapTiles.on('tileerror', () => {
+
+      tripMap.once('load', () => {
+        mapStatusEl.hidden = true;
+        mapTargetKey = '';
+        showMapLocation(itinerary[currentTimelineIndex]);
+      });
+      tripMap.on('error', () => {
         if (!mapStatusEl.hidden) {
           mapStatusEl.textContent = 'Kaarttegels niet beschikbaar';
         }
       });
 
-      alignMapFocus = () => {
-        const activeLocation = itinerary[currentTimelineIndex].location;
-        const activePoint = tripMap.latLngToContainerPoint(activeLocation.coordinates);
-        const mapBounds = mapContainerEl.getBoundingClientRect();
-        const badgeBounds = document.getElementById('map-location').getBoundingClientRect();
-        const targetPoint = L.point(
-          badgeBounds.left + badgeBounds.width / 2 - mapBounds.left,
-          badgeBounds.top + badgeBounds.height / 2 - mapBounds.top
-        );
-        const offset = targetPoint.subtract(activePoint);
-
-        if (Math.abs(offset.x) > 1 || Math.abs(offset.y) > 1) {
-          tripMap.panBy(offset, {
-            animate: !reduceMapMotion,
-            duration: reduceMapMotion ? 0 : 0.55
-          });
-        }
-      };
-      tripMap.on('moveend', () => requestAnimationFrame(alignMapFocus));
       mapTargetKey = `${itinerary[0].location.coordinates.join(',')}:${itinerary[0].location.zoom}`;
 
       window.addEventListener('resize', () => {
-        tripMap.invalidateSize({ animate: false });
-        requestAnimationFrame(() => alignMapFocus());
+        tripMap.resize();
+        requestAnimationFrame(() => showMapLocation(itinerary[currentTimelineIndex]));
       });
     } else {
       mapStatusEl.textContent = 'Kaartbibliotheek kon niet laden';
     }
 
     function showMapLocation(stop) {
-      mapLocationNameEl.textContent = stop.location.name;
       if (!tripMap) return;
 
       const { coordinates, zoom } = stop.location;
       const targetKey = `${coordinates.join(',')}:${zoom}`;
+      const center = [coordinates[1], coordinates[0]];
+      const camera = { center, zoom, offset: mapFocusOffset(), bearing: 0, pitch: 0 };
       if (targetKey === mapTargetKey) {
-        alignMapFocus();
+        if (tripMap.loaded()) {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            tripMap.jumpTo(camera);
+          } else {
+            tripMap.easeTo({ ...camera, duration: 300, essential: false });
+          }
+        }
         return;
       }
 
       mapTargetKey = targetKey;
-      tripMap.flyTo(coordinates, zoom, {
-        animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        duration: 1.35
-      });
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        tripMap.jumpTo(camera);
+      } else {
+        tripMap.easeTo({ ...camera, duration: 900, essential: false });
+      }
     }
 
     const slideTemplates = slides;
@@ -1607,6 +1591,13 @@
     });
     slideTemplates.forEach(slide => slide.remove());
     deck.append(...slides);
+    slides.forEach(slide => {
+      slide.addEventListener('transitionend', event => {
+        if (event.target === slide && event.propertyName === 'transform' && slide.classList.contains('active')) {
+          showMapLocation(itinerary[currentTimelineIndex]);
+        }
+      });
+    });
 
     const pageIndicators = itinerary.map((stop, idx) => {
       const slide = slides[stop.slideIndex];
@@ -1614,7 +1605,6 @@
       const title = slide.querySelector('h2').textContent.trim();
       const image = document.createElement('img');
       const thumbnail = document.createElement('span');
-      const date = document.createElement('span');
       const flags = document.createElement('span');
       const meta = document.createElement('span');
       const stopTitle = document.createElement('span');
@@ -1626,6 +1616,7 @@
 
       button.type = 'button';
       button.className = 'page-indicator';
+      button.style.setProperty('--indicator-color', getComputedStyle(slide.querySelector('.card')).borderTopColor);
       if (stop.sideQuest) {
         button.classList.add('side-quest');
       }
@@ -1638,13 +1629,11 @@
       image.loading = 'lazy';
       image.decoding = 'async';
       thumbnail.className = 'timeline-thumb-wrap';
-      date.className = 'timeline-date';
-      date.textContent = stop.date;
       meta.className = 'timeline-meta';
       flags.className = 'timeline-flags';
       flags.textContent = stop.flags;
       flags.setAttribute('aria-hidden', 'true');
-      meta.append(date, flags);
+      meta.append(flags);
       thumbnail.append(image, meta);
       stopTitle.className = 'timeline-title';
       stopTitle.textContent = stop.title;
@@ -1655,8 +1644,6 @@
       card.className = 'timeline-card';
       connector.className = 'timeline-connector';
       node.className = 'timeline-node';
-      node.textContent = stop.icon;
-      node.title = stop.iconLabel;
       node.setAttribute('aria-hidden', 'true');
 
       card.append(thumbnail, copy);
@@ -1709,8 +1696,8 @@
         behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
       });
       const currentStop = itinerary[currentTimelineIndex];
-      progressDateEl.textContent = currentStop.date;
-      progressFlagsEl.textContent = currentStop.flags;
+      progressIconEl.textContent = currentStop.icon;
+      progressIconEl.setAttribute('aria-label', currentStop.iconLabel);
       showMapLocation(currentStop);
     }
 
