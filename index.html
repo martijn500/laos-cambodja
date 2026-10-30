@@ -1,1795 +1,2318 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAOS & CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ff007f'/><path d='M30,55 L45,35 L55,35 L48,50 L70,50 L75,42 L80,42 L76,55 L80,68 L75,68 L70,60 L48,60 L55,75 L45,75 Z' fill='%23ffee00'/><path d='M25,30 L27,25 L32,27 L27,29 Z M75,25 L80,28 L77,33 L74,29 Z M20,65 L25,67 L22,72 L18,69 Z' fill='%2300f0ff'/></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff007f'/><path d='M30,55 L45,35 L55,35 L48,50 L70,50 L75,42 L80,42 L76,55 L80,68 L75,68 L70,60 L48,60 L55,75 L45,75 Z' fill='%23ffee00'/><path d='M25,30 L27,25 L32,27 L27,29 Z M75,25 L80,28 L77,33 L74,29 Z M20,65 L25,67 L22,72 L18,69 Z' fill='%2300f0ff'/></svg>">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" integrity="sha256-Q8HYhrX98KrE5xNb1vhLgj2fSCg6ZIASZl+b5SwBOJ8=" crossorigin="">
-  <style>
-    :root {
-      --bg: #09090b;
-      --timeline-height: 190px;
-      --neon-pink: #ff007f;
-      --neon-green: #00ff66;
-      --neon-yellow: #ffee00;
-      --neon-cyan: #00f0ff;
-      --card-bg: rgba(15, 18, 26, 0.77);
-      --font-meme: 'Press Start 2P', monospace;
-      --font-sans: 'Plus Jakarta Sans', sans-serif;
-      --font-display: 'Space Grotesk', sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: #fff;
-      font-family: var(--font-sans);
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-    }
-
-    .map-background {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      background: #10191d;
-    }
-
-    .map-background .maplibregl-canvas {
-      filter: grayscale(0.42) saturate(0.88) brightness(0.78) contrast(1.04);
-    }
-
-    .map-background .maplibregl-canvas:focus {
-      outline: none;
-    }
-
-    .map-shade {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      background:
-        linear-gradient(180deg, rgba(7, 9, 14, 0.12), rgba(7, 9, 14, 0.02) 45%, rgba(7, 9, 14, 0.24)),
-        radial-gradient(ellipse at center, transparent 18%, rgba(7, 9, 14, 0.1) 100%);
-      pointer-events: none;
-    }
-
-    .map-focus-marker {
-      position: fixed;
-      top: var(--map-focus-y, 50%);
-      left: 50%;
-      z-index: 4;
-      width: 18px;
-      height: 18px;
-      transform: translate(-50%, -50%);
-      border: 3px solid color-mix(in srgb, var(--map-origin-color, #75d8c8) 44%, #ffffff);
-      border-radius: 50%;
-      background: var(--map-origin-color, #75d8c8);
-      box-shadow: 0 0 0 4px color-mix(in srgb, var(--map-origin-color, #75d8c8) 30%, transparent), 0 0 22px color-mix(in srgb, var(--map-origin-color, #75d8c8) 74%, transparent);
-      pointer-events: none;
-    }
-
-    .map-focus-marker::after {
-      position: absolute;
-      inset: -9px;
-      border: 1px solid color-mix(in srgb, var(--map-origin-color, #75d8c8) 82%, transparent);
-      border-radius: 50%;
-      animation: map-pulse 2s ease-out infinite;
-      content: '';
-    }
-
-    .map-origin-effect {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .map-origin-beam {
-      fill: url(#map-origin-fill);
-    }
-
-    .map-origin-beam-glow {
-      fill: var(--map-origin-color, #75d8c8);
-      opacity: 0.2;
-      filter: url(#map-origin-glow);
-    }
-
-    @keyframes map-pulse {
-      0% { transform: scale(0.55); opacity: 0.85; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    .map-attribution {
-      position: fixed;
-      bottom: calc(var(--timeline-height) + 12px);
-      left: 12px;
-      z-index: 5;
-      padding: 4px 7px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 6px;
-      background: rgba(8, 15, 19, 0.82);
-      color: #dce8e8;
-      font-size: 0.6rem;
-      line-height: 1.3;
-    }
-
-    .map-attribution a {
-      color: #b7e9e1;
-    }
-
-    .map-status {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      z-index: 5;
-      padding: 6px 9px;
-      border-radius: 7px;
-      background: rgba(8, 15, 19, 0.78);
-      color: #dce8e8;
-      font-size: 0.68rem;
-    }
-
-    /* Slide container & transitions */
-    .deck {
-      position: relative;
-      width: 100%;
-      height: calc(100vh - var(--timeline-height));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      opacity: 0;
-      visibility: hidden;
-      transform: scale(0.9) translateY(20px);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .slide.active {
-      opacity: 1;
-      visibility: visible;
-      transform: scale(1) translateY(0);
-    }
-
-    .slide-caricature {
-      position: absolute;
-      right: 55px;
-      bottom: 12px;
-      z-index: 4;
-      width: clamp(110px, 12vw, 160px);
-      pointer-events: none;
-      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45));
-    }
-
-    .slide-caricature img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: contain;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .timeline-card,
-      .nav-btn {
-        transition: none;
-      }
-    }
-
-    /* Slide Card Content Layout */
-    .card {
-      background: var(--card-bg);
-      border: 3px solid var(--neon-pink);
-      box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.2);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 1100px;
-      max-height: min(85vh, max(180px, calc(100vh - var(--timeline-height) - 6.5rem)));
-      overflow-y: auto;
-      padding: 2.5rem;
-      backdrop-filter: blur(12px);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      align-items: center;
-      position: relative;
-    }
-
-    @media (max-width: 850px) {
-      .card {
-        grid-template-columns: 1fr;
-        max-height: max(180px, calc(100vh - var(--timeline-height) - 6.5rem));
-        padding: 1.5rem;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LAOS & CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23ff007f'/><path d='M30,55 L45,35 L55,35 L48,50 L70,50 L75,42 L80,42 L76,55 L80,68 L75,68 L70,60 L48,60 L55,75 L45,75 Z' fill='%23ffee00'/><path d='M25,30 L27,25 L32,27 L27,29 Z M75,25 L80,28 L77,33 L74,29 Z M20,65 L25,67 L22,72 L18,69 Z' fill='%2300f0ff'/></svg>"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23ff007f'/><path d='M30,55 L45,35 L55,35 L48,50 L70,50 L75,42 L80,42 L76,55 L80,68 L75,68 L70,60 L48,60 L55,75 L45,75 Z' fill='%23ffee00'/><path d='M25,30 L27,25 L32,27 L27,29 Z M75,25 L80,28 L77,33 L74,29 Z M20,65 L25,67 L22,72 L18,69 Z' fill='%2300f0ff'/></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
+      integrity="sha256-Q8HYhrX98KrE5xNb1vhLgj2fSCg6ZIASZl+b5SwBOJ8="
+      crossorigin=""
+    />
+    <style>
+      :root {
+        --bg: #09090b;
+        --timeline-height: 190px;
+        --neon-pink: #ff007f;
+        --neon-green: #00ff66;
+        --neon-yellow: #ffee00;
+        --neon-cyan: #00f0ff;
+        --card-bg: rgba(15, 18, 26, 0.77);
+        --font-meme: "Press Start 2P", monospace;
+        --font-sans: "Plus Jakarta Sans", sans-serif;
+        --font-display: "Space Grotesk", sans-serif;
       }
 
-      .slide-caricature {
-        right: 40px;
-        bottom: 8px;
-        width: clamp(72px, 12vw, 96px);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .slide {
-        padding: 0.75rem;
-      }
-
-      .slide .card {
-        position: relative;
-        display: block;
-        max-height: 100%;
+      * {
+        box-sizing: border-box;
+        margin: 0;
         padding: 0;
-        overflow: visible;
-        border: 0;
-        background: transparent;
-        box-shadow: none;
-        backdrop-filter: none;
+        user-select: none;
       }
 
-      .slide .card > div:first-child {
-        position: relative;
-        z-index: 1;
-        max-height: calc(100vh - var(--timeline-height) - 2rem);
-        overflow-y: auto;
-        padding: 1rem 1rem 8rem;
-        border: 1px solid rgba(255, 255, 255, 0.24);
-        border-radius: 16px;
-        background: rgba(7, 9, 14, 0.76);
-        backdrop-filter: blur(6px);
+      body {
+        background-color: var(--bg);
+        color: #fff;
+        font-family: var(--font-sans);
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
       }
 
-      .slide-caricature {
-        right: 10px;
-        bottom: 8px;
-        width: clamp(86px, 26vw, 124px);
-      }
-
-      .slide .img-box {
-        position: absolute;
+      .map-background {
+        position: fixed;
         inset: 0;
         z-index: 0;
-        width: auto;
-        height: auto;
-        border: 0;
-        border-radius: 0;
-        box-shadow: none;
+        overflow: hidden;
+        background: #10191d;
+      }
+
+      .map-background .maplibregl-canvas {
+        filter: grayscale(0.42) saturate(0.88) brightness(0.78) contrast(1.04);
+      }
+
+      .map-background .maplibregl-canvas:focus {
+        outline: none;
+      }
+
+      .map-shade {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(7, 9, 14, 0.12),
+            rgba(7, 9, 14, 0.02) 45%,
+            rgba(7, 9, 14, 0.24)
+          ),
+          radial-gradient(
+            ellipse at center,
+            transparent 18%,
+            rgba(7, 9, 14, 0.1) 100%
+          );
         pointer-events: none;
       }
 
-      .slide .img-box::after {
+      .map-focus-marker {
+        position: fixed;
+        top: var(--map-focus-y, 50%);
+        left: 50%;
+        z-index: 4;
+        width: 18px;
+        height: 18px;
+        transform: translate(-50%, -50%);
+        border: 3px solid
+          color-mix(in srgb, var(--map-origin-color, #75d8c8) 44%, #ffffff);
+        border-radius: 50%;
+        background: var(--map-origin-color, #75d8c8);
+        box-shadow:
+          0 0 0 4px
+            color-mix(
+              in srgb,
+              var(--map-origin-color, #75d8c8) 30%,
+              transparent
+            ),
+          0 0 22px
+            color-mix(
+              in srgb,
+              var(--map-origin-color, #75d8c8) 74%,
+              transparent
+            );
+        pointer-events: none;
+      }
+
+      .map-focus-marker::after {
         position: absolute;
+        inset: -9px;
+        border: 1px solid
+          color-mix(in srgb, var(--map-origin-color, #75d8c8) 82%, transparent);
+        border-radius: 50%;
+        animation: map-pulse 2s ease-out infinite;
+        content: "";
+      }
+
+      .map-origin-effect {
+        position: fixed;
         inset: 0;
-        background: linear-gradient(180deg, rgba(7, 9, 14, 0.08), rgba(7, 9, 14, 0.32));
-        content: '';
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
       }
 
-      .slide .img-box img {
-        opacity: 0.48;
+      .map-origin-beam {
+        fill: url(#map-origin-fill);
       }
 
-      .map-status {
-        top: 10px;
-        left: 8px;
+      .map-origin-beam-glow {
+        fill: var(--map-origin-color, #75d8c8);
+        opacity: 0.2;
+        filter: url(#map-origin-glow);
+      }
+
+      @keyframes map-pulse {
+        0% {
+          transform: scale(0.55);
+          opacity: 0.85;
+        }
+        100% {
+          transform: scale(1.6);
+          opacity: 0;
+        }
       }
 
       .map-attribution {
-        bottom: calc(var(--timeline-height) + 7px);
-        left: 7px;
-        padding: 3px 5px;
-        font-size: 0.54rem;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .map-focus-marker::after {
-        animation: none;
-      }
-    }
-
-    /* Typography styling */
-    .tag {
-      display: inline-block;
-      font-family: var(--font-meme);
-      font-size: 0.75rem;
-      color: #000;
-      background: var(--neon-yellow);
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-      letter-spacing: 1px;
-      box-shadow: 3px 3px 0px var(--neon-pink);
-    }
-
-    h2 {
-      font-family: var(--font-display);
-      font-size: 2.3rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      line-height: 1.1;
-      color: #fff;
-      text-shadow: 3px 3px 0px var(--neon-pink);
-      margin-bottom: 1rem;
-    }
-
-    p.desc {
-      font-size: 1.1rem;
-      line-height: 1.5;
-      color: #ddd;
-      margin-bottom: 1.25rem;
-    }
-
-    blockquote {
-      background: rgba(0, 0, 0, 0.5);
-      border-left: 5px solid var(--neon-cyan);
-      padding: 0.8rem 1.2rem;
-      font-style: italic;
-      color: var(--neon-cyan);
-      border-radius: 0 10px 10px 0;
-      margin-bottom: 1rem;
-      font-weight: 700;
-      font-size: 0.95rem;
-    }
-
-    /* Visual Media / Meme Image Wrapper */
-    .img-box {
-      position: relative;
-      width: 100%;
-      height: 360px;
-      border-radius: 15px;
-      overflow: hidden;
-      border: 2px solid var(--neon-green);
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
-    }
-
-    .img-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
-    }
-
-    .photo-credit {
-      position: absolute;
-      left: 8px;
-      bottom: 8px;
-      z-index: 1;
-      padding: 4px 6px;
-      border-radius: 4px;
-      background: rgba(0, 0, 0, 0.72);
-      color: #fff;
-      font-size: 0.6rem;
-      text-decoration: none;
-    }
-
-    .card:hover .img-box img {
-      transform: scale(1.05);
-    }
-
-    /* Aura / Stats Widget */
-    .stats-bar {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .stat-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      flex: 1;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-family: var(--font-meme);
-      color: var(--neon-green);
-      font-size: 0.9rem;
-      margin-top: 4px;
-    }
-
-    /* Audio FX Button */
-    .sound-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: var(--neon-pink);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      font-family: var(--font-meme);
-      font-size: 0.7rem;
-      border-radius: 20px;
-      cursor: pointer;
-      z-index: 100;
-      box-shadow: 0 0 10px var(--neon-pink);
-    }
-
-    /* Clickable trip timeline */
-    .nav-controls {
-      position: fixed;
-      inset: auto 0 0;
-      height: var(--timeline-height);
-      z-index: 10;
-      padding: 7px 18px 5px;
-      overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(17, 24, 31, 0.88), rgba(8, 13, 18, 0.91));
-      border-top: 1px solid rgba(154, 190, 197, 0.2);
-      box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.36);
-      backdrop-filter: blur(18px);
-    }
-
-    .timeline-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1500px;
-      height: 25px;
-      margin: 0 auto 2px;
-      padding: 0 2px;
-      color: #e9f2f3;
-      font-family: var(--font-display);
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .timeline-heading span {
-      color: #94a8ad;
-      font-family: var(--font-sans);
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .page-indicators {
-      --timeline-gap: 12px;
-      --timeline-half-gap: 6px;
-      --timeline-item-width: 176px;
-      --timeline-half-item-width: 88px;
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      gap: var(--timeline-gap);
-      width: 100%;
-      height: 116px;
-      margin: 0 auto;
-      padding: 0 12px;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scrollbar-color: rgba(130, 170, 176, 0.45) transparent;
-      scrollbar-width: thin;
-    }
-
-    .page-indicator {
-      --indicator-color: #75d8c8;
-      position: relative;
-      display: block;
-      flex: 0 0 var(--timeline-item-width);
-      height: 112px;
-      z-index: 1;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: #fff;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .timeline-card {
-      position: absolute;
-      top: 46px;
-      left: 0;
-      display: block;
-      width: 100%;
-      height: 65px;
-      z-index: 2;
-      overflow: hidden;
-      border: 1px solid color-mix(in srgb, var(--indicator-color) 34%, rgba(174, 197, 200, 0.16));
-      border-radius: 11px;
-      background: linear-gradient(135deg, rgba(29, 41, 47, 0.96), rgba(15, 23, 29, 0.98));
-      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
-    }
-
-    .timeline-thumb-wrap {
-      position: absolute;
-      inset: 0;
-      display: block;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .timeline-thumb-wrap::after {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(7, 13, 17, 0.52), rgba(7, 13, 17, 0.08) 40%, rgba(7, 13, 17, 0.92));
-      content: '';
-    }
-
-    .timeline-thumb {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .timeline-meta {
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: max-content;
-      max-width: 100%;
-      min-height: 19px;
-      padding: 2px 7px;
-      transform: translateX(-50%);
-      border: 1px solid rgba(156, 185, 188, 0.2);
-      border-radius: 999px;
-      background: rgba(8, 15, 19, 0.86);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(5px);
-    }
-
-    .timeline-flags {
-      overflow: hidden;
-      color: #d7e5e6;
-      font-size: 0.75rem;
-      line-height: 1;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .timeline-title {
-      display: -webkit-box;
-      overflow: hidden;
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      line-height: 1.2;
-      text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
-    }
-
-    .timeline-copy {
-      position: absolute;
-      right: 8px;
-      bottom: 6px;
-      left: 8px;
-      z-index: 1;
-      display: block;
-      min-width: 0;
-    }
-
-    .timeline-kind {
-      display: block;
-      overflow: hidden;
-      margin-top: 3px;
-      color: #c1d0d1;
-      font-size: 0.56rem;
-      font-weight: 700;
-      line-height: 1;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-      text-overflow: ellipsis;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .timeline-connector {
-      position: absolute;
-      top: 24px;
-      left: 50%;
-      z-index: 0;
-      width: calc(100% + var(--timeline-gap));
-      height: 2px;
-      background: linear-gradient(90deg, var(--indicator-color), var(--next-indicator-color, var(--indicator-color)));
-      -webkit-mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
-      mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
-      pointer-events: none;
-    }
-
-    .page-indicator:first-child::before,
-    .page-indicator:last-child::after {
-      position: absolute;
-      top: 24px;
-      z-index: 0;
-      width: 50vw;
-      height: 2px;
-      -webkit-mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
-      mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
-      content: '';
-      pointer-events: none;
-    }
-
-    .page-indicator:first-child::before {
-      right: 50%;
-      background: linear-gradient(90deg, transparent, var(--indicator-color));
-    }
-
-    .page-indicator:last-child::after {
-      left: 50%;
-      background: linear-gradient(90deg, var(--indicator-color), transparent);
-    }
-
-    .timeline-node {
-      position: absolute;
-      top: 24px;
-      left: 50%;
-      z-index: 1;
-      width: 2px;
-      height: 30px;
-      transform: translateX(-50%);
-      border-left: 1px dashed var(--indicator-color);
-      pointer-events: none;
-    }
-
-    .timeline-date-number,
-    .timeline-month-label {
-      position: absolute;
-      top: 24px;
-      z-index: 3;
-      transform: translate(-50%, -50%);
-      background: rgba(8, 13, 18, 0.96);
-      color: #fff;
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 700;
-      pointer-events: none;
-    }
-
-    .timeline-date-number {
-      left: 50%;
-      display: grid;
-      place-items: center;
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(8, 13, 18, 0.96);
-      border-radius: 50%;
-      background: var(--indicator-color);
-      color: #09090b;
-      box-shadow: 0 0 0 1px var(--indicator-color);
-    }
-
-    .timeline-month-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 18px;
-      padding: 0 5px;
-      border-radius: 4px;
-      background: var(--indicator-color);
-      color: #09090b;
-      font-size: 0.6rem;
-      letter-spacing: 0.04em;
-    }
-
-    .timeline-month-label-start {
-      left: calc(50% - 50px);
-    }
-
-    .timeline-month-label-transition {
-      left: calc(50% - var(--timeline-half-item-width) - var(--timeline-half-gap));
-    }
-
-    .page-indicator:hover .timeline-card {
-      z-index: 2;
-      transform: translateY(-2px);
-      border-color: color-mix(in srgb, var(--indicator-color) 72%, transparent);
-      background: color-mix(in srgb, var(--indicator-color) 12%, #172127);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
-    }
-
-    .page-indicator[aria-current="step"] .timeline-card {
-      z-index: 2;
-      transform: scale(1.08);
-      transform-origin: center center;
-      border-color: color-mix(in srgb, var(--indicator-color) 78%, transparent);
-      background: color-mix(in srgb, var(--indicator-color) 14%, #172127);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 18px color-mix(in srgb, var(--indicator-color) 16%, transparent);
-      transition-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
-    }
-
-    .page-indicator[aria-current="step"] .timeline-title {
-      color: #ffffff;
-    }
-
-    .page-indicator:focus-visible {
-      outline: 2px solid #9de7dc;
-      outline-offset: 2px;
-      border-radius: 10px;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      width: max-content;
-      margin: 0 auto;
-      height: 34px;
-      padding: 2px 7px;
-      border: 1px solid rgba(183, 233, 225, 0.18);
-      border-radius: 999px;
-      background: rgba(183, 233, 225, 0.07);
-    }
-
-    .nav-btn {
-      display: grid;
-      flex: 0 0 28px;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      background: #b7e9e1;
-      color: #102124;
-      border: none;
-      border-radius: 50%;
-      font-family: var(--font-sans);
-      font-size: 0.8rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform 0.15s, background 0.15s;
-    }
-
-    .nav-arrow {
-      display: block;
-      line-height: 1;
-    }
-
-    .nav-btn-prev .nav-arrow {
-      transform: rotate(180deg);
-    }
-
-    .nav-btn:hover {
-      background: #e4f8f4;
-    }
-
-    .nav-btn:active {
-      transform: scale(0.9);
-    }
-
-    .progress-text {
-      display: flex;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      min-width: 0;
-      height: 100%;
-      padding: 0 4px;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      color: #dce8e8;
-      font-family: var(--font-sans);
-      font-size: 0.72rem;
-      font-weight: 800;
-    }
-
-    .progress-day {
-      font-size: 0.68rem;
-      white-space: nowrap;
-    }
-
-    .progress-icon {
-      font-size: 1.15rem;
-      line-height: 1;
-    }
-
-    @media (max-width: 600px) {
-      :root {
-        --timeline-height: 56px;
+        position: fixed;
+        bottom: calc(var(--timeline-height) + 12px);
+        left: 12px;
+        z-index: 5;
+        padding: 4px 7px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 6px;
+        background: rgba(8, 15, 19, 0.82);
+        color: #dce8e8;
+        font-size: 0.6rem;
+        line-height: 1.3;
       }
 
+      .map-attribution a {
+        color: #b7e9e1;
+      }
+
+      .map-status {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 5;
+        padding: 6px 9px;
+        border-radius: 7px;
+        background: rgba(8, 15, 19, 0.78);
+        color: #dce8e8;
+        font-size: 0.68rem;
+      }
+
+      /* Slide container & transitions */
+      .deck {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - var(--timeline-height));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(0.9) translateY(20px);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .slide.active {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1) translateY(0);
+      }
+
+      .slide-caricature {
+        position: absolute;
+        right: 55px;
+        bottom: 0px;
+        z-index: 4;
+        width: clamp(165px, 18vw, 240px);
+        pointer-events: none;
+        filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45));
+      }
+
+      .slide-caricature img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .timeline-card,
+        .nav-btn {
+          transition: none;
+        }
+      }
+
+      /* Slide Card Content Layout */
+      .card {
+        background: var(--card-bg);
+        border: 3px solid var(--neon-pink);
+        box-shadow:
+          0 0 25px rgba(255, 0, 127, 0.4),
+          inset 0 0 15px rgba(255, 0, 127, 0.2);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 1100px;
+        max-height: min(
+          85vh,
+          max(180px, calc(100vh - var(--timeline-height) - 6.5rem))
+        );
+        overflow-y: auto;
+        padding: 2.5rem;
+        backdrop-filter: blur(12px);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+        position: relative;
+      }
+
+      @media (max-width: 850px) {
+        .card {
+          grid-template-columns: 1fr;
+          max-height: max(180px, calc(100vh - var(--timeline-height) - 6.5rem));
+          padding: 1.5rem;
+        }
+
+        .slide-caricature {
+          right: 40px;
+          bottom: 8px;
+          width: clamp(108px, 18vw, 144px);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .slide {
+          padding: 0.75rem;
+        }
+
+        .slide .card {
+          position: relative;
+          display: block;
+          max-height: 100%;
+          padding: 0;
+          overflow: visible;
+          border: 0;
+          background: transparent;
+          box-shadow: none;
+          backdrop-filter: none;
+        }
+
+        .slide .card > div:first-child {
+          position: relative;
+          z-index: 1;
+          max-height: calc(100vh - var(--timeline-height) - 2rem);
+          overflow-y: auto;
+          padding: 1rem 1rem 8rem;
+          border: 1px solid rgba(255, 255, 255, 0.24);
+          border-radius: 16px;
+          background: rgba(7, 9, 14, 0.76);
+          backdrop-filter: blur(6px);
+        }
+
+        .slide-caricature {
+          right: 10px;
+          bottom: 8px;
+          width: clamp(129px, 39vw, 186px);
+        }
+
+        .slide .img-box {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          width: auto;
+          height: auto;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          pointer-events: none;
+        }
+
+        .slide .img-box::after {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(7, 9, 14, 0.08),
+            rgba(7, 9, 14, 0.32)
+          );
+          content: "";
+        }
+
+        .slide .img-box img {
+          opacity: 0.48;
+        }
+
+        .map-status {
+          top: 10px;
+          left: 8px;
+        }
+
+        .map-attribution {
+          bottom: calc(var(--timeline-height) + 7px);
+          left: 7px;
+          padding: 3px 5px;
+          font-size: 0.54rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .map-focus-marker::after {
+          animation: none;
+        }
+      }
+
+      /* Typography styling */
+      .tag {
+        display: inline-block;
+        font-family: var(--font-meme);
+        font-size: 0.75rem;
+        color: #000;
+        background: var(--neon-yellow);
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1px;
+        box-shadow: 3px 3px 0px var(--neon-pink);
+      }
+
+      h2 {
+        font-family: var(--font-display);
+        font-size: 2.3rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        line-height: 1.1;
+        color: #fff;
+        text-shadow: 3px 3px 0px var(--neon-pink);
+        margin-bottom: 1rem;
+      }
+
+      p.desc {
+        font-size: 1.1rem;
+        line-height: 1.5;
+        color: #ddd;
+        margin-bottom: 1.25rem;
+      }
+
+      blockquote {
+        background: rgba(0, 0, 0, 0.5);
+        border-left: 5px solid var(--neon-cyan);
+        padding: 0.8rem 1.2rem;
+        font-style: italic;
+        color: var(--neon-cyan);
+        border-radius: 0 10px 10px 0;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      /* Visual Media / Meme Image Wrapper */
+      .img-box {
+        position: relative;
+        width: 100%;
+        height: 360px;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid var(--neon-green);
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+      }
+
+      .img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .photo-credit {
+        position: absolute;
+        left: 8px;
+        bottom: 8px;
+        z-index: 1;
+        padding: 4px 6px;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.72);
+        color: #fff;
+        font-size: 0.6rem;
+        text-decoration: none;
+      }
+
+      .card:hover .img-box img {
+        transform: scale(1.05);
+      }
+
+      /* Aura / Stats Widget */
+      .stats-bar {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .stat-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        flex: 1;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-family: var(--font-meme);
+        color: var(--neon-green);
+        font-size: 0.9rem;
+        margin-top: 4px;
+      }
+
+      /* Audio FX Button */
+      .sound-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: var(--neon-pink);
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        font-family: var(--font-meme);
+        font-size: 0.7rem;
+        border-radius: 20px;
+        cursor: pointer;
+        z-index: 100;
+        box-shadow: 0 0 10px var(--neon-pink);
+      }
+
+      /* Clickable trip timeline */
       .nav-controls {
-        padding: 4px 12px;
+        position: fixed;
+        inset: auto 0 0;
+        height: var(--timeline-height);
+        z-index: 10;
+        padding: 7px 18px 5px;
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          rgba(17, 24, 31, 0.88),
+          rgba(8, 13, 18, 0.91)
+        );
+        border-top: 1px solid rgba(154, 190, 197, 0.2);
+        box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.36);
+        backdrop-filter: blur(18px);
       }
 
-      .timeline-heading,
+      .timeline-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1500px;
+        height: 25px;
+        margin: 0 auto 2px;
+        padding: 0 2px;
+        color: #e9f2f3;
+        font-family: var(--font-display);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .timeline-heading span {
+        color: #94a8ad;
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
       .page-indicators {
-        display: none;
+        --timeline-gap: 12px;
+        --timeline-half-gap: 6px;
+        --timeline-item-width: 176px;
+        --timeline-half-item-width: 88px;
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+        gap: var(--timeline-gap);
+        width: 100%;
+        height: 116px;
+        margin: 0 auto;
+        padding: 0 12px;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scrollbar-color: rgba(130, 170, 176, 0.45) transparent;
+        scrollbar-width: thin;
       }
 
-      .nav-btn {
-        flex-basis: 24px;
-        width: 24px;
-        height: 24px;
+      .page-indicator {
+        --indicator-color: #75d8c8;
+        position: relative;
+        display: block;
+        flex: 0 0 var(--timeline-item-width);
+        height: 112px;
+        z-index: 1;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #fff;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .timeline-card {
+        position: absolute;
+        top: 46px;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 65px;
+        z-index: 2;
+        overflow: hidden;
+        border: 1px solid
+          color-mix(
+            in srgb,
+            var(--indicator-color) 34%,
+            rgba(174, 197, 200, 0.16)
+          );
+        border-radius: 11px;
+        background: linear-gradient(
+          135deg,
+          rgba(29, 41, 47, 0.96),
+          rgba(15, 23, 29, 0.98)
+        );
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+
+      .timeline-thumb-wrap {
+        position: absolute;
+        inset: 0;
+        display: block;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .timeline-thumb-wrap::after {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(7, 13, 17, 0.52),
+          rgba(7, 13, 17, 0.08) 40%,
+          rgba(7, 13, 17, 0.92)
+        );
+        content: "";
+      }
+
+      .timeline-thumb {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .timeline-meta {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: max-content;
+        max-width: 100%;
+        min-height: 19px;
+        padding: 2px 7px;
+        transform: translateX(-50%);
+        border: 1px solid rgba(156, 185, 188, 0.2);
+        border-radius: 999px;
+        background: rgba(8, 15, 19, 0.86);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(5px);
+      }
+
+      .timeline-flags {
+        overflow: hidden;
+        color: #d7e5e6;
+        font-size: 0.75rem;
+        line-height: 1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .timeline-title {
+        display: -webkit-box;
+        overflow: hidden;
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        line-height: 1.2;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+
+      .timeline-copy {
+        position: absolute;
+        right: 8px;
+        bottom: 6px;
+        left: 8px;
+        z-index: 1;
+        display: block;
+        min-width: 0;
+      }
+
+      .timeline-kind {
+        display: block;
+        overflow: hidden;
+        margin-top: 3px;
+        color: #c1d0d1;
+        font-size: 0.56rem;
+        font-weight: 700;
+        line-height: 1;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        text-overflow: ellipsis;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .timeline-connector {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        z-index: 0;
+        width: calc(100% + var(--timeline-gap));
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--indicator-color),
+          var(--next-indicator-color, var(--indicator-color))
+        );
+        -webkit-mask: repeating-linear-gradient(
+          90deg,
+          #000 0 4px,
+          transparent 4px 8px
+        );
+        mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+        pointer-events: none;
+      }
+
+      .page-indicator:first-child::before,
+      .page-indicator:last-child::after {
+        position: absolute;
+        top: 24px;
+        z-index: 0;
+        width: 50vw;
+        height: 2px;
+        -webkit-mask: repeating-linear-gradient(
+          90deg,
+          #000 0 4px,
+          transparent 4px 8px
+        );
+        mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+        content: "";
+        pointer-events: none;
+      }
+
+      .page-indicator:first-child::before {
+        right: 50%;
+        background: linear-gradient(90deg, transparent, var(--indicator-color));
+      }
+
+      .page-indicator:last-child::after {
+        left: 50%;
+        background: linear-gradient(90deg, var(--indicator-color), transparent);
+      }
+
+      .timeline-node {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        z-index: 1;
+        width: 2px;
+        height: 30px;
+        transform: translateX(-50%);
+        border-left: 1px dashed var(--indicator-color);
+        pointer-events: none;
+      }
+
+      .timeline-date-number,
+      .timeline-month-label {
+        position: absolute;
+        top: 24px;
+        z-index: 3;
+        transform: translate(-50%, -50%);
+        background: rgba(8, 13, 18, 0.96);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 0.68rem;
+        font-weight: 700;
+        pointer-events: none;
+      }
+
+      .timeline-date-number {
+        left: 50%;
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(8, 13, 18, 0.96);
+        border-radius: 50%;
+        background: var(--indicator-color);
+        color: #09090b;
+        box-shadow: 0 0 0 1px var(--indicator-color);
+      }
+
+      .timeline-month-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 4px;
+        background: var(--indicator-color);
+        color: #09090b;
+        font-size: 0.6rem;
+        letter-spacing: 0.04em;
+      }
+
+      .timeline-month-label-start {
+        left: calc(50% - 50px);
+      }
+
+      .timeline-month-label-transition {
+        left: calc(
+          50% - var(--timeline-half-item-width) - var(--timeline-half-gap)
+        );
+      }
+
+      .page-indicator:hover .timeline-card {
+        z-index: 2;
+        transform: translateY(-2px);
+        border-color: color-mix(
+          in srgb,
+          var(--indicator-color) 72%,
+          transparent
+        );
+        background: color-mix(in srgb, var(--indicator-color) 12%, #172127);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+      }
+
+      .page-indicator[aria-current="step"] .timeline-card {
+        z-index: 2;
+        transform: scale(1.08);
+        transform-origin: center center;
+        border-color: color-mix(
+          in srgb,
+          var(--indicator-color) 78%,
+          transparent
+        );
+        background: color-mix(in srgb, var(--indicator-color) 14%, #172127);
+        box-shadow:
+          0 10px 24px rgba(0, 0, 0, 0.4),
+          0 0 18px color-mix(in srgb, var(--indicator-color) 16%, transparent);
+        transition-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
+      }
+
+      .page-indicator[aria-current="step"] .timeline-title {
+        color: #ffffff;
+      }
+
+      .page-indicator:focus-visible {
+        outline: 2px solid #9de7dc;
+        outline-offset: 2px;
+        border-radius: 10px;
       }
 
       .nav-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: max-content;
+        margin: 0 auto;
+        height: 34px;
+        padding: 2px 7px;
+        border: 1px solid rgba(183, 233, 225, 0.18);
+        border-radius: 999px;
+        background: rgba(183, 233, 225, 0.07);
+      }
+
+      .nav-btn {
+        display: grid;
+        flex: 0 0 28px;
+        place-items: center;
+        width: 28px;
         height: 28px;
-        padding: 1px 5px;
+        background: #b7e9e1;
+        color: #102124;
+        border: none;
+        border-radius: 50%;
+        font-family: var(--font-sans);
+        font-size: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          background 0.15s;
       }
-    }
 
-  </style>
-</head>
-<body>
-
-  <div class="map-background" id="trip-map" role="img" aria-label="Kaart met de actuele locatie van de reis"></div>
-  <div class="map-shade" aria-hidden="true"></div>
-  <svg class="map-origin-effect" id="map-origin-effect" aria-hidden="true" focusable="false">
-    <defs>
-      <filter id="map-origin-glow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="14"></feGaussianBlur>
-      </filter>
-      <linearGradient id="map-origin-fill" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0" stop-color="#0b1820" stop-opacity="0"></stop>
-        <stop offset="0.62" stop-color="#0b1820" stop-opacity="0.08"></stop>
-        <stop offset="1" stop-color="#0b1820" stop-opacity="0.38"></stop>
-      </linearGradient>
-    </defs>
-    <path class="map-origin-beam-glow"></path>
-    <path class="map-origin-beam"></path>
-  </svg>
-  <div class="map-focus-marker" id="map-focus-marker" aria-hidden="true"></div>
-  <div class="map-attribution"><a href="https://openfreemap.org/" target="_blank" rel="noopener noreferrer">OpenFreeMap</a> · © <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a></div>
-  <div class="map-status" id="map-status" role="status">Kaart laden…</div>
-  <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
-
-  <div class="deck">
-
-    <!-- SLIDE 1: CHIANG RAI -->
-    <div class="slide active">
-      <div class="card" style="border-color: var(--neon-pink);">
-        <div>
-          <span class="tag">STOP 1 🛫 THAILAND</span>
-          <h2>CHIANG RAI START 💥</h2>
-          <p class="desc">We vliegen erin op Chiang Rai! Geen genade. Witte tempels, immens grote draken en meteen 100.000% aura opbouwen voordat we de grens over steken naar Laos.</p>
-          <blockquote>"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Vlieguren<div class="stat-value">12H+</div></div>
-            <div class="stat-item">Aura Level<div class="stat-value">+9999</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-pink);">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg" alt="Wat Rong Khun Chiang Rai">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 2: GIBBON EXPERIENCE (HUAY XAI) -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-green);">
-        <div>
-          <span class="tag">STOP 2 🌲 JUNGLE ACTION</span>
-          <h2>GIBBON ZIPLINE 🐒</h2>
-          <p class="desc">Meteen na de grens bij Huay Xai de jungle in! Slapen in de hoogste boomhutten ter wereld en met 60 km/u aan ziplines door het bladerdak van Nam Kan zweven.</p>
-          <blockquote>"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Hoogte<div class="stat-value">40 Meter</div></div>
-            <div class="stat-item">Adrenaline<div class="stat-value">OVER 9000</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-green);">
-          <img src="https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg" alt="Gibbon Experience Zipline">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 3: MEKONG SLOWBOAT -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-yellow);">
-        <div>
-          <span class="tag">STOP 3 🚤 RIVIER EXPEDITIE</span>
-          <h2>MEKONG SLOWBOAT 🌊</h2>
-          <p class="desc">Vers uit de zipline stappen we op de houten slowboat. Twee dagen chillon over de machtige Mekong rivier richting Luang Prabang met stops bij Pakbeng.</p>
-          <blockquote>"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Snelheid<div class="stat-value">15 km/h</div></div>
-            <div class="stat-item">Vibe<div class="stat-value">Unstoppable</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-yellow);">
-          <img src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg" alt="Mekong Slowboat Laos">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 4: LUANG PRABANG (WAT XIENGTHONG & PHOUSI HILL) -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-cyan);">
-        <div>
-          <span class="tag">STOP 4 ⛩️ LAOS CULTUUR</span>
-          <h2>LUANG PRABANG 🛕</h2>
-          <p class="desc">Aankomst in de culturele hoofdstad! Bewonder de gouden details van <strong>Wat Xiengthong</strong> en klim 355 treden omhoog naar <strong>Phousi Hill</strong> voor de meest epische zonsondergang over de Mekong.</p>
-          <blockquote>"There's a sunrise and a sunset every single day, and they're absolutely free... especially from Phousi Hill." — Jo Walton</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Phousi Treden<div class="stat-value">355 Steps</div></div>
-            <div class="stat-item">Gouden Aura<div class="stat-value">100%</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-cyan);">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="Wat Xiengthong Luang Prabang">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 5: VANG VIENG -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-pink);">
-        <div>
-          <span class="tag">STOP 5 🎈 AVONTUUR</span>
-          <h2>VANG VIENG 🎈</h2>
-          <p class="desc">Luchtballonnen boven karstbergen, kajakken over de rivier en chillen in turquoise lagoons. Pure adrenaline ontmoet de mooiste natuur.</p>
-          <blockquote>"The sky is not the limit, it's just the view from my balloon." — Amelia Earhart</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Uitzicht<div class="stat-value">Unreal</div></div>
-            <div class="stat-item">Vibe<div class="stat-value">Peak</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-pink);">
-          <img src="https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original" alt="Vang Vieng Hot Air Balloon">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 6: ANGKOR WAT -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-cyan);">
-        <div>
-          <span class="tag">STOP 7 🇰🇭 CAMBODJA</span>
-          <h2>ANGKOR WAT SUNRISE 🌅</h2>
-          <p class="desc">Vlieg vanuit Vientiane naar Siem Reap, waarschijnlijk met een overstap. Op 28 februari om 04:30 uur uit bed voor de zonsopkomst bij Angkor Wat en de beroemde spiegeling in de vijver.</p>
-          <blockquote>"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander the Great</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Wekker<div class="stat-value">04:30 AM</div></div>
-            <div class="stat-item">Wonder Factor<div class="stat-value">7/7</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-cyan);">
-          <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg" alt="Angkor Wat bij zonsopkomst">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 7: TA PROHM -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-green);">
-        <div>
-          <span class="tag">STOP 8 🗿 TOMB RAIDER</span>
-          <h2>TA PROHM TEMPEL 🌿</h2>
-          <p class="desc">Giga bomen die hun wortels dwars door eeuwenoude steenformaties hebben gegroeid. Echte Tomb Raider & Indiana Jones vibes.</p>
-          <blockquote>"Nature always wins. Especially tree roots." — Charles Darwin</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Lara Croft<div class="stat-value">Approved</div></div>
-            <div class="stat-item">Jungle Power<div class="stat-value">100%</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-green);">
-          <img src="https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg" alt="Ta Prohm Tree Roots">
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 8: PHNOM PENH -->
-    <div class="slide">
-      <div class="card" style="border-color: var(--neon-pink);">
-        <div>
-          <span class="tag">STOP 9 ✈️ FINALE</span>
-          <h2>PHNOM PENH & TERUG 🏛️</h2>
-          <p class="desc">Reis op 2 maart van Siem Reap naar Phnom Penh (ongeveer 5–6 uur) en houd 3 maart vrij voor de stad. Na twee nachten in Phnom Penh vertrek je op donderdag 4 maart om 08:15 uur naar Amsterdam, waar je diezelfde avond om 18:30 uur aankomt.</p>
-          <blockquote>"Don't cry because it's over, smile because it was absolutely legendary." — Dr. Seuss</blockquote>
-          <div class="stats-bar">
-            <div class="stat-item">Memories<div class="stat-value">∞</div></div>
-            <div class="stat-item">Status<div class="stat-value">COMPLETED</div></div>
-          </div>
-        </div>
-        <div class="img-box" style="border-color: var(--neon-pink);">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG" alt="Phnom Penh Royal Palace">
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- NAVIGATION CONTROLS -->
-  <div class="nav-controls">
-    <div class="timeline-heading">✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span></div>
-    <nav class="page-indicators" id="page-indicators" aria-label="Klikbare reistijdlijn"></nav>
-    <div class="nav-actions">
-      <button class="nav-btn nav-btn-prev" onclick="prevSlide()" aria-label="Vorige pagina"><span class="nav-arrow" aria-hidden="true">▶</span></button>
-      <span class="progress-text" id="progress" aria-live="polite" aria-atomic="true">
-        <span class="progress-day">Dag 1</span>
-        <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
-      </span>
-      <button class="nav-btn nav-btn-next" onclick="nextSlide()" aria-label="Volgende pagina"><span class="nav-arrow" aria-hidden="true">▶</span></button>
-    </div>
-  </div>
-
-  <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js" integrity="sha256-FSX5cSI9gfFp8EnxzlAIPm8WQ6prDqBxZlOlUNLVf8I=" crossorigin=""></script>
-  <script>
-    let currentSlide = 0;
-    let slides = Array.from(document.querySelectorAll('.slide'));
-    const progressEl = document.getElementById('progress');
-    const progressDayEl = progressEl.querySelector('.progress-day');
-    const progressIconEl = progressEl.querySelector('.progress-icon');
-    const pageIndicatorsEl = document.getElementById('page-indicators');
-    let currentTimelineIndex = 0;
-    const appBasePath = (() => {
-      const basePath = new URL(document.baseURI).pathname;
-      if (document.querySelector('base')) return basePath.endsWith('/') ? basePath : `${basePath}/`;
-      if (basePath.endsWith('/index.html')) return basePath.slice(0, -'index.html'.length);
-      return basePath.endsWith('/') ? basePath : '/';
-    })();
-    const photos = {
-      flight: {
-        src: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Vliegtuig boven de wolken'
-      },
-      chiangRai: {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg',
-        alt: 'Witte tempel Wat Rong Khun in Chiang Rai'
-      },
-      mekongBorderSunset: {
-        src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg/1280px-Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
-        alt: 'Zonsondergang over de Mekong bij de Thai–Lao-grens, onderweg naar Huay Xai',
-        credit: 'Foto: Clay Gilliland · CC BY-SA 2.0',
-        creditUrl: 'https://commons.wikimedia.org/wiki/File:Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai,_Lao_and_Thai_border._(12346467243).jpg'
-      },
-      mekong: {
-        src: 'https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg',
-        alt: 'Slowboat op de Mekong in Laos'
-      },
-      jungle: {
-        src: 'https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg',
-        alt: 'Zipline tussen de bomen van de Laotiaanse jungle'
-      },
-      luangPrabang: {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original',
-        alt: 'Wat Xiengthong in Luang Prabang'
-      },
-      waterfall: {
-        src: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Waterval tussen groen tropisch woud'
-      },
-      train: {
-        src: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Spoorlijn door een groen landschap'
-      },
-      vangVieng: {
-        src: 'https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original',
-        alt: 'Luchtballon boven het karstlandschap van Vang Vieng'
-      },
-      angkor: {
-        src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg',
-        alt: 'Angkor Wat bij zonsopkomst met spiegeling in het water'
-      },
-      taProhm: {
-        src: 'https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg',
-        alt: 'Boomwortels groeien over de tempel Ta Prohm'
-      },
-      bus: {
-        src: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80',
-        alt: 'Bus voor de rit naar Phnom Penh'
-      },
-      phnomPenh: {
-        src: 'https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG',
-        alt: 'Koninklijk Paleis in Phnom Penh in de avond'
-      },
-      nagini: {
-        src: 'https://d2e5ushqwiltxm.cloudfront.net/wp-content/uploads/sites/46/2025/08/22084652/Snack-at-Nagini-Bar-922x615.jpg',
-        alt: 'Nagini Bar bij 3 Nagas in Luang Prabang'
-      },
-      buddhaPark: {
-        src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Buddha_Park_01.jpg',
-        alt: 'Buddha Park Xieng Khuan in Vientiane'
-      },
-      street08: {
-        src: 'https://commons.wikimedia.org/wiki/Special:FilePath/Street_scene,_Siem_Reap,_2018_(08).jpg',
-        alt: 'Street 08 nightlife area in Siem Reap'
+      .nav-arrow {
+        display: block;
+        line-height: 1;
       }
-    };
-    const itinerary = [
-      {
-        date: 'MA · 15 FEB',
-        flags: '🇳🇱',
-        title: 'Vertrek uit Amsterdam',
-        location: { name: 'Amsterdam · Nederland', coordinates: [52.3105, 4.7683], zoom: 6 },
-        quote: '"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu',
-        detail: 'Instappen, stoelriem vast en 12 uur lang onbeperkt vliegzeug-snacks bouwen op 10 km hoogte.',
-        sleep: 'Slaap: aan boord',
-        icon: '✈️',
-        iconLabel: 'Vlucht',
-        photo: 'flight',
-        slideIndex: 0
-      },
-      {
-        date: 'DI · 16 FEB',
-        flags: '🇹🇭',
-        title: 'Aankomst Chiang Rai',
-        location: { name: 'Chiang Rai · Thailand', coordinates: [19.9072, 99.8325], zoom: 8 },
-        quote: '"Bro is geland. Direct 100.000% aura opgebouwd bij de Witte Tempel." — Sun Tzu',
-        detail: 'Inchecken, jetlag wegblazen en meteen flexen bij de felwitte tempels en gigantische draken.',
-        sleep: 'Slaap: Chiang Rai',
-        icon: '🛬',
-        iconLabel: 'Aankomst',
-        photo: 'chiangRai',
-        slideIndex: 0
-      },
-      {
-        date: 'WO · 17 FEB',
-        flags: '🇹🇭 → 🇱🇦',
-        title: 'Grens over naar Huay Xai',
-        location: { name: 'Huay Xai · Laos', coordinates: [20.2761, 100.4134], zoom: 9 },
-        quote: '"Niemand kan de grens oversteken zonder een vleugje chaos." — Julius Caesar',
-        detail: 'Border-crossing madness! Stempels jagen, busje pakken en de Laotiaanse grens invallen.',
-        sleep: 'Slaap: Huay Xai',
-        icon: '🚐',
-        iconLabel: 'Grensovergang per transfer',
-        photo: 'mekongBorderSunset',
-        slideIndex: 1
-      },
-      {
-        date: 'DO · 18 FEB',
-        flags: '🇱🇦',
-        title: 'Gibbon Experience · dag 1',
-        location: { name: 'Bokeo Nature Reserve · Laos', coordinates: [20.337, 100.618], zoom: 9 },
-        quote: '"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson',
-        detail: 'Vlieg als een absolute gigachad met 60 km/u over de jungletoppen en slaap in giga boomhutten.',
-        sleep: 'Slaap: boomhut in de jungle',
-        icon: '🪢',
-        iconLabel: 'Zipline',
-        photo: 'jungle',
-        slideIndex: 1
-      },
-      {
-        date: 'VR · 19 FEB',
-        flags: '🇱🇦',
-        title: 'Gibbon Experience · dag 2',
-        location: { name: 'Huay Xai · Laos', coordinates: [20.2761, 100.4134], zoom: 9 },
-        quote: '"Tarzan droomt hiervan. Adrenaline niveau: OVER 9000." — Charles Darwin',
-        detail: 'Wakker worden boven de wolken, keihard ziplinen door de ochtendmist en terug hiken.',
-        sleep: 'Slaap: Huay Xai',
-        icon: '🥾',
-        iconLabel: 'Jungletocht',
-        photo: 'jungle',
-        slideIndex: 2
-      },
-      {
-        date: 'ZA · 20 FEB',
-        flags: '🇱🇦',
-        title: 'Slowboat naar Pakbeng',
-        location: { name: 'Pakbeng · Laos', coordinates: [19.8938, 101.1357], zoom: 9 },
-        quote: '"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame',
-        detail: 'De ultieme ontprikkeling: houten slowboat op de Mekong, staren naar bergen en verstand op nul.',
-        sleep: 'Slaap: Pakbeng',
-        icon: '🚤',
-        iconLabel: 'Slowboat',
-        photo: 'mekong',
-        slideIndex: 2
-      },
-      {
-        date: 'ZO · 21 FEB',
-        flags: '🇱🇦',
-        title: 'Slowboat naar Luang Prabang',
-        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 9 },
-        quote: '"Slowboat mode: nul wifi, puur chillon op de stroom van de rivier." — Confucius',
-        detail: 'Dag twee op het water, rivierdorpjes spotten en in de namiddag binnenglijden bij Luang Prabang.',
-        sleep: 'Slaap: Luang Prabang',
-        icon: '🚤',
-        iconLabel: 'Slowboat',
-        photo: 'mekong',
-        slideIndex: 2
-      },
-      {
-        date: 'MA · 22 FEB',
-        flags: '🇱🇦',
-        title: 'Luang Prabang · oude stad',
-        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 10 },
-        quote: '"There\'s a sunrise and a sunset every single day, especially from Phousi Hill." — Jo Walton',
-        detail: 'Gouden tempels, 355 treden Phousi Hill climben voor de zonsondergang en de nachtmarkt leegkopen.',
-        sleep: 'Slaap: Luang Prabang',
-        icon: '🛕',
-        iconLabel: 'Tempelbezoek',
-        photo: 'luangPrabang',
-        slideIndex: 3
-      },
-      {
-        date: 'MA · 22 FEB',
-        flags: '🇱🇦',
-        title: 'SIDE QUEST: NAGINI BAR 🐍',
-        location: { name: 'Luang Prabang · Laos', coordinates: [19.8833, 102.1347], zoom: 10 },
-        sideQuest: true,
-        quote: '"After enlightenment comes happy hour." — De innerlijke monnik',
-        detail: 'Na de tempels en Phousi Hill is het tijd voor een classy side quest. Cocktails met Lao-invloeden, een koloniaal mansion en uitzicht over de Mekong. BRO UNLOCKED THE LUXURY SKIN 🍸',
-        sleep: 'Slaap: Luang Prabang',
-        icon: '🍸',
-        iconLabel: 'Cocktails',
-        photo: 'nagini',
-        slideIndex: 3
-      },
-      {
-        date: 'DI · 23 FEB',
-        flags: '🇱🇦',
-        title: 'Kuang Si-watervallen',
-        location: { name: 'Kuang Si · Laos', coordinates: [19.7492, 101.9914], zoom: 10 },
-        quote: '"Turquoise waterfijnheid levert een instant dopamine-hit op." — Aristoteles',
-        detail: 'Plonzen in de meest onwerkelijk blauwe waterval-pools ooit. Pure natuurlijk gekoelde adrenaline.',
-        sleep: 'Slaap: Luang Prabang',
-        icon: '💦',
-        iconLabel: 'Watervallen',
-        photo: 'waterfall',
-        slideIndex: 3
-      },
-      {
-        date: 'WO · 24 FEB',
-        flags: '🇱🇦',
-        title: 'Trein naar Vang Vieng',
-        location: { name: 'Vang Vieng · Laos', coordinates: [18.925, 102.447], zoom: 9 },
-        quote: '"Sneller dan de rivier, strakker dan de karstbergen." — Marco Polo',
-        detail: 'In sneltreinvaart door de bergen knallen richting het outdoor-walhalla van Laos.',
-        sleep: 'Slaap: Vang Vieng',
-        icon: '🚆',
-        iconLabel: 'Trein',
-        photo: 'train',
-        slideIndex: 4
-      },
-      {
-        date: 'DO · 25 FEB',
-        flags: '🇱🇦',
-        title: 'Vang Vieng · natuurdag',
-        location: { name: 'Vang Vieng · Laos', coordinates: [18.925, 102.447], zoom: 10 },
-        quote: '"The sky is not the limit, it\'s just the view from my balloon." — Amelia Earhart',
-        detail: 'Zweven in een luchtballon boven bizarre karstbergen, kajakken of loungen bij Blue Lagoons.',
-        sleep: 'Slaap: Vang Vieng',
-        icon: '🎈',
-        iconLabel: 'Ballonvaart of outdoor-avontuur',
-        photo: 'vangVieng',
-        slideIndex: 4
-      },
-      {
-        date: 'VR · 26 FEB',
-        flags: '🇱🇦',
-        title: 'Trein naar Vientiane',
-        location: { name: 'Vientiane · Laos', coordinates: [17.9757, 102.6331], zoom: 9 },
-        quote: '"Op weg naar de hoofdstad met 100% zendag-energie." — Gautama Boeddha',
-        detail: 'Soepel doorzoeven naar de hoofdstad voor boulevard-vibes en epische avondsnacks.',
-        sleep: 'Slaap: Vientiane',
-        icon: '🚆',
-        iconLabel: 'Trein',
-        photo: 'train',
-        slideIndex: 4
-      },
-      {
-        date: 'VR · 26 FEB',
-        flags: '🇱🇦',
-        title: 'SIDE QUEST: BUDDHA PARK 🗿',
-        location: { name: 'Buddha Park · Laos', coordinates: [17.9751, 102.7645], zoom: 11 },
-        sideQuest: true,
-        quote: '"The universe is full of mysteries. Some are made of concrete." — Gautama Broddha',
-        detail: 'Meer dan 200 bizarre beelden uit de boeddhistische en hindoeïstische mythologie. Een gigantische fantasywereld van beton. BRO ENTERED THE BUDDHA MULTIVERSE 💀',
-        sleep: 'Slaap: Vientiane',
-        icon: '🗿',
-        iconLabel: 'Buddha Park',
-        photo: 'buddhaPark',
-        slideIndex: 3
-      },
-      {
-        date: 'ZA · 27 FEB',
-        flags: '🇱🇦 → 🇰🇭',
-        title: 'Vlucht naar Siem Reap',
-        location: { name: 'Siem Reap · Cambodja', coordinates: [13.3633, 103.8564], zoom: 9 },
-        quote: '"Grenzen oversteken is makkelijk als de tempels op je wachten." — Genghis Khan',
-        detail: 'Vleugels uitslaan, Laos inruilen voor Cambodja en klaarmaken voor het wereldwonder.',
-        sleep: 'Slaap: Siem Reap',
-        icon: '✈️',
-        iconLabel: 'Vlucht',
-        photo: 'flight',
-        slideIndex: 5
-      },
-      {
-        date: 'ZO · 28 FEB',
-        flags: '🇰🇭',
-        title: 'Angkor Wat & Ta Prohm',
-        location: { name: 'Angkor Wat · Cambodja', coordinates: [13.4125, 103.867], zoom: 10 },
-        quote: '"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander de Grote',
-        detail: '04:30 wekker: sunrise bij de spiegelvijver van Angkor Wat & Tomb Raider spelen tussen de bomen.',
-        sleep: 'Slaap: Siem Reap',
-        icon: '🌅',
-        iconLabel: 'Tempels bij zonsopkomst',
-        photo: 'angkor',
-        slideIndex: 5
-      },
-      {
-        date: 'MA · 1 MRT',
-        flags: '🇰🇭',
-        title: 'Siem Reap · extra dag',
-        location: { name: 'Siem Reap · Cambodja', coordinates: [13.3633, 103.8564], zoom: 9 },
-        quote: '"Nature always wins. Especially tree roots in ancient stones." — Charles Darwin',
-        detail: 'No-stress chilldag: rustig nog een verborgen tempel meepakken of keihard chillen aan het zwembad.',
-        sleep: 'Slaap: Siem Reap',
-        icon: '🌿',
-        iconLabel: 'Rust- of tempeldag',
-        photo: 'taProhm',
-        slideIndex: 6
-      },
-      {
-        date: 'MA · 1 MRT',
-        flags: '🇰🇭',
-        title: 'SIDE QUEST: STREET 08 🌃',
-        location: { name: 'Siem Reap · Cambodja', coordinates: [13.355, 103.854], zoom: 11 },
-        sideQuest: true,
-        quote: '"Work hard, play hard. Especially after 1000 years of temple grinding." — Confucius',
-        detail: 'De zon gaat onder, de neonlichten springen aan en Pub Street ontwaakt. Cocktails, bars, muziek en totale chaos. ANGKOR WAT BY DAY, ABSOLUTE MENACE BY NIGHT 🔥',
-        sleep: 'Slaap: Siem Reap',
-        icon: '🌃',
-        iconLabel: 'Nightlife',
-        photo: 'street08',
-        slideIndex: 7
-      },
-      {
-        date: 'DI · 2 MRT',
-        flags: '🇰🇭',
-        title: 'Bus naar Phnom Penh',
-        location: { name: 'Phnom Penh · Cambodja', coordinates: [11.5564, 104.9282], zoom: 9 },
-        quote: '"Het gaat niet om de busrit, het gaat om de aura waarmee je aankomt." — Napoleon Bonaparte',
-        detail: 'Roadtrip door het Cambodjaanse platteland op weg naar de bruisende hoofdstad.',
-        sleep: 'Slaap: Phnom Penh · nacht 1/2',
-        icon: '🚌',
-        iconLabel: 'Bus',
-        photo: 'bus',
-        slideIndex: 7
-      },
-      {
-        date: 'WO · 3 MRT',
-        flags: '🇰🇭',
-        title: 'Phnom Penh · volle dag',
-        location: { name: 'Phnom Penh · Cambodja', coordinates: [11.5564, 104.9282], zoom: 10 },
-        quote: '"Koninklijke paleisen, rivierviews en keihard genieten op de finale avond." — Sisi',
-        detail: 'Koninklijk Paleis uitchecken, slenteren langs de Riverside en de allerlaatste avond groots vieren.',
-        sleep: 'Slaap: Phnom Penh · nacht 2/2',
-        icon: '🏙️',
-        iconLabel: 'Stadsdag',
-        photo: 'phnomPenh',
-        slideIndex: 7
-      },
-      {
-        date: 'DO · 4 MRT',
-        flags: '🇰🇭 → 🇳🇱',
-        title: 'Terug naar Amsterdam',
-        location: { name: 'Amsterdam · Nederland', coordinates: [52.3105, 4.7683], zoom: 6 },
-        quote: '"Don\'t cry because it\'s over, smile because it was absolutely legendary." — Dr. Seuss',
-        detail: 'Vroeg de koffers dichtrammen, vlieger in en met een vrachtlading aan memories en aura naar huis.',
-        sleep: 'Slaap: thuis in Amsterdam',
-        icon: '✈️',
-        iconLabel: 'Terugvlucht',
-        photo: 'flight',
-        slideIndex: 7
+
+      .nav-btn-prev .nav-arrow {
+        transform: rotate(180deg);
       }
-    ];
-    const tripDayNumbers = new Map();
-    itinerary.forEach(stop => {
-      if (!tripDayNumbers.has(stop.date)) {
-        tripDayNumbers.set(stop.date, tripDayNumbers.size + 1);
+
+      .nav-btn:hover {
+        background: #e4f8f4;
       }
-    });
-    let soundEnabled = true;
-    const mapStatusEl = document.getElementById('map-status');
-    const mapContainerEl = document.getElementById('trip-map');
-    const mapFocusMarkerEl = document.getElementById('map-focus-marker');
-    const mapOriginEffectEl = document.getElementById('map-origin-effect');
-    const mapOriginBeamEl = mapOriginEffectEl.querySelector('.map-origin-beam');
-    const mapOriginBeamGlowEl = mapOriginEffectEl.querySelector('.map-origin-beam-glow');
-    let tripMap = null;
-    let mapTargetKey = '';
 
-    function mapFocusOffset() {
-      const mapBounds = mapContainerEl.getBoundingClientRect();
-      const activeCard = document.querySelector('.slide.active .card');
-      const timelineBounds = document.querySelector('.nav-controls').getBoundingClientRect();
-      const cardBounds = activeCard?.getBoundingClientRect();
-      const cardBottom = cardBounds ? cardBounds.bottom : mapBounds.top;
-      const availableGap = timelineBounds.top - cardBottom;
-      const focusY = availableGap >= 28
-        ? cardBottom + availableGap / 2
-        : timelineBounds.top - 18;
-      const originColor = activeCard ? getComputedStyle(activeCard).borderTopColor : '#75d8c8';
-      const source = { x: window.innerWidth / 2, y: focusY };
-      const baseY = Math.min(cardBounds?.bottom ?? source.y, source.y - 20);
-      const baseLeft = activeCard ? cardBounds.left + 18 : source.x - 180;
-      const baseRight = activeCard ? cardBounds.right - 18 : source.x + 180;
-      const gap = Math.max(0, source.y - baseY);
-      const leftBase = { x: baseLeft, y: baseY };
-      const rightBase = { x: baseRight, y: baseY };
-      const leftControl1 = { x: source.x, y: source.y };
-      const leftControl2 = { x: source.x - (source.x - baseLeft) * 0.002, y: baseY + gap * 0.08 };
-      const rightControl1 = { x: source.x, y: source.y };
-      const rightControl2 = { x: source.x + (baseRight - source.x) * 0.002, y: baseY + gap * 0.08 };
-      const pathPoint = point => `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+      .nav-btn:active {
+        transform: scale(0.9);
+      }
 
-      mapOriginEffectEl.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
-      const beamPath =
-        `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)} ` +
-        `L ${pathPoint(rightBase)} C ${pathPoint(rightControl2)} ${pathPoint(rightControl1)} ${pathPoint(source)} Z`;
-      mapOriginBeamEl.setAttribute('d', beamPath);
-      mapOriginBeamGlowEl.setAttribute('d', beamPath);
+      .progress-text {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-width: 0;
+        height: 100%;
+        padding: 0 4px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: #dce8e8;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
 
-      mapFocusMarkerEl.style.setProperty('--map-focus-y', `${focusY}px`);
-      mapFocusMarkerEl.style.setProperty('--map-origin-color', originColor);
-      mapOriginEffectEl.style.setProperty('--map-origin-color', originColor);
-      const markerBounds = mapFocusMarkerEl.getBoundingClientRect();
-      return [
-        markerBounds.left + markerBounds.width / 2 - mapBounds.left - mapBounds.width / 2,
-        markerBounds.top + markerBounds.height / 2 - mapBounds.top - mapBounds.height / 2
-      ];
-    }
+      .progress-day {
+        font-size: 0.68rem;
+        white-space: nowrap;
+      }
 
-    if (window.maplibregl) {
-      const reduceMapMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const initialLocation = itinerary[0].location;
-      const initialCenter = [initialLocation.coordinates[1], initialLocation.coordinates[0]];
-      tripMap = new maplibregl.Map({
-        attributionControl: false,
-        boxZoom: false,
-        center: initialCenter,
-        container: mapContainerEl,
-        doubleClickZoom: false,
-        dragPan: false,
-        interactive: false,
-        keyboard: false,
-        scrollZoom: false,
-        style: 'https://tiles.openfreemap.org/styles/positron',
-        touchZoomRotate: false,
-        zoom: initialLocation.zoom
-      });
+      .progress-icon {
+        font-size: 1.15rem;
+        line-height: 1;
+      }
 
-      tripMap.once('load', () => {
-        mapStatusEl.hidden = true;
-        mapTargetKey = '';
-        showMapLocation(itinerary[currentTimelineIndex]);
-      });
-      tripMap.on('error', () => {
-        if (!mapStatusEl.hidden) {
-          mapStatusEl.textContent = 'Kaarttegels niet beschikbaar';
+      @media (max-width: 600px) {
+        :root {
+          --timeline-height: 56px;
         }
-      });
 
-      mapTargetKey = `${itinerary[0].location.coordinates.join(',')}:${itinerary[0].location.zoom}`;
-
-      window.addEventListener('resize', () => {
-        tripMap.resize();
-        requestAnimationFrame(() => showMapLocation(itinerary[currentTimelineIndex]));
-      });
-    } else {
-      mapStatusEl.textContent = 'Kaartbibliotheek kon niet laden';
-    }
-
-    function showMapLocation(stop) {
-      if (!tripMap) return;
-
-      const { coordinates, zoom } = stop.location;
-      const targetKey = `${coordinates.join(',')}:${zoom}`;
-      const center = [coordinates[1], coordinates[0]];
-      const camera = { center, zoom, offset: mapFocusOffset(), bearing: 0, pitch: 0 };
-      if (targetKey === mapTargetKey) {
-        if (tripMap.loaded()) {
-          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            tripMap.jumpTo(camera);
-          } else {
-            tripMap.easeTo({ ...camera, duration: 300, essential: false });
-          }
+        .nav-controls {
+          padding: 4px 12px;
         }
-        return;
-      }
 
-      mapTargetKey = targetKey;
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        tripMap.jumpTo(camera);
-      } else {
-        tripMap.easeTo({ ...camera, duration: 900, essential: false });
-      }
-    }
-
-    const slideTemplates = slides;
-    const deck = document.querySelector('.deck');
-    slides = itinerary.map((stop, idx) => {
-      const slide = slideTemplates[stop.slideIndex].cloneNode(true);
-      const tag = slide.querySelector('.tag');
-      const heading = slide.querySelector('h2');
-      const description = slide.querySelector('.desc');
-      const quote = slide.querySelector('blockquote');
-      const photo = photos[stop.photo];
-      const slideImage = slide.querySelector('.img-box img');
-      const imageBox = slide.querySelector('.img-box');
-      const [routeStat, sleepStat] = slide.querySelectorAll('.stat-item');
-      const tripDay = tripDayNumbers.get(stop.date);
-      const caricature = document.createElement('span');
-      const caricatureImage = document.createElement('img');
-
-      stop.slideIndex = idx;
-      slideImage.src = photo.src;
-      slideImage.alt = photo.alt;
-      if (photo.credit && photo.creditUrl) {
-        const credit = document.createElement('a');
-        credit.className = 'photo-credit';
-        credit.href = photo.creditUrl;
-        credit.target = '_blank';
-        credit.rel = 'noopener noreferrer';
-        credit.textContent = photo.credit;
-        imageBox.append(credit);
-      }
-      slide.classList.toggle('active', idx === currentSlide);
-      tag.textContent = `${stop.date} · ${stop.flags}`;
-      heading.textContent = stop.title;
-      description.textContent = stop.detail;
-      quote.textContent = stop.quote;
-      routeStat.firstChild.textContent = 'REISDAG';
-      routeStat.querySelector('.stat-value').textContent = tripDay;
-      sleepStat.firstChild.textContent = 'OVERNACHTING';
-      sleepStat.querySelector('.stat-value').textContent = stop.sleep.replace(/^Slaap: /, '');
-      caricature.className = 'slide-caricature';
-      caricature.setAttribute('aria-hidden', 'true');
-      caricatureImage.alt = '';
-      caricatureImage.addEventListener('error', () => caricature.remove(), { once: true });
-      caricatureImage.src = `img/${String(tripDay).padStart(2, '0')}.png`;
-      caricature.append(caricatureImage);
-      slide.querySelector('.card').append(caricature);
-      return slide;
-    });
-    slideTemplates.forEach(slide => slide.remove());
-    deck.append(...slides);
-    const initialRoute = window.location.pathname.slice(appBasePath.length).match(/^dag-(\d+)\/?$/);
-    const initialDay = initialRoute ? Number(initialRoute[1]) : 1;
-    const initialTimelineIndex = itinerary.findIndex(stop => tripDayNumbers.get(stop.date) === initialDay);
-    if (initialTimelineIndex >= 0) {
-      currentTimelineIndex = initialTimelineIndex;
-      currentSlide = itinerary[initialTimelineIndex].slideIndex;
-    }
-    slides.forEach(slide => {
-      slide.addEventListener('transitionend', event => {
-        if (event.target === slide && event.propertyName === 'transform' && slide.classList.contains('active')) {
-          showMapLocation(itinerary[currentTimelineIndex]);
+        .timeline-heading,
+        .page-indicators {
+          display: none;
         }
-      });
-    });
 
-    const pageIndicators = itinerary.map((stop, idx) => {
-      const slide = slides[stop.slideIndex];
-      const button = document.createElement('button');
-      const title = slide.querySelector('h2').textContent.trim();
-      const image = document.createElement('img');
-      const thumbnail = document.createElement('span');
-      const flags = document.createElement('span');
-      const meta = document.createElement('span');
-      const stopTitle = document.createElement('span');
-      const stopKind = document.createElement('span');
-      const copy = document.createElement('span');
-      const card = document.createElement('span');
-      const connector = document.createElement('span');
-      const node = document.createElement('span');
-      const dateNumber = document.createElement('span');
-      const monthLabel = document.createElement('span');
-
-      button.type = 'button';
-      button.className = 'page-indicator';
-      const indicatorColor = getComputedStyle(slide.querySelector('.card')).borderTopColor;
-      const nextStop = itinerary[idx + 1];
-      const nextSlide = nextStop ? slides[nextStop.slideIndex] : slide;
-      const nextIndicatorColor = getComputedStyle(nextSlide.querySelector('.card')).borderTopColor;
-      button.style.setProperty('--indicator-color', indicatorColor);
-      button.style.setProperty('--next-indicator-color', nextIndicatorColor);
-      if (stop.sideQuest) {
-        button.classList.add('side-quest');
-      }
-      button.setAttribute('aria-label', `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`);
-      button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
-
-      image.className = 'timeline-thumb';
-      image.src = slide.querySelector('.img-box img').src;
-      image.alt = '';
-      image.loading = 'lazy';
-      image.decoding = 'async';
-      thumbnail.className = 'timeline-thumb-wrap';
-      meta.className = 'timeline-meta';
-      flags.className = 'timeline-flags';
-      flags.textContent = stop.flags;
-      flags.setAttribute('aria-hidden', 'true');
-      meta.append(flags);
-      thumbnail.append(image, meta);
-      stopTitle.className = 'timeline-title';
-      stopTitle.textContent = stop.title;
-      stopKind.className = 'timeline-kind';
-      stopKind.textContent = stop.iconLabel;
-      copy.className = 'timeline-copy';
-      copy.append(stopTitle, stopKind);
-      card.className = 'timeline-card';
-      connector.className = 'timeline-connector';
-      node.className = 'timeline-node';
-      node.setAttribute('aria-hidden', 'true');
-      dateNumber.className = 'timeline-date-number';
-      const dateNumberText = stop.date.match(/\d+/)?.[0] ?? '';
-      const isFirstStopOfDate = idx === 0 || itinerary[idx - 1].date !== stop.date;
-      if (isFirstStopOfDate) {
-        dateNumber.textContent = dateNumberText;
-        dateNumber.setAttribute('aria-hidden', 'true');
-      }
-      const month = stop.date.match(/\b(FEB|MRT)\b/)?.[0];
-      if (idx === 0 || (isFirstStopOfDate && month === 'MRT' && dateNumberText === '1')) {
-        monthLabel.className = `timeline-month-label ${idx === 0 ? 'timeline-month-label-start' : 'timeline-month-label-transition'}`;
-        monthLabel.textContent = month;
-        monthLabel.setAttribute('aria-hidden', 'true');
-      }
-
-      card.append(thumbnail, copy);
-      button.append(connector, node, dateNumber, monthLabel, card);
-      button.addEventListener('click', () => goToSlide(stop.slideIndex, idx));
-      pageIndicatorsEl.append(button);
-      return button;
-    });
-
-    // Web Audio Synthesizer for 8-bit sound effects
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    function playBeep(freq = 440, type = 'sine', duration = 0.1) {
-      if (!soundEnabled) return;
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function toggleAudio() {
-      soundEnabled = !soundEnabled;
-      const btn = document.querySelector('.sound-btn');
-      btn.innerText = soundEnabled ? 'SFX: ON 🔊' : 'SFX: OFF 🔇';
-      if (soundEnabled) playBeep(880, 'square', 0.15);
-    }
-
-    function updateDeck() {
-      slides.forEach((slide, idx) => {
-        slide.classList.toggle('active', idx === currentSlide);
-      });
-      pageIndicators.forEach((indicator, idx) => {
-        if (idx === currentTimelineIndex) {
-          indicator.setAttribute('aria-current', 'step');
-        } else {
-          indicator.removeAttribute('aria-current');
+        .nav-btn {
+          flex-basis: 24px;
+          width: 24px;
+          height: 24px;
         }
-      });
-      const activeIndicator = pageIndicators[currentTimelineIndex];
-      const indicatorBounds = activeIndicator.getBoundingClientRect();
-      const timelineBounds = pageIndicatorsEl.getBoundingClientRect();
-      const desiredScrollLeft = pageIndicatorsEl.scrollLeft + indicatorBounds.left +
-        indicatorBounds.width / 2 - timelineBounds.left - timelineBounds.width / 2;
-      const maxScrollLeft = pageIndicatorsEl.scrollWidth - pageIndicatorsEl.clientWidth;
-      const targetScrollLeft = Math.min(maxScrollLeft, Math.max(0, desiredScrollLeft));
-      if (Math.abs(targetScrollLeft - pageIndicatorsEl.scrollLeft) > 1) {
-        pageIndicatorsEl.scrollTo({
-          left: targetScrollLeft,
-          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-        });
-      }
-      const currentStop = itinerary[currentTimelineIndex];
-      progressDayEl.textContent = `Dag ${tripDayNumbers.get(currentStop.date)}`;
-      progressIconEl.textContent = currentStop.icon;
-      progressIconEl.setAttribute('aria-label', currentStop.iconLabel);
-      showMapLocation(currentStop);
-    }
 
-    function updateSlideUrl(replace = false) {
-      if (!['http:', 'https:'].includes(window.location.protocol)) return;
-      const day = tripDayNumbers.get(itinerary[currentTimelineIndex].date);
-      const route = `${appBasePath}dag-${day}`;
-      const state = {
-        ...((history.state && typeof history.state === 'object') ? history.state : {}),
-        tripSlideIndex: currentSlide,
-        tripTimelineIndex: currentTimelineIndex
+        .nav-actions {
+          height: 28px;
+          padding: 1px 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="map-background"
+      id="trip-map"
+      role="img"
+      aria-label="Kaart met de actuele locatie van de reis"
+    ></div>
+    <div class="map-shade" aria-hidden="true"></div>
+    <svg
+      class="map-origin-effect"
+      id="map-origin-effect"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <filter
+          id="map-origin-glow"
+          x="-20%"
+          y="-20%"
+          width="140%"
+          height="140%"
+        >
+          <feGaussianBlur stdDeviation="14"></feGaussianBlur>
+        </filter>
+        <linearGradient id="map-origin-fill" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#0b1820" stop-opacity="0"></stop>
+          <stop offset="0.62" stop-color="#0b1820" stop-opacity="0.08"></stop>
+          <stop offset="1" stop-color="#0b1820" stop-opacity="0.38"></stop>
+        </linearGradient>
+      </defs>
+      <path class="map-origin-beam-glow"></path>
+      <path class="map-origin-beam"></path>
+    </svg>
+    <div
+      class="map-focus-marker"
+      id="map-focus-marker"
+      aria-hidden="true"
+    ></div>
+    <div class="map-attribution">
+      <a
+        href="https://openfreemap.org/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >OpenFreeMap</a
+      >
+      · ©
+      <a
+        href="https://www.openmaptiles.org/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >OpenMapTiles</a
+      >
+      ·
+      <a
+        href="https://www.openstreetmap.org/copyright"
+        target="_blank"
+        rel="noopener noreferrer"
+        >© OpenStreetMap</a
+      >
+    </div>
+    <div class="map-status" id="map-status" role="status">Kaart laden…</div>
+    <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
+
+    <div class="deck">
+      <!-- SLIDE 1: CHIANG RAI -->
+      <div class="slide active">
+        <div class="card" style="border-color: var(--neon-pink)">
+          <div>
+            <span class="tag">STOP 1 🛫 THAILAND</span>
+            <h2>CHIANG RAI START 💥</h2>
+            <p class="desc">
+              We vliegen erin op Chiang Rai! Geen genade. Witte tempels, immens
+              grote draken en meteen 100.000% aura opbouwen voordat we de grens
+              over steken naar Laos.
+            </p>
+            <blockquote>
+              "The journey of a thousand miles begins with a single step... and
+              a massive flex." — Lao Tzu
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Vlieguren
+                <div class="stat-value">12H+</div>
+              </div>
+              <div class="stat-item">
+                Aura Level
+                <div class="stat-value">+9999</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-pink)">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg"
+              alt="Wat Rong Khun Chiang Rai"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: GIBBON EXPERIENCE (HUAY XAI) -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-green)">
+          <div>
+            <span class="tag">STOP 2 🌲 JUNGLE ACTION</span>
+            <h2>GIBBON ZIPLINE 🐒</h2>
+            <p class="desc">
+              Meteen na de grens bij Huay Xai de jungle in! Slapen in de hoogste
+              boomhutten ter wereld en met 60 km/u aan ziplines door het
+              bladerdak van Nam Kan zweven.
+            </p>
+            <blockquote>
+              "Do not go where the path may lead, go instead where there is no
+              path and leave a zipline." — Ralph Waldo Emerson
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Hoogte
+                <div class="stat-value">40 Meter</div>
+              </div>
+              <div class="stat-item">
+                Adrenaline
+                <div class="stat-value">OVER 9000</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-green)">
+            <img
+              src="https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg"
+              alt="Gibbon Experience Zipline"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: MEKONG SLOWBOAT -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-yellow)">
+          <div>
+            <span class="tag">STOP 3 🚤 RIVIER EXPEDITIE</span>
+            <h2>MEKONG SLOWBOAT 🌊</h2>
+            <p class="desc">
+              Vers uit de zipline stappen we op de houten slowboat. Twee dagen
+              chillon over de machtige Mekong rivier richting Luang Prabang met
+              stops bij Pakbeng.
+            </p>
+            <blockquote>
+              "There is nothing—absolutely nothing—half so much worth doing as
+              simply messing about in boats." — Kenneth Grahame
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Snelheid
+                <div class="stat-value">15 km/h</div>
+              </div>
+              <div class="stat-item">
+                Vibe
+                <div class="stat-value">Unstoppable</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-yellow)">
+            <img
+              src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg"
+              alt="Mekong Slowboat Laos"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: LUANG PRABANG (WAT XIENGTHONG & PHOUSI HILL) -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-cyan)">
+          <div>
+            <span class="tag">STOP 4 ⛩️ LAOS CULTUUR</span>
+            <h2>LUANG PRABANG 🛕</h2>
+            <p class="desc">
+              Aankomst in de culturele hoofdstad! Bewonder de gouden details van
+              <strong>Wat Xiengthong</strong> en klim 355 treden omhoog naar
+              <strong>Phousi Hill</strong> voor de meest epische zonsondergang
+              over de Mekong.
+            </p>
+            <blockquote>
+              "There's a sunrise and a sunset every single day, and they're
+              absolutely free... especially from Phousi Hill." — Jo Walton
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Phousi Treden
+                <div class="stat-value">355 Steps</div>
+              </div>
+              <div class="stat-item">
+                Gouden Aura
+                <div class="stat-value">100%</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-cyan)">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
+              alt="Wat Xiengthong Luang Prabang"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: VANG VIENG -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-pink)">
+          <div>
+            <span class="tag">STOP 5 🎈 AVONTUUR</span>
+            <h2>VANG VIENG 🎈</h2>
+            <p class="desc">
+              Luchtballonnen boven karstbergen, kajakken over de rivier en
+              chillen in turquoise lagoons. Pure adrenaline ontmoet de mooiste
+              natuur.
+            </p>
+            <blockquote>
+              "The sky is not the limit, it's just the view from my balloon." —
+              Amelia Earhart
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Uitzicht
+                <div class="stat-value">Unreal</div>
+              </div>
+              <div class="stat-item">
+                Vibe
+                <div class="stat-value">Peak</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-pink)">
+            <img
+              src="https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original"
+              alt="Vang Vieng Hot Air Balloon"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: ANGKOR WAT -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-cyan)">
+          <div>
+            <span class="tag">STOP 7 🇰🇭 CAMBODJA</span>
+            <h2>ANGKOR WAT SUNRISE 🌅</h2>
+            <p class="desc">
+              Vlieg vanuit Vientiane naar Siem Reap, waarschijnlijk met een
+              overstap. Op 28 februari om 04:30 uur uit bed voor de zonsopkomst
+              bij Angkor Wat en de beroemde spiegeling in de vijver.
+            </p>
+            <blockquote>
+              "Look at the sun. It is shining for you and your reflection in the
+              temple pool." — Alexander the Great
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Wekker
+                <div class="stat-value">04:30 AM</div>
+              </div>
+              <div class="stat-item">
+                Wonder Factor
+                <div class="stat-value">7/7</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-cyan)">
+            <img
+              src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg"
+              alt="Angkor Wat bij zonsopkomst"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: TA PROHM -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-green)">
+          <div>
+            <span class="tag">STOP 8 🗿 TOMB RAIDER</span>
+            <h2>TA PROHM TEMPEL 🌿</h2>
+            <p class="desc">
+              Giga bomen die hun wortels dwars door eeuwenoude steenformaties
+              hebben gegroeid. Echte Tomb Raider & Indiana Jones vibes.
+            </p>
+            <blockquote>
+              "Nature always wins. Especially tree roots." — Charles Darwin
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Lara Croft
+                <div class="stat-value">Approved</div>
+              </div>
+              <div class="stat-item">
+                Jungle Power
+                <div class="stat-value">100%</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-green)">
+            <img
+              src="https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg"
+              alt="Ta Prohm Tree Roots"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: PHNOM PENH -->
+      <div class="slide">
+        <div class="card" style="border-color: var(--neon-pink)">
+          <div>
+            <span class="tag">STOP 9 ✈️ FINALE</span>
+            <h2>PHNOM PENH & TERUG 🏛️</h2>
+            <p class="desc">
+              Reis op 2 maart van Siem Reap naar Phnom Penh (ongeveer 5–6 uur)
+              en houd 3 maart vrij voor de stad. Na twee nachten in Phnom Penh
+              vertrek je op donderdag 4 maart om 08:15 uur naar Amsterdam, waar
+              je diezelfde avond om 18:30 uur aankomt.
+            </p>
+            <blockquote>
+              "Don't cry because it's over, smile because it was absolutely
+              legendary." — Dr. Seuss
+            </blockquote>
+            <div class="stats-bar">
+              <div class="stat-item">
+                Memories
+                <div class="stat-value">∞</div>
+              </div>
+              <div class="stat-item">
+                Status
+                <div class="stat-value">COMPLETED</div>
+              </div>
+            </div>
+          </div>
+          <div class="img-box" style="border-color: var(--neon-pink)">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG"
+              alt="Phnom Penh Royal Palace"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVIGATION CONTROLS -->
+    <div class="nav-controls">
+      <div class="timeline-heading">
+        ✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span>
+      </div>
+      <nav
+        class="page-indicators"
+        id="page-indicators"
+        aria-label="Klikbare reistijdlijn"
+      ></nav>
+      <div class="nav-actions">
+        <button
+          class="nav-btn nav-btn-prev"
+          onclick="prevSlide()"
+          aria-label="Vorige pagina"
+        >
+          <span class="nav-arrow" aria-hidden="true">▶</span>
+        </button>
+        <span
+          class="progress-text"
+          id="progress"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span class="progress-day">Dag 1</span>
+          <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
+        </span>
+        <button
+          class="nav-btn nav-btn-next"
+          onclick="nextSlide()"
+          aria-label="Volgende pagina"
+        >
+          <span class="nav-arrow" aria-hidden="true">▶</span>
+        </button>
+      </div>
+    </div>
+
+    <script
+      src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"
+      integrity="sha256-FSX5cSI9gfFp8EnxzlAIPm8WQ6prDqBxZlOlUNLVf8I="
+      crossorigin=""
+    ></script>
+    <script>
+      let currentSlide = 0;
+      let slides = Array.from(document.querySelectorAll(".slide"));
+      const progressEl = document.getElementById("progress");
+      const progressDayEl = progressEl.querySelector(".progress-day");
+      const progressIconEl = progressEl.querySelector(".progress-icon");
+      const pageIndicatorsEl = document.getElementById("page-indicators");
+      let currentTimelineIndex = 0;
+      const appBasePath = (() => {
+        const basePath = new URL(document.baseURI).pathname;
+        if (document.querySelector("base"))
+          return basePath.endsWith("/") ? basePath : `${basePath}/`;
+        if (basePath.endsWith("/index.html"))
+          return basePath.slice(0, -"index.html".length);
+        return basePath.endsWith("/") ? basePath : "/";
+      })();
+      const photos = {
+        flight: {
+          src: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80",
+          alt: "Vliegtuig boven de wolken",
+        },
+        chiangRai: {
+          src: "https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg",
+          alt: "Witte tempel Wat Rong Khun in Chiang Rai",
+        },
+        mekongBorderSunset: {
+          src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg/1280px-Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          alt: "Zonsondergang over de Mekong bij de Thai–Lao-grens, onderweg naar Huay Xai",
+          credit: "Foto: Clay Gilliland · CC BY-SA 2.0",
+          creditUrl:
+            "https://commons.wikimedia.org/wiki/File:Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai,_Lao_and_Thai_border._(12346467243).jpg",
+        },
+        mekong: {
+          src: "https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg",
+          alt: "Slowboat op de Mekong in Laos",
+        },
+        mekongSlowboat: {
+          src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Pak_Beng_slow_boats_on_the_Mekong_river_bank_at_sunset_Laos_23Nov2005.jpg/1280px-Pak_Beng_slow_boats_on_the_Mekong_river_bank_at_sunset_Laos_23Nov2005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          alt: "Grote slowboats liggen aangemeerd aan de oever van de Mekong bij Pakbeng",
+          credit: "Foto: Everhard van Eimeren · CC BY-SA 4.0",
+          creditUrl:
+            "https://commons.wikimedia.org/wiki/File:Pak_Beng_slow_boats_on_the_Mekong_river_bank_at_sunset_Laos_23Nov2005.jpg",
+        },
+        jungle: {
+          src: "https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg",
+          alt: "Zipline tussen de bomen van de Laotiaanse jungle",
+        },
+        luangPrabang: {
+          src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+          alt: "Wat Xiengthong in Luang Prabang",
+        },
+        waterfall: {
+          src: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80",
+          alt: "Waterval tussen groen tropisch woud",
+        },
+        train: {
+          src: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80",
+          alt: "Spoorlijn door een groen landschap",
+        },
+        vangVieng: {
+          src: "https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original",
+          alt: "Luchtballon boven het karstlandschap van Vang Vieng",
+        },
+        angkor: {
+          src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg",
+          alt: "Angkor Wat bij zonsopkomst met spiegeling in het water",
+        },
+        taProhm: {
+          src: "https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg",
+          alt: "Boomwortels groeien over de tempel Ta Prohm",
+        },
+        bus: {
+          src: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
+          alt: "Bus voor de rit naar Phnom Penh",
+        },
+        phnomPenh: {
+          src: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG",
+          alt: "Koninklijk Paleis in Phnom Penh in de avond",
+        },
+        nagini: {
+          src: "https://d2e5ushqwiltxm.cloudfront.net/wp-content/uploads/sites/46/2025/08/22084652/Snack-at-Nagini-Bar-922x615.jpg",
+          alt: "Nagini Bar bij 3 Nagas in Luang Prabang",
+        },
+        buddhaPark: {
+          src: "https://commons.wikimedia.org/wiki/Special:FilePath/Buddha_Park_01.jpg",
+          alt: "Buddha Park Xieng Khuan in Vientiane",
+        },
+        street08: {
+          src: "https://commons.wikimedia.org/wiki/Special:FilePath/Street_scene,_Siem_Reap,_2018_(08).jpg",
+          alt: "Street 08 nightlife area in Siem Reap",
+        },
       };
-      if (replace) {
-        history.replaceState(state, '', route);
-      } else {
-        history.pushState(state, '', route);
+      const itinerary = [
+        {
+          date: "MA · 15 FEB",
+          flags: "🇳🇱",
+          title: "Vertrek uit Amsterdam",
+          location: {
+            name: "Amsterdam · Nederland",
+            coordinates: [52.3105, 4.7683],
+            zoom: 6,
+          },
+          quote:
+            '"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu',
+          detail:
+            "Instappen, stoelriem vast en 12 uur lang onbeperkt vliegzeug-snacks bouwen op 10 km hoogte.",
+          sleep: "Slaap: aan boord",
+          icon: "✈️",
+          iconLabel: "Vlucht",
+          photo: "flight",
+          slideIndex: 0,
+        },
+        {
+          date: "DI · 16 FEB",
+          flags: "🇹🇭",
+          title: "Aankomst Chiang Rai",
+          location: {
+            name: "Chiang Rai · Thailand",
+            coordinates: [19.9072, 99.8325],
+            zoom: 8,
+          },
+          quote:
+            '"Bro is geland. Direct 100.000% aura opgebouwd bij de Witte Tempel." — Sun Tzu',
+          detail:
+            "Inchecken, jetlag wegblazen en meteen flexen bij de felwitte tempels en gigantische draken.",
+          sleep: "Slaap: Chiang Rai",
+          icon: "🛬",
+          iconLabel: "Aankomst",
+          photo: "chiangRai",
+          slideIndex: 0,
+        },
+        {
+          date: "WO · 17 FEB",
+          flags: "🇹🇭 → 🇱🇦",
+          title: "Grens over naar Huay Xai",
+          location: {
+            name: "Huay Xai · Laos",
+            coordinates: [20.2761, 100.4134],
+            zoom: 9,
+          },
+          quote:
+            '"Niemand kan de grens oversteken zonder een vleugje chaos." — Julius Caesar',
+          detail:
+            "Border-crossing madness! Stempels jagen, busje pakken en de Laotiaanse grens invallen.",
+          sleep: "Slaap: Huay Xai",
+          icon: "🚐",
+          iconLabel: "Grensovergang per transfer",
+          photo: "mekongBorderSunset",
+          slideIndex: 1,
+        },
+        {
+          date: "DO · 18 FEB",
+          flags: "🇱🇦",
+          title: "Gibbon Experience · dag 1",
+          location: {
+            name: "Bokeo Nature Reserve · Laos",
+            coordinates: [20.337, 100.618],
+            zoom: 9,
+          },
+          quote:
+            '"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson',
+          detail:
+            "Vlieg als een absolute gigachad met 60 km/u over de jungletoppen en slaap in giga boomhutten.",
+          sleep: "Slaap: boomhut in de jungle",
+          icon: "🪢",
+          iconLabel: "Zipline",
+          photo: "jungle",
+          slideIndex: 1,
+        },
+        {
+          date: "VR · 19 FEB",
+          flags: "🇱🇦",
+          title: "Gibbon Experience · dag 2",
+          location: {
+            name: "Huay Xai · Laos",
+            coordinates: [20.2761, 100.4134],
+            zoom: 9,
+          },
+          quote:
+            '"Tarzan droomt hiervan. Adrenaline niveau: OVER 9000." — Charles Darwin',
+          detail:
+            "Wakker worden boven de wolken, keihard ziplinen door de ochtendmist en terug hiken.",
+          sleep: "Slaap: Huay Xai",
+          icon: "🥾",
+          iconLabel: "Jungletocht",
+          photo: "jungle",
+          slideIndex: 2,
+        },
+        {
+          date: "ZA · 20 FEB",
+          flags: "🇱🇦",
+          title: "Slowboat naar Pakbeng",
+          location: {
+            name: "Pakbeng · Laos",
+            coordinates: [19.8938, 101.1357],
+            zoom: 9,
+          },
+          quote:
+            '"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame',
+          detail:
+            "De ultieme ontprikkeling: houten slowboat op de Mekong, staren naar bergen en verstand op nul.",
+          sleep: "Slaap: Pakbeng",
+          icon: "🚤",
+          iconLabel: "Slowboat",
+          photo: "mekong",
+          slideIndex: 2,
+        },
+        {
+          date: "ZO · 21 FEB",
+          flags: "🇱🇦",
+          title: "Slowboat naar Luang Prabang",
+          location: {
+            name: "Luang Prabang · Laos",
+            coordinates: [19.8833, 102.1347],
+            zoom: 9,
+          },
+          quote:
+            '"Slowboat mode: nul wifi, puur chillon op de stroom van de rivier." — Confucius',
+          detail:
+            "Dag twee op het water, rivierdorpjes spotten en in de namiddag binnenglijden bij Luang Prabang.",
+          sleep: "Slaap: Luang Prabang",
+          icon: "🚤",
+          iconLabel: "Slowboat",
+          photo: "mekongSlowboat",
+          slideIndex: 2,
+        },
+        {
+          date: "MA · 22 FEB",
+          flags: "🇱🇦",
+          title: "Luang Prabang · oude stad",
+          location: {
+            name: "Luang Prabang · Laos",
+            coordinates: [19.8833, 102.1347],
+            zoom: 10,
+          },
+          quote:
+            '"There\'s a sunrise and a sunset every single day, especially from Phousi Hill." — Jo Walton',
+          detail:
+            "Gouden tempels, 355 treden Phousi Hill climben voor de zonsondergang en de nachtmarkt leegkopen.",
+          sleep: "Slaap: Luang Prabang",
+          icon: "🛕",
+          iconLabel: "Tempelbezoek",
+          photo: "luangPrabang",
+          slideIndex: 3,
+        },
+        {
+          date: "MA · 22 FEB",
+          flags: "🇱🇦",
+          title: "SIDE QUEST: NAGINI BAR 🐍",
+          location: {
+            name: "Luang Prabang · Laos",
+            coordinates: [19.8833, 102.1347],
+            zoom: 10,
+          },
+          sideQuest: true,
+          quote:
+            '"After enlightenment comes happy hour." — De innerlijke monnik',
+          detail:
+            "Na de tempels en Phousi Hill is het tijd voor een classy side quest. Cocktails met Lao-invloeden, een koloniaal mansion en uitzicht over de Mekong. BRO UNLOCKED THE LUXURY SKIN 🍸",
+          sleep: "Slaap: Luang Prabang",
+          icon: "🍸",
+          iconLabel: "Cocktails",
+          photo: "nagini",
+          slideIndex: 3,
+        },
+        {
+          date: "DI · 23 FEB",
+          flags: "🇱🇦",
+          title: "Kuang Si-watervallen",
+          location: {
+            name: "Kuang Si · Laos",
+            coordinates: [19.7492, 101.9914],
+            zoom: 10,
+          },
+          quote:
+            '"Turquoise waterfijnheid levert een instant dopamine-hit op." — Aristoteles',
+          detail:
+            "Plonzen in de meest onwerkelijk blauwe waterval-pools ooit. Pure natuurlijk gekoelde adrenaline.",
+          sleep: "Slaap: Luang Prabang",
+          icon: "💦",
+          iconLabel: "Watervallen",
+          photo: "waterfall",
+          slideIndex: 3,
+        },
+        {
+          date: "WO · 24 FEB",
+          flags: "🇱🇦",
+          title: "Trein naar Vang Vieng",
+          location: {
+            name: "Vang Vieng · Laos",
+            coordinates: [18.925, 102.447],
+            zoom: 9,
+          },
+          quote:
+            '"Sneller dan de rivier, strakker dan de karstbergen." — Marco Polo',
+          detail:
+            "In sneltreinvaart door de bergen knallen richting het outdoor-walhalla van Laos.",
+          sleep: "Slaap: Vang Vieng",
+          icon: "🚆",
+          iconLabel: "Trein",
+          photo: "train",
+          slideIndex: 4,
+        },
+        {
+          date: "DO · 25 FEB",
+          flags: "🇱🇦",
+          title: "Vang Vieng · natuurdag",
+          location: {
+            name: "Vang Vieng · Laos",
+            coordinates: [18.925, 102.447],
+            zoom: 10,
+          },
+          quote:
+            '"The sky is not the limit, it\'s just the view from my balloon." — Amelia Earhart',
+          detail:
+            "Zweven in een luchtballon boven bizarre karstbergen, kajakken of loungen bij Blue Lagoons.",
+          sleep: "Slaap: Vang Vieng",
+          icon: "🎈",
+          iconLabel: "Ballonvaart of outdoor-avontuur",
+          photo: "vangVieng",
+          slideIndex: 4,
+        },
+        {
+          date: "VR · 26 FEB",
+          flags: "🇱🇦",
+          title: "Trein naar Vientiane",
+          location: {
+            name: "Vientiane · Laos",
+            coordinates: [17.9757, 102.6331],
+            zoom: 9,
+          },
+          quote:
+            '"Op weg naar de hoofdstad met 100% zendag-energie." — Gautama Boeddha',
+          detail:
+            "Soepel doorzoeven naar de hoofdstad voor boulevard-vibes en epische avondsnacks.",
+          sleep: "Slaap: Vientiane",
+          icon: "🚆",
+          iconLabel: "Trein",
+          photo: "train",
+          slideIndex: 4,
+        },
+        {
+          date: "VR · 26 FEB",
+          flags: "🇱🇦",
+          title: "SIDE QUEST: BUDDHA PARK 🗿",
+          location: {
+            name: "Buddha Park · Laos",
+            coordinates: [17.9751, 102.7645],
+            zoom: 11,
+          },
+          sideQuest: true,
+          quote:
+            '"The universe is full of mysteries. Some are made of concrete." — Gautama Broddha',
+          detail:
+            "Meer dan 200 bizarre beelden uit de boeddhistische en hindoeïstische mythologie. Een gigantische fantasywereld van beton. BRO ENTERED THE BUDDHA MULTIVERSE 💀",
+          sleep: "Slaap: Vientiane",
+          icon: "🗿",
+          iconLabel: "Buddha Park",
+          photo: "buddhaPark",
+          slideIndex: 3,
+        },
+        {
+          date: "ZA · 27 FEB",
+          flags: "🇱🇦 → 🇰🇭",
+          title: "Vlucht naar Siem Reap",
+          location: {
+            name: "Siem Reap · Cambodja",
+            coordinates: [13.3633, 103.8564],
+            zoom: 9,
+          },
+          quote:
+            '"Grenzen oversteken is makkelijk als de tempels op je wachten." — Genghis Khan',
+          detail:
+            "Vleugels uitslaan, Laos inruilen voor Cambodja en klaarmaken voor het wereldwonder.",
+          sleep: "Slaap: Siem Reap",
+          icon: "✈️",
+          iconLabel: "Vlucht",
+          photo: "flight",
+          slideIndex: 5,
+        },
+        {
+          date: "ZO · 28 FEB",
+          flags: "🇰🇭",
+          title: "Angkor Wat & Ta Prohm",
+          location: {
+            name: "Angkor Wat · Cambodja",
+            coordinates: [13.4125, 103.867],
+            zoom: 10,
+          },
+          quote:
+            '"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander de Grote',
+          detail:
+            "04:30 wekker: sunrise bij de spiegelvijver van Angkor Wat & Tomb Raider spelen tussen de bomen.",
+          sleep: "Slaap: Siem Reap",
+          icon: "🌅",
+          iconLabel: "Tempels bij zonsopkomst",
+          photo: "angkor",
+          slideIndex: 5,
+        },
+        {
+          date: "MA · 1 MRT",
+          flags: "🇰🇭",
+          title: "Siem Reap · extra dag",
+          location: {
+            name: "Siem Reap · Cambodja",
+            coordinates: [13.3633, 103.8564],
+            zoom: 9,
+          },
+          quote:
+            '"Nature always wins. Especially tree roots in ancient stones." — Charles Darwin',
+          detail:
+            "No-stress chilldag: rustig nog een verborgen tempel meepakken of keihard chillen aan het zwembad.",
+          sleep: "Slaap: Siem Reap",
+          icon: "🌿",
+          iconLabel: "Rust- of tempeldag",
+          photo: "taProhm",
+          slideIndex: 6,
+        },
+        {
+          date: "MA · 1 MRT",
+          flags: "🇰🇭",
+          title: "SIDE QUEST: STREET 08 🌃",
+          location: {
+            name: "Siem Reap · Cambodja",
+            coordinates: [13.355, 103.854],
+            zoom: 11,
+          },
+          sideQuest: true,
+          quote:
+            '"Work hard, play hard. Especially after 1000 years of temple grinding." — Confucius',
+          detail:
+            "De zon gaat onder, de neonlichten springen aan en Pub Street ontwaakt. Cocktails, bars, muziek en totale chaos. ANGKOR WAT BY DAY, ABSOLUTE MENACE BY NIGHT 🔥",
+          sleep: "Slaap: Siem Reap",
+          icon: "🌃",
+          iconLabel: "Nightlife",
+          photo: "street08",
+          slideIndex: 7,
+        },
+        {
+          date: "DI · 2 MRT",
+          flags: "🇰🇭",
+          title: "Bus naar Phnom Penh",
+          location: {
+            name: "Phnom Penh · Cambodja",
+            coordinates: [11.5564, 104.9282],
+            zoom: 9,
+          },
+          quote:
+            '"Het gaat niet om de busrit, het gaat om de aura waarmee je aankomt." — Napoleon Bonaparte',
+          detail:
+            "Roadtrip door het Cambodjaanse platteland op weg naar de bruisende hoofdstad.",
+          sleep: "Slaap: Phnom Penh · nacht 1/2",
+          icon: "🚌",
+          iconLabel: "Bus",
+          photo: "bus",
+          slideIndex: 7,
+        },
+        {
+          date: "WO · 3 MRT",
+          flags: "🇰🇭",
+          title: "Phnom Penh · volle dag",
+          location: {
+            name: "Phnom Penh · Cambodja",
+            coordinates: [11.5564, 104.9282],
+            zoom: 10,
+          },
+          quote:
+            '"Koninklijke paleisen, rivierviews en keihard genieten op de finale avond." — Sisi',
+          detail:
+            "Koninklijk Paleis uitchecken, slenteren langs de Riverside en de allerlaatste avond groots vieren.",
+          sleep: "Slaap: Phnom Penh · nacht 2/2",
+          icon: "🏙️",
+          iconLabel: "Stadsdag",
+          photo: "phnomPenh",
+          slideIndex: 7,
+        },
+        {
+          date: "DO · 4 MRT",
+          flags: "🇰🇭 → 🇳🇱",
+          title: "Terug naar Amsterdam",
+          location: {
+            name: "Amsterdam · Nederland",
+            coordinates: [52.3105, 4.7683],
+            zoom: 6,
+          },
+          quote:
+            "\"Don't cry because it's over, smile because it was absolutely legendary.\" — Dr. Seuss",
+          detail:
+            "Vroeg de koffers dichtrammen, vlieger in en met een vrachtlading aan memories en aura naar huis.",
+          sleep: "Slaap: thuis in Amsterdam",
+          icon: "✈️",
+          iconLabel: "Terugvlucht",
+          photo: "flight",
+          slideIndex: 7,
+        },
+      ];
+      const tripDayNumbers = new Map();
+      itinerary.forEach((stop) => {
+        if (!tripDayNumbers.has(stop.date)) {
+          tripDayNumbers.set(stop.date, tripDayNumbers.size + 1);
+        }
+      });
+      let soundEnabled = true;
+      const mapStatusEl = document.getElementById("map-status");
+      const mapContainerEl = document.getElementById("trip-map");
+      const mapFocusMarkerEl = document.getElementById("map-focus-marker");
+      const mapOriginEffectEl = document.getElementById("map-origin-effect");
+      const mapOriginBeamEl =
+        mapOriginEffectEl.querySelector(".map-origin-beam");
+      const mapOriginBeamGlowEl = mapOriginEffectEl.querySelector(
+        ".map-origin-beam-glow",
+      );
+      let tripMap = null;
+      let mapTargetKey = "";
+
+      function mapFocusOffset() {
+        const mapBounds = mapContainerEl.getBoundingClientRect();
+        const activeCard = document.querySelector(".slide.active .card");
+        const timelineBounds = document
+          .querySelector(".nav-controls")
+          .getBoundingClientRect();
+        const cardBounds = activeCard?.getBoundingClientRect();
+        const cardBottom = cardBounds ? cardBounds.bottom : mapBounds.top;
+        const availableGap = timelineBounds.top - cardBottom;
+        const focusY =
+          availableGap >= 28
+            ? cardBottom + availableGap / 2
+            : timelineBounds.top - 18;
+        const originColor = activeCard
+          ? getComputedStyle(activeCard).borderTopColor
+          : "#75d8c8";
+        const source = { x: window.innerWidth / 2, y: focusY };
+        const baseY = Math.min(cardBounds?.bottom ?? source.y, source.y - 20);
+        const baseLeft = activeCard ? cardBounds.left + 18 : source.x - 180;
+        const baseRight = activeCard ? cardBounds.right - 18 : source.x + 180;
+        const gap = Math.max(0, source.y - baseY);
+        const leftBase = { x: baseLeft, y: baseY };
+        const rightBase = { x: baseRight, y: baseY };
+        const leftControl1 = { x: source.x, y: source.y };
+        const leftControl2 = {
+          x: source.x - (source.x - baseLeft) * 0.002,
+          y: baseY + gap * 0.08,
+        };
+        const rightControl1 = { x: source.x, y: source.y };
+        const rightControl2 = {
+          x: source.x + (baseRight - source.x) * 0.002,
+          y: baseY + gap * 0.08,
+        };
+        const pathPoint = (point) =>
+          `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+
+        mapOriginEffectEl.setAttribute(
+          "viewBox",
+          `0 0 ${window.innerWidth} ${window.innerHeight}`,
+        );
+        const beamPath =
+          `M ${pathPoint(source)} C ${pathPoint(leftControl1)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)} ` +
+          `L ${pathPoint(rightBase)} C ${pathPoint(rightControl2)} ${pathPoint(rightControl1)} ${pathPoint(source)} Z`;
+        mapOriginBeamEl.setAttribute("d", beamPath);
+        mapOriginBeamGlowEl.setAttribute("d", beamPath);
+
+        mapFocusMarkerEl.style.setProperty("--map-focus-y", `${focusY}px`);
+        mapFocusMarkerEl.style.setProperty("--map-origin-color", originColor);
+        mapOriginEffectEl.style.setProperty("--map-origin-color", originColor);
+        const markerBounds = mapFocusMarkerEl.getBoundingClientRect();
+        return [
+          markerBounds.left +
+            markerBounds.width / 2 -
+            mapBounds.left -
+            mapBounds.width / 2,
+          markerBounds.top +
+            markerBounds.height / 2 -
+            mapBounds.top -
+            mapBounds.height / 2,
+        ];
       }
-    }
 
-    function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
-      if (index === currentSlide && timelineIndex === currentTimelineIndex) return;
-      const slideChanged = index !== currentSlide;
-      currentSlide = index;
-      currentTimelineIndex = timelineIndex;
-      if (slideChanged) playBeep(587.33, 'triangle', 0.12);
-      updateSlideUrl();
-      updateDeck();
-    }
+      if (window.maplibregl) {
+        const reduceMapMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const initialLocation = itinerary[0].location;
+        const initialCenter = [
+          initialLocation.coordinates[1],
+          initialLocation.coordinates[0],
+        ];
+        tripMap = new maplibregl.Map({
+          attributionControl: false,
+          boxZoom: false,
+          center: initialCenter,
+          container: mapContainerEl,
+          doubleClickZoom: false,
+          dragPan: false,
+          interactive: false,
+          keyboard: false,
+          scrollZoom: false,
+          style: "https://tiles.openfreemap.org/styles/positron",
+          touchZoomRotate: false,
+          zoom: initialLocation.zoom,
+        });
 
-    function nextSlide() {
-      if (currentSlide < slides.length - 1) {
-        currentSlide++;
-        playBeep(587.33, 'triangle', 0.12);
+        tripMap.once("load", () => {
+          mapStatusEl.hidden = true;
+          mapTargetKey = "";
+          showMapLocation(itinerary[currentTimelineIndex]);
+        });
+        tripMap.on("error", () => {
+          if (!mapStatusEl.hidden) {
+            mapStatusEl.textContent = "Kaarttegels niet beschikbaar";
+          }
+        });
+
+        mapTargetKey = `${itinerary[0].location.coordinates.join(",")}:${itinerary[0].location.zoom}`;
+
+        window.addEventListener("resize", () => {
+          tripMap.resize();
+          requestAnimationFrame(() =>
+            showMapLocation(itinerary[currentTimelineIndex]),
+          );
+        });
       } else {
-        currentSlide = 0;
-        playBeep(880, 'sawtooth', 0.2);
+        mapStatusEl.textContent = "Kaartbibliotheek kon niet laden";
       }
-      currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
-      updateSlideUrl();
-      updateDeck();
-    }
 
-    function prevSlide() {
-      if (currentSlide > 0) {
-        currentSlide--;
-        playBeep(349.23, 'triangle', 0.12);
-        currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
+      function showMapLocation(stop) {
+        if (!tripMap) return;
+
+        const { coordinates, zoom } = stop.location;
+        const targetKey = `${coordinates.join(",")}:${zoom}`;
+        const center = [coordinates[1], coordinates[0]];
+        const camera = {
+          center,
+          zoom,
+          offset: mapFocusOffset(),
+          bearing: 0,
+          pitch: 0,
+        };
+        if (targetKey === mapTargetKey) {
+          if (tripMap.loaded()) {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+              tripMap.jumpTo(camera);
+            } else {
+              tripMap.easeTo({ ...camera, duration: 300, essential: false });
+            }
+          }
+          return;
+        }
+
+        mapTargetKey = targetKey;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          tripMap.jumpTo(camera);
+        } else {
+          tripMap.easeTo({ ...camera, duration: 900, essential: false });
+        }
+      }
+
+      const slideTemplates = slides;
+      const deck = document.querySelector(".deck");
+      slides = itinerary.map((stop, idx) => {
+        const slide = slideTemplates[stop.slideIndex].cloneNode(true);
+        const tag = slide.querySelector(".tag");
+        const heading = slide.querySelector("h2");
+        const description = slide.querySelector(".desc");
+        const quote = slide.querySelector("blockquote");
+        const photo = photos[stop.photo];
+        const slideImage = slide.querySelector(".img-box img");
+        const imageBox = slide.querySelector(".img-box");
+        const [routeStat, sleepStat] = slide.querySelectorAll(".stat-item");
+        const tripDay = tripDayNumbers.get(stop.date);
+        const caricature = document.createElement("span");
+        const caricatureImage = document.createElement("img");
+
+        stop.slideIndex = idx;
+        slideImage.src = photo.src;
+        slideImage.alt = photo.alt;
+        if (photo.credit && photo.creditUrl) {
+          const credit = document.createElement("a");
+          credit.className = "photo-credit";
+          credit.href = photo.creditUrl;
+          credit.target = "_blank";
+          credit.rel = "noopener noreferrer";
+          credit.textContent = photo.credit;
+          imageBox.append(credit);
+        }
+        slide.classList.toggle("active", idx === currentSlide);
+        tag.textContent = `${stop.date} · ${stop.flags}`;
+        heading.textContent = stop.title;
+        description.textContent = stop.detail;
+        quote.textContent = stop.quote;
+        routeStat.firstChild.textContent = "REISDAG";
+        routeStat.querySelector(".stat-value").textContent = tripDay;
+        sleepStat.firstChild.textContent = "OVERNACHTING";
+        sleepStat.querySelector(".stat-value").textContent = stop.sleep.replace(
+          /^Slaap: /,
+          "",
+        );
+        caricature.className = "slide-caricature";
+        caricature.setAttribute("aria-hidden", "true");
+        caricatureImage.alt = "";
+        caricatureImage.addEventListener("error", () => caricature.remove(), {
+          once: true,
+        });
+        caricatureImage.src = `img/${String(tripDay).padStart(2, "0")}.png`;
+        caricature.append(caricatureImage);
+        slide.querySelector(".card").append(caricature);
+        return slide;
+      });
+      slideTemplates.forEach((slide) => slide.remove());
+      deck.append(...slides);
+      const initialRoute = window.location.pathname
+        .slice(appBasePath.length)
+        .match(/^dag-(\d+)\/?$/);
+      const initialDay = initialRoute ? Number(initialRoute[1]) : 1;
+      const initialTimelineIndex = itinerary.findIndex(
+        (stop) => tripDayNumbers.get(stop.date) === initialDay,
+      );
+      if (initialTimelineIndex >= 0) {
+        currentTimelineIndex = initialTimelineIndex;
+        currentSlide = itinerary[initialTimelineIndex].slideIndex;
+      }
+      slides.forEach((slide) => {
+        slide.addEventListener("transitionend", (event) => {
+          if (
+            event.target === slide &&
+            event.propertyName === "transform" &&
+            slide.classList.contains("active")
+          ) {
+            showMapLocation(itinerary[currentTimelineIndex]);
+          }
+        });
+      });
+
+      const pageIndicators = itinerary.map((stop, idx) => {
+        const slide = slides[stop.slideIndex];
+        const button = document.createElement("button");
+        const title = slide.querySelector("h2").textContent.trim();
+        const image = document.createElement("img");
+        const thumbnail = document.createElement("span");
+        const flags = document.createElement("span");
+        const meta = document.createElement("span");
+        const stopTitle = document.createElement("span");
+        const stopKind = document.createElement("span");
+        const copy = document.createElement("span");
+        const card = document.createElement("span");
+        const connector = document.createElement("span");
+        const node = document.createElement("span");
+        const dateNumber = document.createElement("span");
+        const monthLabel = document.createElement("span");
+
+        button.type = "button";
+        button.className = "page-indicator";
+        const indicatorColor = getComputedStyle(
+          slide.querySelector(".card"),
+        ).borderTopColor;
+        const nextStop = itinerary[idx + 1];
+        const nextSlide = nextStop ? slides[nextStop.slideIndex] : slide;
+        const nextIndicatorColor = getComputedStyle(
+          nextSlide.querySelector(".card"),
+        ).borderTopColor;
+        button.style.setProperty("--indicator-color", indicatorColor);
+        button.style.setProperty("--next-indicator-color", nextIndicatorColor);
+        if (stop.sideQuest) {
+          button.classList.add("side-quest");
+        }
+        button.setAttribute(
+          "aria-label",
+          `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`,
+        );
+        button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
+
+        image.className = "timeline-thumb";
+        image.src = slide.querySelector(".img-box img").src;
+        image.alt = "";
+        image.loading = "lazy";
+        image.decoding = "async";
+        thumbnail.className = "timeline-thumb-wrap";
+        meta.className = "timeline-meta";
+        flags.className = "timeline-flags";
+        flags.textContent = stop.flags;
+        flags.setAttribute("aria-hidden", "true");
+        meta.append(flags);
+        thumbnail.append(image, meta);
+        stopTitle.className = "timeline-title";
+        stopTitle.textContent = stop.title;
+        stopKind.className = "timeline-kind";
+        stopKind.textContent = stop.iconLabel;
+        copy.className = "timeline-copy";
+        copy.append(stopTitle, stopKind);
+        card.className = "timeline-card";
+        connector.className = "timeline-connector";
+        node.className = "timeline-node";
+        node.setAttribute("aria-hidden", "true");
+        dateNumber.className = "timeline-date-number";
+        const dateNumberText = stop.date.match(/\d+/)?.[0] ?? "";
+        const isFirstStopOfDate =
+          idx === 0 || itinerary[idx - 1].date !== stop.date;
+        if (isFirstStopOfDate) {
+          dateNumber.textContent = dateNumberText;
+          dateNumber.setAttribute("aria-hidden", "true");
+        }
+        const month = stop.date.match(/\b(FEB|MRT)\b/)?.[0];
+        if (
+          idx === 0 ||
+          (isFirstStopOfDate && month === "MRT" && dateNumberText === "1")
+        ) {
+          monthLabel.className = `timeline-month-label ${idx === 0 ? "timeline-month-label-start" : "timeline-month-label-transition"}`;
+          monthLabel.textContent = month;
+          monthLabel.setAttribute("aria-hidden", "true");
+        }
+
+        card.append(thumbnail, copy);
+        button.append(connector, node, dateNumber, monthLabel, card);
+        button.addEventListener("click", () => goToSlide(stop.slideIndex, idx));
+        pageIndicatorsEl.append(button);
+        return button;
+      });
+
+      // Web Audio Synthesizer for 8-bit sound effects
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      function playBeep(freq = 440, type = "sine", duration = 0.1) {
+        if (!soundEnabled) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioCtx.currentTime + duration,
+          );
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      function toggleAudio() {
+        soundEnabled = !soundEnabled;
+        const btn = document.querySelector(".sound-btn");
+        btn.innerText = soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇";
+        if (soundEnabled) playBeep(880, "square", 0.15);
+      }
+
+      function updateDeck() {
+        slides.forEach((slide, idx) => {
+          slide.classList.toggle("active", idx === currentSlide);
+        });
+        pageIndicators.forEach((indicator, idx) => {
+          if (idx === currentTimelineIndex) {
+            indicator.setAttribute("aria-current", "step");
+          } else {
+            indicator.removeAttribute("aria-current");
+          }
+        });
+        const activeIndicator = pageIndicators[currentTimelineIndex];
+        const indicatorBounds = activeIndicator.getBoundingClientRect();
+        const timelineBounds = pageIndicatorsEl.getBoundingClientRect();
+        const desiredScrollLeft =
+          pageIndicatorsEl.scrollLeft +
+          indicatorBounds.left +
+          indicatorBounds.width / 2 -
+          timelineBounds.left -
+          timelineBounds.width / 2;
+        const maxScrollLeft =
+          pageIndicatorsEl.scrollWidth - pageIndicatorsEl.clientWidth;
+        const targetScrollLeft = Math.min(
+          maxScrollLeft,
+          Math.max(0, desiredScrollLeft),
+        );
+        if (Math.abs(targetScrollLeft - pageIndicatorsEl.scrollLeft) > 1) {
+          pageIndicatorsEl.scrollTo({
+            left: targetScrollLeft,
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+              .matches
+              ? "auto"
+              : "smooth",
+          });
+        }
+        const currentStop = itinerary[currentTimelineIndex];
+        progressDayEl.textContent = `Dag ${tripDayNumbers.get(currentStop.date)}`;
+        progressIconEl.textContent = currentStop.icon;
+        progressIconEl.setAttribute("aria-label", currentStop.iconLabel);
+        showMapLocation(currentStop);
+      }
+
+      function updateSlideUrl(replace = false) {
+        if (!["http:", "https:"].includes(window.location.protocol)) return;
+        const day = tripDayNumbers.get(itinerary[currentTimelineIndex].date);
+        const route = `${appBasePath}dag-${day}`;
+        const state = {
+          ...(history.state && typeof history.state === "object"
+            ? history.state
+            : {}),
+          tripSlideIndex: currentSlide,
+          tripTimelineIndex: currentTimelineIndex,
+        };
+        if (replace) {
+          history.replaceState(state, "", route);
+        } else {
+          history.pushState(state, "", route);
+        }
+      }
+
+      function goToSlide(
+        index,
+        timelineIndex = itinerary.findIndex(
+          (stop) => stop.slideIndex === index,
+        ),
+      ) {
+        if (index === currentSlide && timelineIndex === currentTimelineIndex)
+          return;
+        const slideChanged = index !== currentSlide;
+        currentSlide = index;
+        currentTimelineIndex = timelineIndex;
+        if (slideChanged) playBeep(587.33, "triangle", 0.12);
         updateSlideUrl();
         updateDeck();
       }
-    }
 
-    window.addEventListener('popstate', event => {
-      const dayRoute = window.location.pathname.slice(appBasePath.length).match(/^dag-(\d+)\/?$/);
-      const day = dayRoute ? Number(dayRoute[1]) : 1;
-      const stateTimelineIndex = event.state?.tripTimelineIndex;
-      const stateSlideIndex = event.state?.tripSlideIndex;
-      const hasValidState = Number.isInteger(stateTimelineIndex) &&
-        Number.isInteger(stateSlideIndex) &&
-        itinerary[stateTimelineIndex]?.slideIndex === stateSlideIndex &&
-        tripDayNumbers.get(itinerary[stateTimelineIndex].date) === day;
-      const timelineIndex = hasValidState
-        ? stateTimelineIndex
-        : itinerary.findIndex(stop => tripDayNumbers.get(stop.date) === day);
+      function nextSlide() {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          playBeep(587.33, "triangle", 0.12);
+        } else {
+          currentSlide = 0;
+          playBeep(880, "sawtooth", 0.2);
+        }
+        currentTimelineIndex = itinerary.findIndex(
+          (stop) => stop.slideIndex === currentSlide,
+        );
+        updateSlideUrl();
+        updateDeck();
+      }
 
-      currentTimelineIndex = timelineIndex >= 0 ? timelineIndex : 0;
-      currentSlide = itinerary[currentTimelineIndex].slideIndex;
-      if (hasValidState) currentSlide = stateSlideIndex;
+      function prevSlide() {
+        if (currentSlide > 0) {
+          currentSlide--;
+          playBeep(349.23, "triangle", 0.12);
+          currentTimelineIndex = itinerary.findIndex(
+            (stop) => stop.slideIndex === currentSlide,
+          );
+          updateSlideUrl();
+          updateDeck();
+        }
+      }
+
+      window.addEventListener("popstate", (event) => {
+        const dayRoute = window.location.pathname
+          .slice(appBasePath.length)
+          .match(/^dag-(\d+)\/?$/);
+        const day = dayRoute ? Number(dayRoute[1]) : 1;
+        const stateTimelineIndex = event.state?.tripTimelineIndex;
+        const stateSlideIndex = event.state?.tripSlideIndex;
+        const hasValidState =
+          Number.isInteger(stateTimelineIndex) &&
+          Number.isInteger(stateSlideIndex) &&
+          itinerary[stateTimelineIndex]?.slideIndex === stateSlideIndex &&
+          tripDayNumbers.get(itinerary[stateTimelineIndex].date) === day;
+        const timelineIndex = hasValidState
+          ? stateTimelineIndex
+          : itinerary.findIndex(
+              (stop) => tripDayNumbers.get(stop.date) === day,
+            );
+
+        currentTimelineIndex = timelineIndex >= 0 ? timelineIndex : 0;
+        currentSlide = itinerary[currentTimelineIndex].slideIndex;
+        if (hasValidState) currentSlide = stateSlideIndex;
+        updateDeck();
+      });
+
+      updateSlideUrl(true);
       updateDeck();
-    });
 
-    updateSlideUrl(true);
-    updateDeck();
+      // Keyboard Arrow Controls
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "Space") nextSlide();
+        if (e.key === "ArrowLeft") prevSlide();
+      });
 
-    // Keyboard Arrow Controls
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'Space') nextSlide();
-      if (e.key === 'ArrowLeft') prevSlide();
-    });
-
-    // Touch Swipe Controls for Mobile
-    let touchStartX = 0;
-    document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-    document.addEventListener('touchend', e => {
-      let touchEndX = e.changedTouches[0].screenX;
-      if (touchStartX - touchEndX > 50) nextSlide();
-      if (touchEndX - touchStartX > 50) prevSlide();
-    });
-  </script>
-</body>
+      // Touch Swipe Controls for Mobile
+      let touchStartX = 0;
+      document.addEventListener(
+        "touchstart",
+        (e) => (touchStartX = e.changedTouches[0].screenX),
+      );
+      document.addEventListener("touchend", (e) => {
+        let touchEndX = e.changedTouches[0].screenX;
+        if (touchStartX - touchEndX > 50) nextSlide();
+        if (touchEndX - touchStartX > 50) prevSlide();
+      });
+    </script>
+  </body>
 </html>
