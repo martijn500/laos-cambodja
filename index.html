@@ -579,6 +579,7 @@
     .page-indicators {
       --timeline-gap: 12px;
       --timeline-half-gap: 6px;
+      --timeline-item-width: 176px;
       position: relative;
       display: flex;
       align-items: flex-start;
@@ -589,7 +590,6 @@
       padding: 0 12px;
       overflow-x: auto;
       overscroll-behavior-x: contain;
-      scroll-snap-type: x proximity;
       scrollbar-color: rgba(130, 170, 176, 0.45) transparent;
       scrollbar-width: thin;
     }
@@ -598,7 +598,7 @@
       --indicator-color: #75d8c8;
       position: relative;
       display: block;
-      flex: 0 0 176px;
+      flex: 0 0 var(--timeline-item-width);
       height: 112px;
       z-index: 1;
       padding: 0;
@@ -606,7 +606,6 @@
       background: transparent;
       color: #fff;
       cursor: pointer;
-      scroll-snap-align: start;
       text-align: left;
     }
 
@@ -617,20 +616,13 @@
       display: block;
       width: 100%;
       height: 65px;
+      z-index: 2;
       overflow: hidden;
       border: 1px solid color-mix(in srgb, var(--indicator-color) 34%, rgba(174, 197, 200, 0.16));
       border-radius: 11px;
       background: linear-gradient(135deg, rgba(29, 41, 47, 0.96), rgba(15, 23, 29, 0.98));
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
-    }
-
-    .page-indicator[aria-current="step"] .timeline-card {
-      top: 30px;
-    }
-
-    .page-indicator[aria-current="step"] .timeline-node {
-      height: 6px;
     }
 
     .timeline-thumb-wrap {
@@ -739,13 +731,11 @@
       position: absolute;
       top: 24px;
       left: 50%;
-      z-index: 4;
+      z-index: 1;
       width: 2px;
-      height: 22px;
+      height: 30px;
       transform: translateX(-50%);
-      border-radius: 999px;
-      background: var(--indicator-color);
-      box-shadow: 0 0 8px color-mix(in srgb, var(--indicator-color) 42%, transparent);
+      border-left: 1px dashed var(--indicator-color);
       pointer-events: none;
     }
 
@@ -759,11 +749,12 @@
 
     .page-indicator[aria-current="step"] .timeline-card {
       z-index: 2;
-      transform: translateY(-3px) scale(1.08);
+      transform: scale(1.08);
       transform-origin: center center;
       border-color: color-mix(in srgb, var(--indicator-color) 78%, transparent);
       background: color-mix(in srgb, var(--indicator-color) 14%, #172127);
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 18px color-mix(in srgb, var(--indicator-color) 16%, transparent);
+      transition-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
     }
 
     .page-indicator[aria-current="step"] .timeline-title {
@@ -1691,10 +1682,18 @@
         }
       });
       const activeIndicator = pageIndicators[currentTimelineIndex];
-      pageIndicatorsEl.scrollTo({
-        left: activeIndicator.offsetLeft - (pageIndicatorsEl.clientWidth - activeIndicator.offsetWidth) / 2,
-        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-      });
+      const indicatorBounds = activeIndicator.getBoundingClientRect();
+      const timelineBounds = pageIndicatorsEl.getBoundingClientRect();
+      const desiredScrollLeft = pageIndicatorsEl.scrollLeft + indicatorBounds.left +
+        indicatorBounds.width / 2 - timelineBounds.left - timelineBounds.width / 2;
+      const maxScrollLeft = pageIndicatorsEl.scrollWidth - pageIndicatorsEl.clientWidth;
+      const targetScrollLeft = Math.min(maxScrollLeft, Math.max(0, desiredScrollLeft));
+      if (Math.abs(targetScrollLeft - pageIndicatorsEl.scrollLeft) > 1) {
+        pageIndicatorsEl.scrollTo({
+          left: targetScrollLeft,
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+        });
+      }
       const currentStop = itinerary[currentTimelineIndex];
       progressIconEl.textContent = currentStop.icon;
       progressIconEl.setAttribute('aria-label', currentStop.iconLabel);
