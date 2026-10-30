@@ -175,190 +175,28 @@
       transform: scale(1) translateY(0);
     }
 
-    .slide-mascot-position {
+    .slide-caricature {
       position: absolute;
-      top: max(calc(50% - 190px), 4px);
-      right: max(calc((100vw - 1100px) / 2 - 48px), 4px);
+      right: 55px;
+      bottom: 12px;
       z-index: 4;
-      width: clamp(82px, 10vw, 132px);
+      width: clamp(110px, 12vw, 160px);
       pointer-events: none;
-      filter: drop-shadow(0 0 12px rgba(255, 174, 66, 0.48));
+      filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45));
     }
 
-    .slide-mascot {
+    .slide-caricature img {
       display: block;
       width: 100%;
-      overflow: visible;
-      transform-origin: 60px 70px;
+      height: auto;
+      object-fit: contain;
     }
-
-    .mascot-halo {
-      fill: none;
-      stroke: #ffee00;
-      stroke-width: 3;
-      stroke-dasharray: 4 5;
-      transform-origin: 60px 34px;
-      animation: halo-spin 14s linear infinite;
-    }
-
-    .mascot-glow {
-      fill: #ffb347;
-      opacity: 0.24;
-    }
-
-    .mascot-skin {
-      fill: #ffb347;
-      stroke: #ff7b32;
-      stroke-width: 2;
-      stroke-linejoin: round;
-    }
-
-    .mascot-robe {
-      fill: #ff7b32;
-      stroke: #ffb347;
-      stroke-width: 2;
-      stroke-linejoin: round;
-    }
-
-    .mascot-detail {
-      fill: none;
-      stroke: #ffee00;
-      stroke-linecap: round;
-      stroke-width: 2;
-    }
-
-    .action-takeoff { animation: mascot-takeoff 2.8s ease-in-out infinite; }
-    .action-landing { animation: mascot-landing 3s ease-in-out infinite; }
-    .action-crossing { animation: mascot-walk 1.6s ease-in-out infinite; }
-    .action-zipline { animation: mascot-zipline 2.2s ease-in-out infinite; }
-    .action-climbing { animation: mascot-climb 1.8s ease-in-out infinite; }
-    .action-sailing { animation: mascot-sail 3s ease-in-out infinite; }
-    .action-docking { animation: mascot-dock 2.1s ease-in-out infinite; }
-    .action-meditating { animation: mascot-meditate 3.4s ease-in-out infinite; }
-    .action-splashing { animation: mascot-splash 1.8s ease-in-out infinite; }
-    .action-boarding { animation: mascot-step 1.5s ease-in-out infinite; }
-    .action-ballooning { animation: mascot-balloon 3.5s ease-in-out infinite; }
-    .action-riding { animation: mascot-rail 2s ease-in-out infinite; }
-    .action-flying { animation: mascot-fly 2.6s ease-in-out infinite; }
-    .action-bowing { animation: mascot-bow 2.6s ease-in-out infinite; }
-    .action-floating { animation: mascot-float 3s ease-in-out infinite; }
-    .action-driving { animation: mascot-road 1.7s ease-in-out infinite; }
-    .action-strolling { animation: mascot-stroll 2s ease-in-out infinite; }
-    .action-transferring { animation: mascot-transfer 1.8s ease-in-out infinite; }
-    .action-drifting { animation: mascot-drift 3.4s ease-in-out infinite; }
 
     @media (prefers-reduced-motion: reduce) {
-      .slide-mascot,
-      .mascot-halo {
-        animation: none !important;
-      }
-
       .timeline-card,
       .nav-btn {
         transition: none;
       }
-    }
-
-    @keyframes halo-spin {
-      to { transform: rotate(360deg); }
-    }
-
-    @keyframes mascot-takeoff {
-      0%, 100% { transform: translate(0, 0) rotate(0); }
-      50% { transform: translate(-10px, -20px) rotate(-8deg); }
-    }
-
-    @keyframes mascot-landing {
-      0%, 100% { transform: translateY(-12px) rotate(4deg); }
-      60% { transform: translateY(3px) rotate(-2deg); }
-      75% { transform: translateY(-4px) rotate(1deg); }
-    }
-
-    @keyframes mascot-walk {
-      0%, 100% { transform: translateX(-5px) rotate(-3deg); }
-      50% { transform: translateX(5px) rotate(3deg); }
-    }
-
-    @keyframes mascot-zipline {
-      0%, 100% { transform: translate(-14px, -10px) rotate(-12deg); }
-      50% { transform: translate(15px, 12px) rotate(12deg); }
-    }
-
-    @keyframes mascot-climb {
-      0%, 100% { transform: translateY(5px) rotate(-6deg); }
-      50% { transform: translateY(-9px) rotate(6deg); }
-    }
-
-    @keyframes mascot-sail {
-      0%, 100% { transform: translateY(0) rotate(-4deg); }
-      50% { transform: translateY(8px) rotate(4deg); }
-    }
-
-    @keyframes mascot-dock {
-      0%, 100% { transform: translateY(0) scale(1); }
-      35% { transform: translateY(-12px) scale(1.02); }
-      55% { transform: translateY(2px) scale(0.98); }
-    }
-
-    @keyframes mascot-meditate {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-5px) scale(1.03); }
-    }
-
-    @keyframes mascot-splash {
-      0%, 100% { transform: translateY(0) rotate(0); }
-      30% { transform: translateY(8px) rotate(-8deg); }
-      65% { transform: translateY(-12px) rotate(8deg); }
-    }
-
-    @keyframes mascot-step {
-      0%, 100% { transform: translateX(-4px) rotate(-4deg); }
-      50% { transform: translateX(7px) rotate(4deg); }
-    }
-
-    @keyframes mascot-balloon {
-      0%, 100% { transform: translateY(5px); }
-      50% { transform: translateY(-18px); }
-    }
-
-    @keyframes mascot-rail {
-      0%, 100% { transform: translateX(-8px) rotate(-2deg); }
-      50% { transform: translateX(8px) rotate(2deg); }
-    }
-
-    @keyframes mascot-fly {
-      0%, 100% { transform: translate(-8px, 5px) rotate(-5deg); }
-      50% { transform: translate(10px, -13px) rotate(7deg); }
-    }
-
-    @keyframes mascot-bow {
-      0%, 100% { transform: rotate(0); }
-      40%, 65% { transform: rotate(12deg); }
-    }
-
-    @keyframes mascot-float {
-      0%, 100% { transform: translateY(4px) rotate(-3deg); }
-      50% { transform: translateY(-8px) rotate(3deg); }
-    }
-
-    @keyframes mascot-road {
-      0%, 100% { transform: translateX(-5px) rotate(-2deg); }
-      50% { transform: translateX(5px) rotate(2deg); }
-    }
-
-    @keyframes mascot-stroll {
-      0%, 100% { transform: translateX(-6px) rotate(-4deg); }
-      50% { transform: translateX(6px) rotate(4deg); }
-    }
-
-    @keyframes mascot-transfer {
-      0%, 100% { transform: translate(0, 2px) rotate(-3deg); }
-      50% { transform: translate(8px, -7px) rotate(5deg); }
-    }
-
-    @keyframes mascot-drift {
-      0%, 100% { transform: translate(-5px, 4px) rotate(-5deg); }
-      50% { transform: translate(7px, -6px) rotate(5deg); }
     }
 
     /* Slide Card Content Layout */
@@ -386,6 +224,12 @@
         max-height: max(180px, calc(100vh - var(--timeline-height) - 6.5rem));
         padding: 1.5rem;
       }
+
+      .slide-caricature {
+        right: 40px;
+        bottom: 8px;
+        width: clamp(72px, 12vw, 96px);
+      }
     }
 
     @media (max-width: 600px) {
@@ -394,7 +238,7 @@
       }
 
       .slide .card {
-        position: static;
+        position: relative;
         display: block;
         max-height: 100%;
         padding: 0;
@@ -410,11 +254,17 @@
         z-index: 1;
         max-height: calc(100vh - var(--timeline-height) - 2rem);
         overflow-y: auto;
-        padding: 1rem;
+        padding: 1rem 1rem 8rem;
         border: 1px solid rgba(255, 255, 255, 0.24);
         border-radius: 16px;
         background: rgba(7, 9, 14, 0.76);
         backdrop-filter: blur(6px);
+      }
+
+      .slide-caricature {
+        right: 10px;
+        bottom: 8px;
+        width: clamp(86px, 26vw, 124px);
       }
 
       .slide .img-box {
@@ -438,10 +288,6 @@
 
       .slide .img-box img {
         opacity: 0.48;
-      }
-
-      .slide .meme-overlay-text {
-        display: none;
       }
 
       .map-status {
@@ -526,24 +372,21 @@
       transition: transform 0.5s ease;
     }
 
-    .card:hover .img-box img {
-      transform: scale(1.05);
+    .photo-credit {
+      position: absolute;
+      left: 8px;
+      bottom: 8px;
+      z-index: 1;
+      padding: 4px 6px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.72);
+      color: #fff;
+      font-size: 0.6rem;
+      text-decoration: none;
     }
 
-    .meme-overlay-text {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.85);
-      color: var(--neon-yellow);
-      font-family: var(--font-meme);
-      font-size: 0.65rem;
-      padding: 8px;
-      text-align: center;
-      border-radius: 8px;
-      line-height: 1.4;
-      border: 1px solid var(--neon-yellow);
+    .card:hover .img-box img {
+      transform: scale(1.05);
     }
 
     /* Aura / Stats Widget */
@@ -1031,7 +874,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-pink);">
           <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg" alt="Wat Rong Khun Chiang Rai">
-          <div class="meme-overlay-text">CHIANG RAI: BRO IS ALREADY AT THE WHITE TEMPLE 💀</div>
         </div>
       </div>
     </div>
@@ -1051,7 +893,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-green);">
           <img src="https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg" alt="Gibbon Experience Zipline">
-          <div class="meme-overlay-text">FLYING THROUGH THE JUNGLE LIKE A CHAD 🌴</div>
         </div>
       </div>
     </div>
@@ -1071,7 +912,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-yellow);">
           <img src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg" alt="Mekong Slowboat Laos">
-          <div class="meme-overlay-text">SLOWBOAT MODE: NO WIFI, JUST MEKONG VIEWS 🛶</div>
         </div>
       </div>
     </div>
@@ -1091,7 +931,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-cyan);">
           <img src="https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="Wat Xiengthong Luang Prabang">
-          <div class="meme-overlay-text">WAT XIENGTHONG & PHOUSI HILL = PEAK SUNSET VIEWS 🌅</div>
         </div>
       </div>
     </div>
@@ -1111,7 +950,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-pink);">
           <img src="https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original" alt="Vang Vieng Hot Air Balloon">
-          <div class="meme-overlay-text">WE ARE GOING UP & WE ARE NOT COMING DOWN 🎈</div>
         </div>
       </div>
     </div>
@@ -1131,7 +969,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-cyan);">
           <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg" alt="Angkor Wat bij zonsopkomst">
-          <div class="meme-overlay-text">ANGKOR WAT AT SUNRISE = UNREAL REFLECTION 👑</div>
         </div>
       </div>
     </div>
@@ -1151,7 +988,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-green);">
           <img src="https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg" alt="Ta Prohm Tree Roots">
-          <div class="meme-overlay-text">TREES TAKING OVER THE TEMPLES LIKE A BOSS 🪵</div>
         </div>
       </div>
     </div>
@@ -1171,7 +1007,6 @@
         </div>
         <div class="img-box" style="border-color: var(--neon-pink);">
           <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG" alt="Phnom Penh Royal Palace">
-          <div class="meme-overlay-text">MISSION ACCOMPLISHED: RETURNING WITH 100K AURA ✈️</div>
         </div>
       </div>
     </div>
@@ -1201,6 +1036,12 @@
     const progressIconEl = progressEl.querySelector('.progress-icon');
     const pageIndicatorsEl = document.getElementById('page-indicators');
     let currentTimelineIndex = 0;
+    const appBasePath = (() => {
+      const basePath = new URL(document.baseURI).pathname;
+      if (document.querySelector('base')) return basePath.endsWith('/') ? basePath : `${basePath}/`;
+      if (basePath.endsWith('/index.html')) return basePath.slice(0, -'index.html'.length);
+      return basePath.endsWith('/') ? basePath : '/';
+    })();
     const photos = {
       flight: {
         src: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
@@ -1209,6 +1050,12 @@
       chiangRai: {
         src: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg',
         alt: 'Witte tempel Wat Rong Khun in Chiang Rai'
+      },
+      mekongBorderSunset: {
+        src: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg/1280px-Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai%2C_Lao_and_Thai_border._%2812346467243%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail',
+        alt: 'Zonsondergang over de Mekong bij de Thai–Lao-grens, onderweg naar Huay Xai',
+        credit: 'Foto: Clay Gilliland · CC BY-SA 2.0',
+        creditUrl: 'https://commons.wikimedia.org/wiki/File:Sunset_over_Thailand._Day_2_Pakbang_to_Huay_Xai,_Lao_and_Thai_border._(12346467243).jpg'
       },
       mekong: {
         src: 'https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg',
@@ -1272,7 +1119,6 @@
         quote: '"The journey of a thousand miles begins with a single step... and a massive flex." — Lao Tzu',
         detail: 'Instappen, stoelriem vast en 12 uur lang onbeperkt vliegzeug-snacks bouwen op 10 km hoogte.',
         sleep: 'Slaap: aan boord',
-        mascotAction: 'takeoff',
         icon: '✈️',
         iconLabel: 'Vlucht',
         photo: 'flight',
@@ -1286,7 +1132,6 @@
         quote: '"Bro is geland. Direct 100.000% aura opgebouwd bij de Witte Tempel." — Sun Tzu',
         detail: 'Inchecken, jetlag wegblazen en meteen flexen bij de felwitte tempels en gigantische draken.',
         sleep: 'Slaap: Chiang Rai',
-        mascotAction: 'landing',
         icon: '🛬',
         iconLabel: 'Aankomst',
         photo: 'chiangRai',
@@ -1300,10 +1145,9 @@
         quote: '"Niemand kan de grens oversteken zonder een vleugje chaos." — Julius Caesar',
         detail: 'Border-crossing madness! Stempels jagen, busje pakken en de Laotiaanse grens invallen.',
         sleep: 'Slaap: Huay Xai',
-        mascotAction: 'crossing',
         icon: '🚐',
         iconLabel: 'Grensovergang per transfer',
-        photo: 'mekong',
+        photo: 'mekongBorderSunset',
         slideIndex: 1
       },
       {
@@ -1314,7 +1158,6 @@
         quote: '"Do not go where the path may lead, go instead where there is no path and leave a zipline." — Ralph Waldo Emerson',
         detail: 'Vlieg als een absolute gigachad met 60 km/u over de jungletoppen en slaap in giga boomhutten.',
         sleep: 'Slaap: boomhut in de jungle',
-        mascotAction: 'zipline',
         icon: '🪢',
         iconLabel: 'Zipline',
         photo: 'jungle',
@@ -1328,7 +1171,6 @@
         quote: '"Tarzan droomt hiervan. Adrenaline niveau: OVER 9000." — Charles Darwin',
         detail: 'Wakker worden boven de wolken, keihard ziplinen door de ochtendmist en terug hiken.',
         sleep: 'Slaap: Huay Xai',
-        mascotAction: 'climbing',
         icon: '🥾',
         iconLabel: 'Jungletocht',
         photo: 'jungle',
@@ -1342,7 +1184,6 @@
         quote: '"There is nothing—absolutely nothing—half so much worth doing as simply messing about in boats." — Kenneth Grahame',
         detail: 'De ultieme ontprikkeling: houten slowboat op de Mekong, staren naar bergen en verstand op nul.',
         sleep: 'Slaap: Pakbeng',
-        mascotAction: 'sailing',
         icon: '🚤',
         iconLabel: 'Slowboat',
         photo: 'mekong',
@@ -1356,7 +1197,6 @@
         quote: '"Slowboat mode: nul wifi, puur chillon op de stroom van de rivier." — Confucius',
         detail: 'Dag twee op het water, rivierdorpjes spotten en in de namiddag binnenglijden bij Luang Prabang.',
         sleep: 'Slaap: Luang Prabang',
-        mascotAction: 'docking',
         icon: '🚤',
         iconLabel: 'Slowboat',
         photo: 'mekong',
@@ -1370,7 +1210,6 @@
         quote: '"There\'s a sunrise and a sunset every single day, especially from Phousi Hill." — Jo Walton',
         detail: 'Gouden tempels, 355 treden Phousi Hill climben voor de zonsondergang en de nachtmarkt leegkopen.',
         sleep: 'Slaap: Luang Prabang',
-        mascotAction: 'meditating',
         icon: '🛕',
         iconLabel: 'Tempelbezoek',
         photo: 'luangPrabang',
@@ -1385,7 +1224,6 @@
         quote: '"After enlightenment comes happy hour." — De innerlijke monnik',
         detail: 'Na de tempels en Phousi Hill is het tijd voor een classy side quest. Cocktails met Lao-invloeden, een koloniaal mansion en uitzicht over de Mekong. BRO UNLOCKED THE LUXURY SKIN 🍸',
         sleep: 'Slaap: Luang Prabang',
-        mascotAction: 'meditating',
         icon: '🍸',
         iconLabel: 'Cocktails',
         photo: 'nagini',
@@ -1399,7 +1237,6 @@
         quote: '"Turquoise waterfijnheid levert een instant dopamine-hit op." — Aristoteles',
         detail: 'Plonzen in de meest onwerkelijk blauwe waterval-pools ooit. Pure natuurlijk gekoelde adrenaline.',
         sleep: 'Slaap: Luang Prabang',
-        mascotAction: 'splashing',
         icon: '💦',
         iconLabel: 'Watervallen',
         photo: 'waterfall',
@@ -1413,7 +1250,6 @@
         quote: '"Sneller dan de rivier, strakker dan de karstbergen." — Marco Polo',
         detail: 'In sneltreinvaart door de bergen knallen richting het outdoor-walhalla van Laos.',
         sleep: 'Slaap: Vang Vieng',
-        mascotAction: 'boarding',
         icon: '🚆',
         iconLabel: 'Trein',
         photo: 'train',
@@ -1427,7 +1263,6 @@
         quote: '"The sky is not the limit, it\'s just the view from my balloon." — Amelia Earhart',
         detail: 'Zweven in een luchtballon boven bizarre karstbergen, kajakken of loungen bij Blue Lagoons.',
         sleep: 'Slaap: Vang Vieng',
-        mascotAction: 'ballooning',
         icon: '🎈',
         iconLabel: 'Ballonvaart of outdoor-avontuur',
         photo: 'vangVieng',
@@ -1441,7 +1276,6 @@
         quote: '"Op weg naar de hoofdstad met 100% zendag-energie." — Gautama Boeddha',
         detail: 'Soepel doorzoeven naar de hoofdstad voor boulevard-vibes en epische avondsnacks.',
         sleep: 'Slaap: Vientiane',
-        mascotAction: 'riding',
         icon: '🚆',
         iconLabel: 'Trein',
         photo: 'train',
@@ -1456,7 +1290,6 @@
         quote: '"The universe is full of mysteries. Some are made of concrete." — Gautama Broddha',
         detail: 'Meer dan 200 bizarre beelden uit de boeddhistische en hindoeïstische mythologie. Een gigantische fantasywereld van beton. BRO ENTERED THE BUDDHA MULTIVERSE 💀',
         sleep: 'Slaap: Vientiane',
-        mascotAction: 'meditating',
         icon: '🗿',
         iconLabel: 'Buddha Park',
         photo: 'buddhaPark',
@@ -1470,7 +1303,6 @@
         quote: '"Grenzen oversteken is makkelijk als de tempels op je wachten." — Genghis Khan',
         detail: 'Vleugels uitslaan, Laos inruilen voor Cambodja en klaarmaken voor het wereldwonder.',
         sleep: 'Slaap: Siem Reap',
-        mascotAction: 'flying',
         icon: '✈️',
         iconLabel: 'Vlucht',
         photo: 'flight',
@@ -1484,7 +1316,6 @@
         quote: '"Look at the sun. It is shining for you and your reflection in the temple pool." — Alexander de Grote',
         detail: '04:30 wekker: sunrise bij de spiegelvijver van Angkor Wat & Tomb Raider spelen tussen de bomen.',
         sleep: 'Slaap: Siem Reap',
-        mascotAction: 'bowing',
         icon: '🌅',
         iconLabel: 'Tempels bij zonsopkomst',
         photo: 'angkor',
@@ -1498,7 +1329,6 @@
         quote: '"Nature always wins. Especially tree roots in ancient stones." — Charles Darwin',
         detail: 'No-stress chilldag: rustig nog een verborgen tempel meepakken of keihard chillen aan het zwembad.',
         sleep: 'Slaap: Siem Reap',
-        mascotAction: 'floating',
         icon: '🌿',
         iconLabel: 'Rust- of tempeldag',
         photo: 'taProhm',
@@ -1513,7 +1343,6 @@
         quote: '"Work hard, play hard. Especially after 1000 years of temple grinding." — Confucius',
         detail: 'De zon gaat onder, de neonlichten springen aan en Pub Street ontwaakt. Cocktails, bars, muziek en totale chaos. ANGKOR WAT BY DAY, ABSOLUTE MENACE BY NIGHT 🔥',
         sleep: 'Slaap: Siem Reap',
-        mascotAction: 'strolling',
         icon: '🌃',
         iconLabel: 'Nightlife',
         photo: 'street08',
@@ -1527,7 +1356,6 @@
         quote: '"Het gaat niet om de busrit, het gaat om de aura waarmee je aankomt." — Napoleon Bonaparte',
         detail: 'Roadtrip door het Cambodjaanse platteland op weg naar de bruisende hoofdstad.',
         sleep: 'Slaap: Phnom Penh · nacht 1/2',
-        mascotAction: 'driving',
         icon: '🚌',
         iconLabel: 'Bus',
         photo: 'bus',
@@ -1541,7 +1369,6 @@
         quote: '"Koninklijke paleisen, rivierviews en keihard genieten op de finale avond." — Sisi',
         detail: 'Koninklijk Paleis uitchecken, slenteren langs de Riverside en de allerlaatste avond groots vieren.',
         sleep: 'Slaap: Phnom Penh · nacht 2/2',
-        mascotAction: 'strolling',
         icon: '🏙️',
         iconLabel: 'Stadsdag',
         photo: 'phnomPenh',
@@ -1555,7 +1382,6 @@
         quote: '"Don\'t cry because it\'s over, smile because it was absolutely legendary." — Dr. Seuss',
         detail: 'Vroeg de koffers dichtrammen, vlieger in en met een vrachtlading aan memories en aura naar huis.',
         sleep: 'Slaap: thuis in Amsterdam',
-        mascotAction: 'transferring',
         icon: '✈️',
         iconLabel: 'Terugvlucht',
         photo: 'flight',
@@ -1693,48 +1519,53 @@
       const heading = slide.querySelector('h2');
       const description = slide.querySelector('.desc');
       const quote = slide.querySelector('blockquote');
-      const meme = slide.querySelector('.meme-overlay-text');
       const photo = photos[stop.photo];
       const slideImage = slide.querySelector('.img-box img');
+      const imageBox = slide.querySelector('.img-box');
       const [routeStat, sleepStat] = slide.querySelectorAll('.stat-item');
-      const mascot = document.createElement('span');
+      const tripDay = tripDayNumbers.get(stop.date);
+      const caricature = document.createElement('span');
+      const caricatureImage = document.createElement('img');
 
       stop.slideIndex = idx;
       slideImage.src = photo.src;
       slideImage.alt = photo.alt;
+      if (photo.credit && photo.creditUrl) {
+        const credit = document.createElement('a');
+        credit.className = 'photo-credit';
+        credit.href = photo.creditUrl;
+        credit.target = '_blank';
+        credit.rel = 'noopener noreferrer';
+        credit.textContent = photo.credit;
+        imageBox.append(credit);
+      }
       slide.classList.toggle('active', idx === currentSlide);
       tag.textContent = `${stop.date} · ${stop.flags}`;
       heading.textContent = stop.title;
       description.textContent = stop.detail;
       quote.textContent = stop.quote;
-      meme.textContent = `MISSION: ${stop.title.toUpperCase()} ⚡`;
       routeStat.firstChild.textContent = 'REISDAG';
-      routeStat.querySelector('.stat-value').textContent = tripDayNumbers.get(stop.date);
+      routeStat.querySelector('.stat-value').textContent = tripDay;
       sleepStat.firstChild.textContent = 'OVERNACHTING';
       sleepStat.querySelector('.stat-value').textContent = stop.sleep.replace(/^Slaap: /, '');
-      mascot.className = 'slide-mascot-position';
-      mascot.setAttribute('aria-hidden', 'true');
-      mascot.innerHTML = `
-        <svg class="slide-mascot action-${stop.mascotAction}" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle class="mascot-glow" cx="60" cy="68" r="41"/>
-          <circle class="mascot-halo" cx="60" cy="35" r="25"/>
-          <path class="mascot-detail" d="M60 4v7M31 35h-7M96 35h-7M39 14l5 6M81 14l-5 6"/>
-          <path class="mascot-skin" d="M49 38c0-9 5-15 11-15s11 6 11 15v4H49z"/>
-          <circle cx="56" cy="37" r="1.4" fill="#14141c"/>
-          <circle cx="64" cy="37" r="1.4" fill="#14141c"/>
-          <path class="mascot-detail" d="M57 43c2 2 4 2 6 0"/>
-          <path class="mascot-robe" d="M47 52c3-5 8-7 13-7s10 2 13 7l7 21H40z"/>
-          <path class="mascot-skin" d="M48 53c-7 3-12 9-14 16l5 3c5-5 10-7 16-8M72 53c7 3 12 9 14 16l-5 3c-5-5-10-7-16-8"/>
-          <path class="mascot-robe" d="M43 69c5 4 11 6 17 6s12-2 17-6l8 13c-7 7-15 10-25 10S42 89 35 82z"/>
-          <path class="mascot-skin" d="M43 81c-10 1-15 5-15 10 0 4 8 6 20 6h12v-8H48c-4 0-5-2-5-4zM77 81c10 1 15 5 15 10 0 4-8 6-20 6H60v-8h12c4 0 5-2 5-4z"/>
-          <path class="mascot-detail" d="M60 50v25M48 59c3 3 7 4 12 4s9-1 12-4"/>
-          <path class="mascot-robe" d="M29 101c7-6 17-9 31-9s24 3 31 9l-5 7H34z"/>
-        </svg>`;
-      slide.append(mascot);
+      caricature.className = 'slide-caricature';
+      caricature.setAttribute('aria-hidden', 'true');
+      caricatureImage.alt = '';
+      caricatureImage.addEventListener('error', () => caricature.remove(), { once: true });
+      caricatureImage.src = `img/${String(tripDay).padStart(2, '0')}.png`;
+      caricature.append(caricatureImage);
+      slide.querySelector('.card').append(caricature);
       return slide;
     });
     slideTemplates.forEach(slide => slide.remove());
     deck.append(...slides);
+    const initialRoute = window.location.pathname.slice(appBasePath.length).match(/^dag-(\d+)\/?$/);
+    const initialDay = initialRoute ? Number(initialRoute[1]) : 1;
+    const initialTimelineIndex = itinerary.findIndex(stop => tripDayNumbers.get(stop.date) === initialDay);
+    if (initialTimelineIndex >= 0) {
+      currentTimelineIndex = initialTimelineIndex;
+      currentSlide = itinerary[initialTimelineIndex].slideIndex;
+    }
     slides.forEach(slide => {
       slide.addEventListener('transitionend', event => {
         if (event.target === slide && event.propertyName === 'transform' && slide.classList.contains('active')) {
@@ -1874,12 +1705,29 @@
       showMapLocation(currentStop);
     }
 
+    function updateSlideUrl(replace = false) {
+      if (!['http:', 'https:'].includes(window.location.protocol)) return;
+      const day = tripDayNumbers.get(itinerary[currentTimelineIndex].date);
+      const route = `${appBasePath}dag-${day}`;
+      const state = {
+        ...((history.state && typeof history.state === 'object') ? history.state : {}),
+        tripSlideIndex: currentSlide,
+        tripTimelineIndex: currentTimelineIndex
+      };
+      if (replace) {
+        history.replaceState(state, '', route);
+      } else {
+        history.pushState(state, '', route);
+      }
+    }
+
     function goToSlide(index, timelineIndex = itinerary.findIndex(stop => stop.slideIndex === index)) {
       if (index === currentSlide && timelineIndex === currentTimelineIndex) return;
       const slideChanged = index !== currentSlide;
       currentSlide = index;
       currentTimelineIndex = timelineIndex;
       if (slideChanged) playBeep(587.33, 'triangle', 0.12);
+      updateSlideUrl();
       updateDeck();
     }
 
@@ -1892,6 +1740,7 @@
         playBeep(880, 'sawtooth', 0.2);
       }
       currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
+      updateSlideUrl();
       updateDeck();
     }
 
@@ -1900,10 +1749,31 @@
         currentSlide--;
         playBeep(349.23, 'triangle', 0.12);
         currentTimelineIndex = itinerary.findIndex(stop => stop.slideIndex === currentSlide);
+        updateSlideUrl();
         updateDeck();
       }
     }
 
+    window.addEventListener('popstate', event => {
+      const dayRoute = window.location.pathname.slice(appBasePath.length).match(/^dag-(\d+)\/?$/);
+      const day = dayRoute ? Number(dayRoute[1]) : 1;
+      const stateTimelineIndex = event.state?.tripTimelineIndex;
+      const stateSlideIndex = event.state?.tripSlideIndex;
+      const hasValidState = Number.isInteger(stateTimelineIndex) &&
+        Number.isInteger(stateSlideIndex) &&
+        itinerary[stateTimelineIndex]?.slideIndex === stateSlideIndex &&
+        tripDayNumbers.get(itinerary[stateTimelineIndex].date) === day;
+      const timelineIndex = hasValidState
+        ? stateTimelineIndex
+        : itinerary.findIndex(stop => tripDayNumbers.get(stop.date) === day);
+
+      currentTimelineIndex = timelineIndex >= 0 ? timelineIndex : 0;
+      currentSlide = itinerary[currentTimelineIndex].slideIndex;
+      if (hasValidState) currentSlide = stateSlideIndex;
+      updateDeck();
+    });
+
+    updateSlideUrl(true);
     updateDeck();
 
     // Keyboard Arrow Controls
