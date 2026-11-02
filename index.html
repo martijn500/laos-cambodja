@@ -1504,8 +1504,8 @@
           alt: "Zipline tussen de bomen van de Laotiaanse jungle",
         },
         luangPrabang: {
-          src: "img/luangprabang.jpg",
-          alt: "Illustratie: wij tweeën met een plattegrond bij een tempel in Luang Prabang",
+          src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+          alt: "Wat Xiengthong in Luang Prabang",
         },
         waterfall: {
           src: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80",
@@ -1520,12 +1520,15 @@
           alt: "Luchtballon boven het karstlandschap van Vang Vieng",
         },
         angkor: {
-          src: "img/ankor.jpeg",
-          alt: "Illustratie: wij tweeën met een kaart voor de tempels van Angkor",
+          src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Don%27t_you_love_the_magical_colours_of_dawn%3F_%2850232013563%29.jpg/1920px-Don%27t_you_love_the_magical_colours_of_dawn%3F_%2850232013563%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          alt: "Angkor Wat bij zonsopkomst in een warme roze-oranje gloed, weerspiegeld in de vijver",
+          credit: "Foto: shankar s. · CC BY 2.0",
+          creditUrl:
+            "https://commons.wikimedia.org/wiki/File:Don't_you_love_the_magical_colours_of_dawn%3F_(50232013563).jpg",
         },
         taProhm: {
-          src: "img/ankor2.jpeg",
-          alt: "Illustratie: wij tweeën tussen de boomwortels van Ta Prohm",
+          src: "https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg",
+          alt: "Boomwortels groeien over de tempel Ta Prohm",
         },
         bus: {
           src: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
@@ -1722,8 +1725,6 @@
           icon: "🛕",
           iconLabel: "Tempelbezoek",
           photo: "luangPrabang",
-          // Day 8's caricature belongs to the Nagini Bar side quest
-          caricature: false,
           slideIndex: 3,
           theme: "luangPrabang",
         },
@@ -1992,9 +1993,20 @@
         },
       ];
       const tripDayNumbers = new Map();
+      // Caricatures: img/08.png for the day itself, img/08-s1.png, 08-s2.png… for its side quests
+      const caricatureNames = new Map();
+      const sideQuestCounts = new Map();
       itinerary.forEach((stop) => {
         if (!tripDayNumbers.has(stop.date)) {
           tripDayNumbers.set(stop.date, tripDayNumbers.size + 1);
+        }
+        const dayName = String(tripDayNumbers.get(stop.date)).padStart(2, "0");
+        if (stop.sideQuest) {
+          const count = (sideQuestCounts.get(stop.date) || 0) + 1;
+          sideQuestCounts.set(stop.date, count);
+          caricatureNames.set(stop, `${dayName}-s${count}`);
+        } else {
+          caricatureNames.set(stop, dayName);
         }
       });
       let soundEnabled = true;
@@ -2532,7 +2544,7 @@
           once: true,
         });
         if (stop.caricature !== false) {
-          caricatureImage.src = `img/${String(tripDay).padStart(2, "0")}.png`;
+          caricatureImage.src = `img/${caricatureNames.get(stop)}.png`;
           caricature.append(caricatureImage);
           card.append(caricature);
         }
