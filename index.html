@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,800;1,900&family=Press+Start+2P&family=Space+Grotesk:wght@700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
     <link
@@ -33,10 +33,49 @@
         --neon-green: #00ff66;
         --neon-yellow: #ffee00;
         --neon-cyan: #00f0ff;
+        --neon-orange: #ff8a00;
+        --neon-purple: #b066ff;
         --card-bg: rgba(15, 18, 26, 0.77);
+        --panel-bg: rgba(10, 11, 18, 0.92);
+        --ink-muted: #b9b4cc;
+        --line-soft: rgba(255, 255, 255, 0.14);
+        /* Colour of the active travel day, updated from JS */
+        --day-color: var(--neon-pink);
+        --radius-sm: 4px;
+        --radius: 8px;
+        --radius-lg: 14px;
         --font-meme: "Press Start 2P", monospace;
         --font-sans: "Plus Jakarta Sans", sans-serif;
-        --font-display: "Space Grotesk", sans-serif;
+      }
+
+      /* Arcade key: solid fill with a hard, darker offset shadow */
+      .slide-close,
+      .nav-btn,
+      .sound-btn {
+        --key-color: var(--popup-color, var(--day-color));
+        border: 2px solid #000;
+        border-radius: var(--radius-sm);
+        background: var(--key-color);
+        color: #000;
+        box-shadow: 3px 3px 0 color-mix(in srgb, var(--key-color) 35%, #000);
+        cursor: pointer;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s,
+          filter 0.15s;
+      }
+
+      .slide-close:hover,
+      .nav-btn:hover,
+      .sound-btn:hover {
+        filter: brightness(1.12);
+      }
+
+      .slide-close:active,
+      .nav-btn:active,
+      .sound-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 1px 1px 0 color-mix(in srgb, var(--key-color) 35%, #000);
       }
 
       * {
@@ -61,6 +100,11 @@
         z-index: 0;
         overflow: hidden;
         background: #10191d;
+      }
+
+      /* MapLibre sets Helvetica on the map container; popups live inside it */
+      .map-background.maplibregl-map {
+        font: inherit;
       }
 
       .map-background .map-shade {
@@ -95,7 +139,7 @@
         max-width: none;
         padding: 0;
         overflow: visible;
-        border-radius: 20px;
+        border-radius: var(--radius-lg);
         background: transparent;
         box-shadow: none;
       }
@@ -136,16 +180,13 @@
         height: 32px;
         padding: 0;
         appearance: none;
-        border: 2px solid
-          color-mix(in srgb, var(--marker-color, #75d8c8) 44%, #fff);
-        border-radius: 50%;
-        background: var(--marker-color, #75d8c8);
-        color: #04150d;
-        box-shadow:
-          0 2px 8px rgba(0, 0, 0, 0.6),
-          0 0 0 2px
-            color-mix(in srgb, var(--marker-color, #75d8c8) 45%, transparent);
-        font: 900 0.8rem var(--font-display);
+        border: 2px solid #000;
+        border-radius: var(--radius-sm);
+        background: var(--marker-color, var(--neon-cyan));
+        color: #000;
+        box-shadow: 3px 3px 0
+          color-mix(in srgb, var(--marker-color, var(--neon-cyan)) 35%, #000);
+        font: 400 0.6rem/1 var(--font-meme);
       }
 
       .map-attribution {
@@ -154,16 +195,16 @@
         left: 12px;
         z-index: 5;
         padding: 4px 7px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 6px;
-        background: rgba(8, 15, 19, 0.82);
-        color: #dce8e8;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-sm);
+        background: var(--panel-bg);
+        color: var(--ink-muted);
         font-size: 0.6rem;
         line-height: 1.3;
       }
 
       .map-attribution a {
-        color: #b7e9e1;
+        color: var(--neon-cyan);
       }
 
       .map-status {
@@ -171,15 +212,18 @@
         top: 14px;
         left: 14px;
         z-index: 5;
-        padding: 6px 9px;
-        border-radius: 7px;
-        background: rgba(8, 15, 19, 0.78);
-        color: #dce8e8;
-        font-size: 0.68rem;
+        padding: 7px 9px;
+        border: 1px solid var(--line-soft);
+        border-radius: var(--radius-sm);
+        background: var(--panel-bg);
+        color: #fff;
+        font: 0.55rem/1 var(--font-meme);
       }
 
       .map-day-marker:focus-visible,
-      .slide-close:focus-visible {
+      .slide-close:focus-visible,
+      .nav-btn:focus-visible,
+      .sound-btn:focus-visible {
         outline: 3px solid #fff;
         outline-offset: 3px;
       }
@@ -204,8 +248,8 @@
       .map-day-marker[aria-current="date"]::after {
         position: absolute;
         inset: -9px;
-        border: 1px solid var(--marker-color, #75d8c8);
-        border-radius: 50%;
+        border: 2px solid var(--marker-color, var(--neon-cyan));
+        border-radius: var(--radius);
         animation: map-pulse 2s ease-out infinite;
         content: "";
         pointer-events: none;
@@ -231,7 +275,9 @@
         width: 26px;
         height: 26px;
         transform: translate(-50%, -50%);
-        font-size: 0.7rem;
+        box-shadow: 2px 2px 0
+          color-mix(in srgb, var(--marker-color, var(--neon-cyan)) 35%, #000);
+        font-size: 0.5rem;
         pointer-events: none;
       }
 
@@ -274,18 +320,9 @@
         z-index: 5;
         display: grid;
         place-items: center;
-        width: 38px;
-        height: 38px;
-        border: 1px solid rgba(255, 255, 255, 0.65);
-        border-radius: 50%;
-        background: rgba(8, 15, 19, 0.9);
-        color: #fff;
+        width: 36px;
+        height: 36px;
         padding: 0;
-        font: 700 1.6rem/1 var(--font-sans);
-        text-align: center;
-        line-height: 1;
-        cursor: pointer;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
       }
 
       .slide-close span {
@@ -299,11 +336,10 @@
       .slide-close span::before,
       .slide-close span::after {
         position: absolute;
-        top: 7px;
-        left: 1px;
-        width: 14px;
-        height: 2px;
-        border-radius: 2px;
+        top: 6px;
+        left: 0;
+        width: 16px;
+        height: 4px;
         background: currentColor;
         content: "";
       }
@@ -380,12 +416,13 @@
 
       /* Slide Card Content Layout */
       .card {
+        --card-color: var(--popup-color, var(--day-color));
         background: var(--card-bg);
-        border: 3px solid var(--neon-pink);
+        border: 3px solid var(--card-color);
         box-shadow:
-          0 0 25px rgba(255, 0, 127, 0.4),
-          inset 0 0 15px rgba(255, 0, 127, 0.2);
-        border-radius: 20px;
+          0 0 25px color-mix(in srgb, var(--card-color) 40%, transparent),
+          inset 0 0 15px color-mix(in srgb, var(--card-color) 20%, transparent);
+        border-radius: var(--radius-lg);
         width: 100%;
         max-width: 1100px;
         max-height: min(
@@ -436,14 +473,6 @@
           max-height: 100%;
           padding: 0.75rem;
           overflow: hidden;
-          border: 3px solid var(--popup-color, var(--neon-pink));
-          border-radius: 20px;
-          background: var(--card-bg);
-          box-shadow:
-            0 0 25px
-              color-mix(in srgb, var(--popup-color, var(--neon-pink)) 40%, transparent),
-            inset 0 0 15px
-              color-mix(in srgb, var(--popup-color, var(--neon-pink)) 20%, transparent);
           backdrop-filter: none;
         }
 
@@ -454,6 +483,7 @@
         .slide .card > div:first-child > .tag {
           grid-column: 1 / -1;
           grid-row: 1;
+          margin-right: 44px;
         }
 
         .slide .card > div:first-child > h2 {
@@ -506,7 +536,7 @@
           height: clamp(180px, 32vh, 260px);
           margin-bottom: 0;
           border: 0;
-          border-radius: 12px;
+          border-radius: var(--radius);
           box-shadow: none;
           pointer-events: none;
         }
@@ -561,7 +591,7 @@
         color: #000;
         background: var(--neon-yellow);
         padding: 6px 12px;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         text-transform: uppercase;
         margin-bottom: 0.75rem;
         letter-spacing: 1px;
@@ -592,7 +622,7 @@
         padding: 0.8rem 1.2rem;
         font-style: italic;
         color: var(--neon-cyan);
-        border-radius: 0 10px 10px 0;
+        border-radius: 0 var(--radius) var(--radius) 0;
         margin-bottom: 1rem;
         font-weight: 700;
         font-size: 0.95rem;
@@ -603,10 +633,11 @@
         position: relative;
         width: 100%;
         height: 360px;
-        border-radius: 15px;
+        border-radius: var(--radius);
         overflow: hidden;
         border: 2px solid var(--neon-green);
-        box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+        box-shadow: 0 0 15px
+          color-mix(in srgb, var(--popup-color, var(--day-color)) 30%, transparent);
       }
 
       .img-box img {
@@ -622,7 +653,7 @@
         bottom: 8px;
         z-index: 1;
         padding: 4px 6px;
-        border-radius: 4px;
+        border-radius: var(--radius-sm);
         background: rgba(0, 0, 0, 0.72);
         color: #fff;
         font-size: 0.6rem;
@@ -641,20 +672,23 @@
       }
 
       .stat-item {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 0.85rem;
+        background: rgba(0, 0, 0, 0.35);
+        border: 2px solid var(--line-soft);
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        color: var(--ink-muted);
+        font-family: var(--font-meme);
+        font-size: 0.55rem;
         flex: 1;
         text-align: center;
       }
 
       .stat-value {
         font-family: var(--font-meme);
-        color: var(--neon-green);
-        font-size: 0.9rem;
-        margin-top: 4px;
+        color: var(--popup-color, var(--day-color));
+        font-size: 0.85rem;
+        line-height: 1.3;
+        margin-top: 8px;
       }
 
       /* Audio FX Button */
@@ -662,16 +696,10 @@
         position: absolute;
         top: 20px;
         right: 20px;
-        background: var(--neon-pink);
-        color: #fff;
-        border: none;
-        padding: 8px 16px;
+        padding: 8px 14px;
         font-family: var(--font-meme);
-        font-size: 0.7rem;
-        border-radius: 20px;
-        cursor: pointer;
+        font-size: 0.65rem;
         z-index: 100;
-        box-shadow: 0 0 10px var(--neon-pink);
       }
 
       /* Clickable trip timeline */
@@ -682,14 +710,14 @@
         z-index: 10;
         padding: 7px 18px 5px;
         overflow: hidden;
-        background: linear-gradient(
-          180deg,
-          rgba(17, 24, 31, 0.88),
-          rgba(8, 13, 18, 0.91)
-        );
-        border-top: 1px solid rgba(154, 190, 197, 0.2);
-        box-shadow: 0 -12px 38px rgba(0, 0, 0, 0.36);
+        background: var(--panel-bg);
+        border-top: 3px solid var(--day-color);
+        box-shadow: 0 -6px 24px
+          color-mix(in srgb, var(--day-color) 22%, transparent);
         backdrop-filter: blur(18px);
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
       }
 
       .timeline-heading {
@@ -700,19 +728,17 @@
         height: 25px;
         margin: 0 auto 2px;
         padding: 0 2px;
-        color: #e9f2f3;
-        font-family: var(--font-display);
-        font-size: 0.82rem;
-        font-weight: 700;
-        letter-spacing: 0.04em;
+        color: #fff;
+        font-family: var(--font-meme);
+        font-size: 0.6rem;
       }
 
       .timeline-heading span {
-        color: #94a8ad;
+        color: var(--ink-muted);
         font-family: var(--font-sans);
         font-size: 0.68rem;
-        font-weight: 600;
-        letter-spacing: 0.02em;
+        font-weight: 700;
+        letter-spacing: 0.04em;
       }
 
       .page-indicators {
@@ -730,12 +756,13 @@
         padding: 0 12px;
         overflow-x: auto;
         overscroll-behavior-x: contain;
-        scrollbar-color: rgba(130, 170, 176, 0.45) transparent;
+        scrollbar-color: color-mix(in srgb, var(--day-color) 50%, transparent)
+          transparent;
         scrollbar-width: thin;
       }
 
       .page-indicator {
-        --indicator-color: #75d8c8;
+        --indicator-color: var(--neon-cyan);
         position: relative;
         display: block;
         flex: 0 0 var(--timeline-item-width);
@@ -758,24 +785,14 @@
         height: 65px;
         z-index: 2;
         overflow: hidden;
-        border: 1px solid
-          color-mix(
-            in srgb,
-            var(--indicator-color) 34%,
-            rgba(174, 197, 200, 0.16)
-          );
-        border-radius: 11px;
-        background: linear-gradient(
-          135deg,
-          rgba(29, 41, 47, 0.96),
-          rgba(15, 23, 29, 0.98)
-        );
-        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+        border: 2px solid
+          color-mix(in srgb, var(--indicator-color) 45%, transparent);
+        border-radius: var(--radius);
+        background: #0d0e16;
         transition:
-          transform 0.2s,
-          box-shadow 0.2s,
-          border-color 0.2s,
-          background 0.2s;
+          transform 0.15s,
+          box-shadow 0.15s,
+          border-color 0.15s;
       }
 
       .timeline-thumb-wrap {
@@ -791,9 +808,9 @@
         inset: 0;
         background: linear-gradient(
           180deg,
-          rgba(7, 13, 17, 0.52),
-          rgba(7, 13, 17, 0.08) 40%,
-          rgba(7, 13, 17, 0.92)
+          rgba(8, 8, 14, 0.45),
+          rgba(8, 8, 14, 0.1) 38%,
+          rgba(8, 8, 14, 0.94)
         );
         content: "";
       }
@@ -808,7 +825,7 @@
       .timeline-meta {
         position: absolute;
         top: 5px;
-        right: 7px;
+        right: 6px;
         z-index: 1;
         display: flex;
         align-items: center;
@@ -816,35 +833,30 @@
         gap: 6px;
         width: max-content;
         max-width: 100%;
-        min-height: 19px;
-        padding: 2px 7px;
-        border: 1px solid rgba(156, 185, 188, 0.2);
-        border-radius: 999px;
-        background: rgba(8, 15, 19, 0.86);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(5px);
+        min-height: 17px;
+        padding: 1px 5px;
+        border-radius: var(--radius-sm);
+        background: rgba(0, 0, 0, 0.75);
       }
 
       .timeline-date-badge {
         position: absolute;
         top: 5px;
-        left: 7px;
+        left: 6px;
         z-index: 1;
-        padding: 3px 6px;
-        border: 1px solid rgba(156, 185, 188, 0.3);
-        border-radius: 999px;
-        background: rgba(8, 15, 19, 0.9);
-        color: #fff;
-        font-size: 0.52rem;
-        font-weight: 800;
-        letter-spacing: 0.02em;
+        padding: 4px 5px;
+        border-radius: var(--radius-sm);
+        background: var(--indicator-color);
+        color: #000;
+        font-family: var(--font-meme);
+        font-size: 0.45rem;
         line-height: 1;
         white-space: nowrap;
       }
 
       .timeline-flags {
         overflow: hidden;
-        color: #d7e5e6;
+        color: #fff;
         font-size: 0.75rem;
         line-height: 1;
         text-overflow: ellipsis;
@@ -854,11 +866,11 @@
       .timeline-title {
         display: -webkit-box;
         overflow: hidden;
-        color: #ffffff;
+        color: #fff;
         font-size: 0.72rem;
         font-weight: 800;
         line-height: 1.2;
-        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
       }
@@ -876,10 +888,11 @@
       .timeline-kind {
         display: block;
         overflow: hidden;
-        margin-top: 3px;
-        color: #c1d0d1;
+        margin-top: 4px;
+        color: var(--indicator-color);
         font-size: 0.56rem;
-        font-weight: 700;
+        font-weight: 800;
+        letter-spacing: 0.04em;
         line-height: 1;
         text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
         text-overflow: ellipsis;
@@ -943,60 +956,40 @@
         width: 2px;
         height: 30px;
         transform: translateX(-50%);
-        border-left: 1px dashed var(--indicator-color);
+        border-left: 2px dotted var(--indicator-color);
         pointer-events: none;
       }
 
       .page-indicator:hover .timeline-card {
-        z-index: 2;
-        transform: translateY(-2px);
-        border-color: color-mix(
-          in srgb,
-          var(--indicator-color) 72%,
-          transparent
-        );
-        background: color-mix(in srgb, var(--indicator-color) 12%, #172127);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+        transform: translate(-2px, -2px);
+        border-color: var(--indicator-color);
+        box-shadow: 3px 3px 0
+          color-mix(in srgb, var(--indicator-color) 35%, #000);
       }
 
       .page-indicator[aria-current="step"] .timeline-card {
-        z-index: 2;
-        transform: scale(1.08);
-        transform-origin: center center;
-        border-color: color-mix(
-          in srgb,
-          var(--indicator-color) 78%,
-          transparent
-        );
-        background: color-mix(in srgb, var(--indicator-color) 14%, #172127);
+        transform: translate(-3px, -3px);
+        border-color: var(--indicator-color);
         box-shadow:
-          0 10px 24px rgba(0, 0, 0, 0.4),
-          0 0 18px color-mix(in srgb, var(--indicator-color) 16%, transparent);
-        transition-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
-      }
-
-      .page-indicator[aria-current="step"] .timeline-title {
-        color: #ffffff;
+          4px 4px 0 var(--indicator-color),
+          0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
       }
 
       .page-indicator:focus-visible {
-        outline: 2px solid #9de7dc;
+        outline: 3px solid #fff;
         outline-offset: 2px;
-        border-radius: 10px;
+        border-radius: var(--radius);
       }
 
       .nav-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.6rem;
         width: max-content;
         margin: 0 auto;
         height: 34px;
-        padding: 2px 7px;
-        border: 1px solid rgba(183, 233, 225, 0.18);
-        border-radius: 999px;
-        background: rgba(183, 233, 225, 0.07);
+        padding: 0 4px;
       }
 
       .nav-btn {
@@ -1005,34 +998,22 @@
         place-items: center;
         width: 28px;
         height: 28px;
-        background: #b7e9e1;
-        color: #102124;
-        border: none;
-        border-radius: 50%;
-        font-family: var(--font-sans);
-        font-size: 0.8rem;
-        font-weight: 800;
-        cursor: pointer;
-        transition:
-          transform 0.15s,
-          background 0.15s;
+        padding: 0;
       }
 
+      /* Pixel-style triangle; the ▶ glyph renders as an emoji on some phones */
       .nav-arrow {
         display: block;
-        line-height: 1;
+        width: 0;
+        height: 0;
+        border-block: 6px solid transparent;
+        border-left: 8px solid currentColor;
+        font-size: 0;
+        transform: translateX(1px);
       }
 
       .nav-btn-prev .nav-arrow {
-        transform: rotate(180deg);
-      }
-
-      .nav-btn:hover {
-        background: #e4f8f4;
-      }
-
-      .nav-btn:active {
-        transform: scale(0.9);
+        transform: rotate(180deg) translateX(1px);
       }
 
       .progress-text {
@@ -1040,21 +1021,16 @@
         flex: 0 0 auto;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 8px;
         min-width: 0;
         height: 100%;
         padding: 0 4px;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
-        color: #dce8e8;
-        font-family: var(--font-sans);
-        font-size: 0.72rem;
-        font-weight: 800;
+        color: #fff;
+        font-family: var(--font-meme);
+        font-size: 0.6rem;
       }
 
       .progress-day {
-        font-size: 0.68rem;
         white-space: nowrap;
       }
 
@@ -1528,8 +1504,8 @@
           alt: "Zipline tussen de bomen van de Laotiaanse jungle",
         },
         luangPrabang: {
-          src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
-          alt: "Wat Xiengthong in Luang Prabang",
+          src: "img/luangprabang.jpg",
+          alt: "Illustratie: wij tweeën met een plattegrond bij een tempel in Luang Prabang",
         },
         waterfall: {
           src: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=1200&q=80",
@@ -1544,15 +1520,12 @@
           alt: "Luchtballon boven het karstlandschap van Vang Vieng",
         },
         angkor: {
-          src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Don%27t_you_love_the_magical_colours_of_dawn%3F_%2850232013563%29.jpg/1920px-Don%27t_you_love_the_magical_colours_of_dawn%3F_%2850232013563%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-          alt: "Angkor Wat bij zonsopkomst in een warme roze-oranje gloed, weerspiegeld in de vijver",
-          credit: "Foto: shankar s. · CC BY 2.0",
-          creditUrl:
-            "https://commons.wikimedia.org/wiki/File:Don't_you_love_the_magical_colours_of_dawn%3F_(50232013563).jpg",
+          src: "img/ankor.jpeg",
+          alt: "Illustratie: wij tweeën met een kaart voor de tempels van Angkor",
         },
         taProhm: {
-          src: "https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg",
-          alt: "Boomwortels groeien over de tempel Ta Prohm",
+          src: "img/ankor2.jpeg",
+          alt: "Illustratie: wij tweeën tussen de boomwortels van Ta Prohm",
         },
         bus: {
           src: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80",
@@ -1578,6 +1551,19 @@
             "https://commons.wikimedia.org/wiki/File:2016_Siem_Reab,_Pub_Street_noc%C4%85.jpg",
         },
       };
+      // One colour per destination; neighbouring destinations must differ
+      const stopThemes = {
+        amsterdam: "var(--neon-pink)",
+        chiangRai: "var(--neon-yellow)",
+        huayXai: "var(--neon-orange)",
+        gibbon: "var(--neon-green)",
+        slowboat: "var(--neon-cyan)",
+        luangPrabang: "var(--neon-purple)",
+        vangVieng: "var(--neon-orange)",
+        vientiane: "var(--neon-yellow)",
+        angkor: "var(--neon-green)",
+        phnomPenh: "var(--neon-purple)",
+      };
       const itinerary = [
         {
           date: "MA · 15 FEB",
@@ -1597,6 +1583,7 @@
           iconLabel: "Vlucht",
           photo: "flight",
           slideIndex: 0,
+          theme: "amsterdam",
         },
         {
           date: "DI · 16 FEB",
@@ -1616,6 +1603,7 @@
           iconLabel: "Aankomst",
           photo: "chiangRai",
           slideIndex: 0,
+          theme: "chiangRai",
         },
         {
           date: "WO · 17 FEB",
@@ -1635,6 +1623,7 @@
           iconLabel: "Grensovergang per transfer",
           photo: "mekongBorderSunset",
           slideIndex: 1,
+          theme: "huayXai",
         },
         {
           date: "DO · 18 FEB",
@@ -1654,6 +1643,7 @@
           iconLabel: "Zipline",
           photo: "jungle",
           slideIndex: 1,
+          theme: "gibbon",
         },
         {
           date: "VR · 19 FEB",
@@ -1673,6 +1663,7 @@
           iconLabel: "Jungletocht",
           photo: "jungle",
           slideIndex: 2,
+          theme: "gibbon",
         },
         {
           date: "ZA · 20 FEB",
@@ -1692,6 +1683,7 @@
           iconLabel: "Slowboat",
           photo: "mekong",
           slideIndex: 2,
+          theme: "slowboat",
         },
         {
           date: "ZO · 21 FEB",
@@ -1711,6 +1703,7 @@
           iconLabel: "Slowboat",
           photo: "mekongSlowboat",
           slideIndex: 2,
+          theme: "slowboat",
         },
         {
           date: "MA · 22 FEB",
@@ -1729,7 +1722,10 @@
           icon: "🛕",
           iconLabel: "Tempelbezoek",
           photo: "luangPrabang",
+          // Day 8's caricature belongs to the Nagini Bar side quest
+          caricature: false,
           slideIndex: 3,
+          theme: "luangPrabang",
         },
         {
           date: "MA · 22 FEB",
@@ -1750,6 +1746,7 @@
           iconLabel: "Cocktails",
           photo: "nagini",
           slideIndex: 3,
+          theme: "luangPrabang",
         },
         {
           date: "DI · 23 FEB",
@@ -1769,6 +1766,7 @@
           iconLabel: "Watervallen",
           photo: "waterfall",
           slideIndex: 3,
+          theme: "luangPrabang",
         },
         {
           date: "WO · 24 FEB",
@@ -1788,6 +1786,7 @@
           iconLabel: "Trein",
           photo: "train",
           slideIndex: 4,
+          theme: "vangVieng",
         },
         {
           date: "DO · 25 FEB",
@@ -1807,6 +1806,7 @@
           iconLabel: "Ballonvaart of outdoor-avontuur",
           photo: "vangVieng",
           slideIndex: 4,
+          theme: "vangVieng",
         },
         {
           date: "VR · 26 FEB",
@@ -1826,6 +1826,7 @@
           iconLabel: "Trein",
           photo: "vientiane",
           slideIndex: 4,
+          theme: "vientiane",
         },
         {
           date: "VR · 26 FEB",
@@ -1846,6 +1847,7 @@
           iconLabel: "Buddha Park",
           photo: "buddhaPark",
           slideIndex: 3,
+          theme: "vientiane",
         },
         {
           date: "ZA · 27 FEB",
@@ -1865,6 +1867,7 @@
           iconLabel: "Vlucht",
           photo: "flight",
           slideIndex: 5,
+          theme: "angkor",
         },
         {
           date: "ZO · 28 FEB",
@@ -1884,6 +1887,7 @@
           iconLabel: "Tempels bij zonsopkomst",
           photo: "angkor",
           slideIndex: 5,
+          theme: "angkor",
         },
         {
           date: "MA · 1 MRT",
@@ -1903,6 +1907,7 @@
           iconLabel: "Rust- of tempeldag",
           photo: "taProhm",
           slideIndex: 6,
+          theme: "angkor",
         },
         {
           date: "MA · 1 MRT",
@@ -1923,6 +1928,7 @@
           iconLabel: "Nightlife",
           photo: "street08",
           slideIndex: 7,
+          theme: "angkor",
         },
         {
           date: "DI · 2 MRT",
@@ -1942,6 +1948,7 @@
           iconLabel: "Bus",
           photo: "bus",
           slideIndex: 7,
+          theme: "phnomPenh",
         },
         {
           date: "WO · 3 MRT",
@@ -1961,6 +1968,7 @@
           iconLabel: "Stadsdag",
           photo: "phnomPenh",
           slideIndex: 7,
+          theme: "phnomPenh",
         },
         {
           date: "DO · 4 MRT",
@@ -1980,6 +1988,7 @@
           iconLabel: "Terugvlucht",
           photo: "flight",
           slideIndex: 7,
+          theme: "amsterdam",
         },
       ];
       const tripDayNumbers = new Map();
@@ -2480,6 +2489,8 @@
         const closeButton = document.createElement("button");
 
         stop.slideIndex = idx;
+        card.style.borderColor = stopThemes[stop.theme];
+        imageBox.style.borderColor = stopThemes[stop.theme];
         slide.setAttribute("role", "dialog");
         slide.setAttribute("aria-label", stop.title);
         slideImage.src = photo.src;
@@ -2520,9 +2531,11 @@
         caricatureImage.addEventListener("error", () => caricature.remove(), {
           once: true,
         });
-        caricatureImage.src = `img/${String(tripDay).padStart(2, "0")}.png`;
-        caricature.append(caricatureImage);
-        card.append(caricature);
+        if (stop.caricature !== false) {
+          caricatureImage.src = `img/${String(tripDay).padStart(2, "0")}.png`;
+          caricature.append(caricatureImage);
+          card.append(caricature);
+        }
         return slide;
       });
       slideTemplates.forEach((slide) => slide.remove());
@@ -2671,6 +2684,10 @@
           }
         });
         const activeIndicator = pageIndicators[currentTimelineIndex];
+        document.body.style.setProperty(
+          "--day-color",
+          activeIndicator.style.getPropertyValue("--indicator-color"),
+        );
         const indicatorBounds = activeIndicator.getBoundingClientRect();
         const timelineBounds = pageIndicatorsEl.getBoundingClientRect();
         const desiredScrollLeft =
@@ -2830,12 +2847,17 @@
       });
 
       // Touch Swipe Controls for Mobile
+      // Disabled while only the map is visible, so panning/zooming isn't hijacked
       let touchStartX = 0;
-      document.addEventListener(
-        "touchstart",
-        (e) => (touchStartX = e.changedTouches[0].screenX),
-      );
+      let swipeEnabled = false;
+      document.addEventListener("touchstart", (e) => {
+        swipeEnabled =
+          e.touches.length === 1 &&
+          !document.body.classList.contains("popup-closed");
+        touchStartX = e.changedTouches[0].screenX;
+      });
       document.addEventListener("touchend", (e) => {
+        if (!swipeEnabled) return;
         let touchEndX = e.changedTouches[0].screenX;
         if (touchStartX - touchEndX > 50) nextSlide();
         if (touchEndX - touchStartX > 50) prevSlide();
