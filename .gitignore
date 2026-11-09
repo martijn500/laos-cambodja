@@ -1,3 +1,6 @@
 .DS_Store
+node_modules/
+test-results/
+playwright-report/
 # Original photos (large); the web versions in img/slides are committed
 img/bg/

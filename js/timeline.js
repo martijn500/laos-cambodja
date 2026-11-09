@@ -1,0 +1,103 @@
+import { state } from "./state.js";
+import { itinerary, tripDayNumbers } from "./data/itinerary.js";
+import { photos } from "./data/photos.js";
+import { goToSlide } from "./deck.js";
+import { slidePhotoSrc } from "./slides/gallery.js";
+
+export const pageIndicatorsEl = document.getElementById("page-indicators");
+
+export function buildTimeline() {
+  state.pageIndicators = itinerary.map((stop, idx) => {
+    const slide = state.slides[stop.slideIndex];
+    const button = document.createElement("button");
+    const title = slide.querySelector("h2").textContent.trim();
+    const image = document.createElement("img");
+    const thumbnail = document.createElement("span");
+    const flags = document.createElement("span");
+    const meta = document.createElement("span");
+    const dateBadge = document.createElement("span");
+    const stopTitle = document.createElement("span");
+    const copy = document.createElement("span");
+    const card = document.createElement("span");
+    const connector = document.createElement("span");
+    const node = document.createElement("span");
+    const dateNumber = document.createElement("span");
+
+    button.type = "button";
+    button.className = "page-indicator";
+    const indicatorColor = getComputedStyle(
+      slide.querySelector(".card"),
+    ).borderTopColor;
+    const nextStop = itinerary[idx + 1];
+    const nextSlide = nextStop ? state.slides[nextStop.slideIndex] : slide;
+    const nextIndicatorColor = getComputedStyle(
+      nextSlide.querySelector(".card"),
+    ).borderTopColor;
+    button.style.setProperty("--indicator-color", indicatorColor);
+    button.style.setProperty("--next-indicator-color", nextIndicatorColor);
+    if (stop.sideQuest) {
+      button.classList.add("side-quest");
+    }
+    button.setAttribute(
+      "aria-label",
+      `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`,
+    );
+    button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
+
+    image.className = "timeline-thumb";
+    image.dataset.src = slidePhotoSrc(stop, 1);
+    image.addEventListener(
+      "error",
+      () => (image.src = photos[stop.photo].src),
+      { once: true },
+    );
+    image.alt = "";
+    image.loading = "lazy";
+    image.decoding = "async";
+    thumbnail.className = "timeline-thumb-wrap";
+    meta.className = "timeline-meta";
+    flags.className = "timeline-flags";
+    flags.textContent = stop.flags;
+    flags.setAttribute("aria-hidden", "true");
+    meta.append(flags);
+    dateBadge.className = "timeline-date-badge";
+    // Side quests share their date with the main day: label them instead
+    dateBadge.textContent = stop.sideQuest
+      ? "SIDE QUEST"
+      : stop.date.replace(/^[^·]+·\s*/, "");
+    dateBadge.setAttribute("aria-hidden", "true");
+    thumbnail.append(image, dateBadge, meta);
+    stopTitle.className = "timeline-title";
+    stopTitle.textContent = stop.title.replace(/^SIDE QUEST:\s*/i, "");
+    copy.className = "timeline-copy";
+    copy.append(stopTitle);
+    card.className = "timeline-card";
+    connector.className = "timeline-connector";
+    node.className = "timeline-node";
+    node.setAttribute("aria-hidden", "true");
+    dateNumber.className = "timeline-date-number";
+    dateNumber.style.setProperty("--marker-color", indicatorColor);
+    const isFirstStopOfDate =
+      idx === 0 || itinerary[idx - 1].date !== stop.date;
+    if (isFirstStopOfDate) {
+      dateNumber.textContent = String(tripDayNumbers.get(stop.date));
+      dateNumber.setAttribute("aria-hidden", "true");
+    }
+
+    card.append(thumbnail, copy);
+    button.append(connector, node, dateNumber, card);
+    button.dataset.index = String(idx);
+    pageIndicatorsEl.append(button);
+    return button;
+  });
+
+  // One listener for the whole timeline (event delegation)
+  pageIndicatorsEl.addEventListener("click", (event) => {
+    const button = /** @type {HTMLElement} */ (event.target).closest(
+      ".page-indicator",
+    );
+    if (!(button instanceof HTMLElement)) return;
+    const index = Number(button.dataset.index);
+    goToSlide(index);
+  });
+}

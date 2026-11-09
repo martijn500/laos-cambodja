@@ -1,0 +1,234 @@
+/* Deck visibility while booting and the full-screen loader */
+
+.deck {
+  pointer-events: none;
+}
+
+body.map-popup-transition .deck {
+  visibility: hidden;
+}
+
+.slide,
+.slide .card {
+  pointer-events: none;
+}
+
+.slide.active .card {
+  pointer-events: auto;
+}
+
+/*
+ * While booting, the deck (static template slides, then the slide that
+ * is being built) stays hidden: the day appears once, as the popup
+ * growing out of its map marker. Only if the map can't load does the
+ * plain deck slide show as a fallback.
+ */
+/* opacity, not visibility: .slide.active sets visibility: visible and
+   would punch through an inherited hidden */
+body.is-booting .deck {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.is-booting .slide {
+  transition: none;
+}
+
+/*
+ * Boot loader: a pixel map pin in the colour of the day hops over its
+ * own shadow, above a chase of neon blocks (same language as the beam
+ * bars and the arcade keys). Fades away when the day pops out.
+ */
+.boot-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 22px;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      color-mix(in srgb, var(--day-color) 14%, transparent),
+      transparent 55%
+    ),
+    var(--bg);
+  color: #fff;
+  font-family: var(--font-meme);
+  text-align: center;
+  transition:
+    opacity 320ms var(--ease-out),
+    visibility 0s linear 320ms;
+}
+
+body:not(.is-booting) .boot-loader {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot-pin {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.boot-pin svg {
+  width: 48px;
+  height: 60px;
+  color: var(--day-color);
+  filter: drop-shadow(4px 4px 0 color-mix(in srgb, var(--day-color) 35%, #000));
+  shape-rendering: crispEdges;
+  transform-origin: 50% 100%;
+  animation: boot-hop 900ms var(--ease-out) infinite;
+}
+
+.boot-pin-shadow {
+  width: 32px;
+  height: 4px;
+  background: color-mix(in srgb, var(--day-color) 45%, transparent);
+  animation: boot-shadow 900ms var(--ease-out) infinite;
+}
+
+.boot-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.boot-bar span {
+  width: 12px;
+  height: 12px;
+  background: var(--c);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--c) 35%, #000);
+  opacity: 0.15;
+  animation: boot-chase 1.2s steps(1, end) infinite;
+}
+
+.boot-bar span:nth-child(6n + 1) {
+  --c: var(--neon-pink);
+}
+.boot-bar span:nth-child(6n + 2) {
+  --c: var(--neon-orange);
+}
+.boot-bar span:nth-child(6n + 3) {
+  --c: var(--neon-yellow);
+}
+.boot-bar span:nth-child(6n + 4) {
+  --c: var(--neon-green);
+}
+.boot-bar span:nth-child(6n + 5) {
+  --c: var(--neon-cyan);
+}
+.boot-bar span:nth-child(6n + 6) {
+  --c: var(--neon-purple);
+}
+.boot-bar span:nth-child(1) {
+  animation-delay: 0ms;
+}
+.boot-bar span:nth-child(2) {
+  animation-delay: 100ms;
+}
+.boot-bar span:nth-child(3) {
+  animation-delay: 200ms;
+}
+.boot-bar span:nth-child(4) {
+  animation-delay: 300ms;
+}
+.boot-bar span:nth-child(5) {
+  animation-delay: 400ms;
+}
+.boot-bar span:nth-child(6) {
+  animation-delay: 500ms;
+}
+.boot-bar span:nth-child(7) {
+  animation-delay: 600ms;
+}
+.boot-bar span:nth-child(8) {
+  animation-delay: 700ms;
+}
+
+.boot-title {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-shadow: 3px 3px 0 var(--neon-pink);
+}
+
+/* Dots type out one by one, like an arcade terminal */
+.boot-title .boot-dots {
+  display: inline-block;
+  width: 3ch;
+  overflow: hidden;
+  vertical-align: bottom;
+  text-align: left;
+  animation: boot-dots 1.2s steps(4, jump-none) infinite;
+}
+
+.boot-day {
+  min-height: 1em;
+  margin: 0;
+  color: var(--day-color);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+
+@keyframes boot-hop {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1.08 0.9;
+  }
+  12% {
+    scale: 1;
+  }
+  45% {
+    translate: 0 -16px;
+    scale: 0.96 1.06;
+  }
+  80% {
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes boot-shadow {
+  0%,
+  100% {
+    scale: 1.1 1;
+    opacity: 1;
+  }
+  45% {
+    scale: 0.55 1;
+    opacity: 0.45;
+  }
+  80% {
+    scale: 1 1;
+    opacity: 1;
+  }
+}
+
+@keyframes boot-chase {
+  0% {
+    opacity: 1;
+    translate: 0 -3px;
+  }
+  25% {
+    opacity: 0.55;
+    translate: 0 0;
+  }
+  50%,
+  100% {
+    opacity: 0.15;
+    translate: 0 0;
+  }
+}
+
+@keyframes boot-dots {
+  from {
+    width: 0;
+  }
+  to {
+    width: 3ch;
+  }
+}

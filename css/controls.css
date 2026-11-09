@@ -1,0 +1,516 @@
+/* Controls: sound key, timeline, previous / next navigation */
+
+/* Audio FX Button */
+.sound-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 14px;
+  font-family: var(--font-meme);
+  font-size: 0.65rem;
+  z-index: 100;
+}
+
+/* Muted state reads as a "powered down" key */
+.sound-btn[aria-pressed="false"] {
+  --key-color: #8a8699;
+}
+
+@keyframes key-pop {
+  40% {
+    scale: 0.9;
+  }
+  75% {
+    scale: 1.06;
+  }
+}
+
+.sound-btn.is-toggled {
+  animation: key-pop 380ms var(--ease-out);
+}
+
+/* Clickable trip timeline */
+.nav-controls {
+  position: fixed;
+  inset: auto 0 0;
+  height: var(--timeline-height);
+  z-index: 10;
+  padding: 7px 18px 5px;
+  overflow: hidden;
+  background: var(--panel-bg);
+  border-top: 3px solid var(--day-color);
+  box-shadow: 0 -6px 24px color-mix(in srgb, var(--day-color) 22%, transparent);
+  backdrop-filter: blur(18px);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.timeline-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 25px;
+  margin: 0 0 2px;
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+.timeline-heading-title,
+.timeline-heading-meta,
+.timeline-hint {
+  line-height: 1;
+  text-box: trim-both cap alphabetic;
+}
+
+.timeline-heading-title {
+  /* Press Start 2P's cap-height metric is a bit taller than its ink */
+  translate: 0 0.5px;
+  color: #fff;
+  font-family: var(--font-meme);
+  font-size: 0.6rem;
+}
+
+/* Pixel star (replaces the ✦ glyph, which isn't in the pixel font) */
+.timeline-star {
+  flex: 0 0 auto;
+  width: 7px;
+  margin-right: -2px;
+  height: 7px;
+  clip-path: polygon(
+    42.9% 0,
+    57.1% 0,
+    57.1% 28.6%,
+    71.4% 28.6%,
+    71.4% 42.9%,
+    100% 42.9%,
+    100% 57.1%,
+    71.4% 57.1%,
+    71.4% 71.4%,
+    57.1% 71.4%,
+    57.1% 100%,
+    42.9% 100%,
+    42.9% 71.4%,
+    28.6% 71.4%,
+    28.6% 57.1%,
+    0 57.1%,
+    0 42.9%,
+    28.6% 42.9%,
+    28.6% 28.6%,
+    42.9% 28.6%
+  );
+  background: #fff;
+}
+
+.timeline-heading-meta,
+.timeline-hint {
+  font-family: var(--font-crt);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.timeline-heading-meta {
+  color: var(--ink-muted);
+}
+
+/* Pixel divider in the colour of the day */
+.timeline-divider {
+  flex: 0 0 auto;
+  width: 6px;
+  translate: 0 -0.5px;
+  height: 6px;
+  background: var(--day-color);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--day-color) 35%, #000);
+  transition: background-color 0.3s;
+}
+
+.timeline-hint {
+  color: color-mix(in srgb, var(--ink-muted) 60%, transparent);
+}
+
+.page-indicators {
+  --timeline-gap: 12px;
+  --timeline-half-gap: 6px;
+  --timeline-item-width: 176px;
+  --timeline-half-item-width: 88px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--timeline-gap);
+  width: 100%;
+  height: 116px;
+  margin: 0 auto;
+  padding: 0 12px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: color-mix(in srgb, var(--day-color) 50%, transparent)
+    transparent;
+  scrollbar-width: thin;
+}
+
+.page-indicator {
+  --indicator-color: var(--neon-cyan);
+  position: relative;
+  display: block;
+  flex: 0 0 var(--timeline-item-width);
+  height: 112px;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.timeline-card {
+  position: absolute;
+  top: 46px;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 65px;
+  z-index: 2;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--indicator-color) 45%, transparent);
+  border-radius: var(--radius);
+  background: #0d0e16;
+  transition:
+    translate var(--dur-hover) var(--ease-out),
+    box-shadow var(--dur-hover) var(--ease-out),
+    border-color var(--dur-hover) var(--ease-out);
+}
+
+.timeline-thumb-wrap {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.timeline-thumb-wrap::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 8, 14, 0.5),
+    rgba(8, 8, 14, 0.2) 28%,
+    rgba(8, 8, 14, 0.85) 56%,
+    rgba(8, 8, 14, 0.96)
+  );
+  content: "";
+}
+
+.timeline-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 0.6s var(--ease-out);
+}
+
+.timeline-meta {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  min-height: 17px;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.timeline-date-badge {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  z-index: 1;
+  padding: 4px 5px;
+  border-radius: var(--radius-sm);
+  background: var(--indicator-color);
+  color: #000;
+  font-family: var(--font-meme);
+  font-size: 0.45rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Side quest: inverted badge, so it reads as a bonus stop */
+.side-quest .timeline-date-badge {
+  background: #000;
+  color: var(--indicator-color);
+  box-shadow: inset 0 0 0 1px var(--indicator-color);
+}
+
+.timeline-flags {
+  overflow: hidden;
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #fff;
+  font-size: 1.12rem;
+  line-height: 0.9;
+  text-shadow: 0 1px 0 #000;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.timeline-copy {
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  left: 7px;
+  z-index: 1;
+  display: block;
+  min-width: 0;
+}
+
+.timeline-connector {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 0;
+  width: calc(100% + var(--timeline-gap));
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--indicator-color),
+    var(--next-indicator-color, var(--indicator-color))
+  );
+  -webkit-mask: repeating-linear-gradient(
+    90deg,
+    #000 0 4px,
+    transparent 4px 8px
+  );
+  mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+  pointer-events: none;
+}
+
+.page-indicator:first-child::before,
+.page-indicator:last-child::after {
+  position: absolute;
+  top: 24px;
+  z-index: 0;
+  width: 50vw;
+  height: 2px;
+  -webkit-mask: repeating-linear-gradient(
+    90deg,
+    #000 0 4px,
+    transparent 4px 8px
+  );
+  mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
+  content: "";
+  pointer-events: none;
+}
+
+.page-indicator:first-child::before {
+  right: 50%;
+  background: linear-gradient(90deg, transparent, var(--indicator-color));
+}
+
+.page-indicator:last-child::after {
+  left: 50%;
+  background: linear-gradient(90deg, var(--indicator-color), transparent);
+}
+
+.timeline-node {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 1;
+  width: 2px;
+  height: 30px;
+  transform: translateX(-50%);
+  border-left: 2px dotted var(--indicator-color);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .page-indicator:hover .timeline-card {
+    translate: -2px -2px;
+    border-color: var(--indicator-color);
+    box-shadow: 3px 3px 0 color-mix(in srgb, var(--indicator-color) 35%, #000);
+  }
+
+  .page-indicator:hover .timeline-thumb {
+    scale: 1.08;
+  }
+}
+
+.page-indicator[aria-current="step"] .timeline-card {
+  translate: -3px -3px;
+  border-color: var(--indicator-color);
+  box-shadow:
+    4px 4px 0 var(--indicator-color),
+    0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
+  transition-timing-function: var(--ease-spring);
+  transition-duration: 0.4s;
+}
+
+.page-indicator:active .timeline-card {
+  translate: 1px 1px;
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--indicator-color) 35%, #000);
+  transition-duration: var(--dur-press);
+}
+
+/* Day number on the route line follows the same spring as the map */
+.timeline-date-number {
+  transition: scale 0.4s var(--ease-spring);
+}
+
+.page-indicator[aria-current="step"] .timeline-date-number {
+  scale: 1.2;
+}
+
+/* Ring the card itself, not the whole button with the route line above;
+   sized to fit the 5px left below the card in the scroller */
+.page-indicator:focus-visible {
+  outline: none;
+}
+
+.page-indicator:focus-visible .timeline-card {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: max-content;
+  margin: 0 auto;
+  height: 34px;
+  padding: 0 4px;
+}
+
+.nav-btn {
+  display: grid;
+  flex: 0 0 28px;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+/* Pixel-style triangle; the ▶ glyph renders as an emoji on some phones */
+.nav-arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  border-block: 6px solid transparent;
+  border-left: 8px solid currentColor;
+  font-size: 0;
+  transform: translateX(1px);
+}
+
+.nav-btn-prev .nav-arrow {
+  transform: rotate(180deg) translateX(1px);
+}
+
+/* Arrows nudge in the direction they will take you */
+.nav-arrow {
+  transition: translate var(--dur-hover) var(--ease-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-btn-next:hover .nav-arrow {
+    translate: 2px 0;
+  }
+
+  .nav-btn-prev:hover .nav-arrow {
+    translate: -2px 0;
+  }
+}
+
+/* Day label ticks over like an arcade counter when the day changes */
+@keyframes counter-tick {
+  from {
+    opacity: 0;
+    transform: translateY(70%);
+  }
+}
+
+@keyframes icon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-25deg);
+  }
+}
+
+.progress-text.is-updating .progress-day {
+  animation: counter-tick 340ms var(--ease-out);
+}
+
+.progress-text.is-updating .progress-icon {
+  display: inline-block;
+  animation: icon-pop 480ms var(--ease-spring) 60ms backwards;
+}
+
+.progress-text {
+  overflow: hidden;
+}
+
+.progress-text {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  height: 100%;
+  padding: 0 4px;
+  color: #fff;
+  font-family: var(--font-meme);
+  font-size: 0.6rem;
+}
+
+.progress-day {
+  white-space: nowrap;
+}
+
+.progress-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --timeline-height: 56px;
+  }
+
+  .nav-controls {
+    padding: 4px 12px;
+  }
+
+  .timeline-heading,
+  .page-indicators {
+    display: none;
+  }
+
+  .nav-btn {
+    flex-basis: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-actions {
+    height: 28px;
+    padding: 1px 5px;
+  }
+}
