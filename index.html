@@ -406,8 +406,7 @@
         height: 60px;
         color: var(--day-color);
         filter: drop-shadow(
-          4px 4px 0
-            color-mix(in srgb, var(--day-color) 35%, #000)
+          4px 4px 0 color-mix(in srgb, var(--day-color) 35%, #000)
         );
         shape-rendering: crispEdges;
         transform-origin: 50% 100%;
@@ -435,20 +434,48 @@
         animation: boot-chase 1.2s steps(1, end) infinite;
       }
 
-      .boot-bar span:nth-child(6n + 1) { --c: var(--neon-pink); }
-      .boot-bar span:nth-child(6n + 2) { --c: var(--neon-orange); }
-      .boot-bar span:nth-child(6n + 3) { --c: var(--neon-yellow); }
-      .boot-bar span:nth-child(6n + 4) { --c: var(--neon-green); }
-      .boot-bar span:nth-child(6n + 5) { --c: var(--neon-cyan); }
-      .boot-bar span:nth-child(6n + 6) { --c: var(--neon-purple); }
-      .boot-bar span:nth-child(1) { animation-delay: 0ms; }
-      .boot-bar span:nth-child(2) { animation-delay: 100ms; }
-      .boot-bar span:nth-child(3) { animation-delay: 200ms; }
-      .boot-bar span:nth-child(4) { animation-delay: 300ms; }
-      .boot-bar span:nth-child(5) { animation-delay: 400ms; }
-      .boot-bar span:nth-child(6) { animation-delay: 500ms; }
-      .boot-bar span:nth-child(7) { animation-delay: 600ms; }
-      .boot-bar span:nth-child(8) { animation-delay: 700ms; }
+      .boot-bar span:nth-child(6n + 1) {
+        --c: var(--neon-pink);
+      }
+      .boot-bar span:nth-child(6n + 2) {
+        --c: var(--neon-orange);
+      }
+      .boot-bar span:nth-child(6n + 3) {
+        --c: var(--neon-yellow);
+      }
+      .boot-bar span:nth-child(6n + 4) {
+        --c: var(--neon-green);
+      }
+      .boot-bar span:nth-child(6n + 5) {
+        --c: var(--neon-cyan);
+      }
+      .boot-bar span:nth-child(6n + 6) {
+        --c: var(--neon-purple);
+      }
+      .boot-bar span:nth-child(1) {
+        animation-delay: 0ms;
+      }
+      .boot-bar span:nth-child(2) {
+        animation-delay: 100ms;
+      }
+      .boot-bar span:nth-child(3) {
+        animation-delay: 200ms;
+      }
+      .boot-bar span:nth-child(4) {
+        animation-delay: 300ms;
+      }
+      .boot-bar span:nth-child(5) {
+        animation-delay: 400ms;
+      }
+      .boot-bar span:nth-child(6) {
+        animation-delay: 500ms;
+      }
+      .boot-bar span:nth-child(7) {
+        animation-delay: 600ms;
+      }
+      .boot-bar span:nth-child(8) {
+        animation-delay: 700ms;
+      }
 
       .boot-title {
         margin: 0;
@@ -476,27 +503,63 @@
       }
 
       @keyframes boot-hop {
-        0%, 100% { translate: 0 0; scale: 1.08 0.9; }
-        12% { scale: 1; }
-        45% { translate: 0 -16px; scale: 0.96 1.06; }
-        80% { translate: 0 0; scale: 1; }
+        0%,
+        100% {
+          translate: 0 0;
+          scale: 1.08 0.9;
+        }
+        12% {
+          scale: 1;
+        }
+        45% {
+          translate: 0 -16px;
+          scale: 0.96 1.06;
+        }
+        80% {
+          translate: 0 0;
+          scale: 1;
+        }
       }
 
       @keyframes boot-shadow {
-        0%, 100% { scale: 1.1 1; opacity: 1; }
-        45% { scale: 0.55 1; opacity: 0.45; }
-        80% { scale: 1 1; opacity: 1; }
+        0%,
+        100% {
+          scale: 1.1 1;
+          opacity: 1;
+        }
+        45% {
+          scale: 0.55 1;
+          opacity: 0.45;
+        }
+        80% {
+          scale: 1 1;
+          opacity: 1;
+        }
       }
 
       @keyframes boot-chase {
-        0% { opacity: 1; translate: 0 -3px; }
-        25% { opacity: 0.55; translate: 0 0; }
-        50%, 100% { opacity: 0.15; translate: 0 0; }
+        0% {
+          opacity: 1;
+          translate: 0 -3px;
+        }
+        25% {
+          opacity: 0.55;
+          translate: 0 0;
+        }
+        50%,
+        100% {
+          opacity: 0.15;
+          translate: 0 0;
+        }
       }
 
       @keyframes boot-dots {
-        from { width: 0; }
-        to { width: 3ch; }
+        from {
+          width: 0;
+        }
+        to {
+          width: 3ch;
+        }
       }
 
       body.popup-closed .deck {
@@ -996,7 +1059,8 @@
         font-family: var(--font-crt);
         font-size: 1.35rem;
         line-height: 1.1;
-        text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+        text-shadow: 0 0 8px
+          color-mix(in srgb, var(--neon-cyan) 45%, transparent);
       }
 
       /* Visual Media / Meme Image Wrapper */
@@ -1008,7 +1072,11 @@
         overflow: hidden;
         border: 2px solid var(--neon-green);
         box-shadow: 0 0 15px
-          color-mix(in srgb, var(--popup-color, var(--day-color)) 30%, transparent);
+          color-mix(
+            in srgb,
+            var(--popup-color, var(--day-color)) 30%,
+            transparent
+          );
       }
 
       .img-box img {
@@ -1016,6 +1084,228 @@
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
+      }
+
+      /* Gallery: photos stacked, only the current one visible */
+      .img-box .slide-photo {
+        position: absolute;
+        inset: 0;
+      }
+
+      .img-box .slide-photo:not(.is-current) {
+        visibility: hidden;
+      }
+
+      /* Arcade wipe: stacked bars in shades of the day colour */
+      .photo-bars {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: grid;
+        grid-template-rows: repeat(6, 1fr);
+        pointer-events: none;
+      }
+
+      .photo-bars span {
+        scale: 0 1;
+        background: color-mix(
+          in srgb,
+          var(--card-color) var(--bar-mix),
+          var(--bar-to)
+        );
+        /* 1px overlap so no photo shows through between bars at fractional
+           heights */
+        height: calc(100% + 1px);
+      }
+
+      .photo-bars span:nth-child(1) {
+        --bar-mix: 70%;
+        --bar-to: #fff;
+      }
+      .photo-bars span:nth-child(2) {
+        --bar-mix: 100%;
+        --bar-to: #000;
+      }
+      .photo-bars span:nth-child(3) {
+        --bar-mix: 82%;
+        --bar-to: #000;
+      }
+      .photo-bars span:nth-child(4) {
+        --bar-mix: 64%;
+        --bar-to: #000;
+      }
+      .photo-bars span:nth-child(5) {
+        --bar-mix: 48%;
+        --bar-to: #000;
+      }
+      .photo-bars span:nth-child(6) {
+        --bar-mix: 34%;
+        --bar-to: #000;
+      }
+
+      /* Indicator: one pixel per photo; the current one is a bar that fills
+         up in pixel steps and then starts the next photo */
+      .photo-controls {
+        position: absolute;
+        left: 8px;
+        bottom: 8px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 6px;
+        border-radius: var(--radius-sm);
+        background: rgba(0, 0, 0, 0.72);
+        pointer-events: auto;
+      }
+
+      .photo-controls[hidden] {
+        display: none;
+      }
+
+      .photo-dots {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Play / pause key: pixel ❚❚ while playing, pixel ▶ when stopped */
+      .photo-toggle {
+        position: relative;
+        flex: 0 0 auto;
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        border: 0;
+        background: none;
+        color: rgba(255, 255, 255, 0.55);
+        cursor: pointer;
+        transition:
+          color var(--dur-hover) var(--ease-out),
+          scale var(--dur-hover) var(--ease-spring);
+      }
+
+      .photo-toggle::before,
+      .photo-toggle::after {
+        position: absolute;
+        top: 1px;
+        width: 3px;
+        height: 8px;
+        background: currentColor;
+        content: "";
+      }
+
+      .photo-toggle::before {
+        left: 1px;
+      }
+
+      .photo-toggle::after {
+        right: 1px;
+      }
+
+      body.slideshow-stopped .photo-toggle::before {
+        left: 2px;
+        width: 7px;
+        /* Pixel ▶: rows of 1, 3, 5, 7, 7, 5, 3, 1 pixels */
+        clip-path: polygon(
+          0 0,
+          14.3% 0,
+          14.3% 12.5%,
+          42.9% 12.5%,
+          42.9% 25%,
+          71.4% 25%,
+          71.4% 37.5%,
+          100% 37.5%,
+          100% 62.5%,
+          71.4% 62.5%,
+          71.4% 75%,
+          42.9% 75%,
+          42.9% 87.5%,
+          14.3% 87.5%,
+          14.3% 100%,
+          0 100%
+        );
+      }
+
+      body.slideshow-stopped .photo-toggle::after {
+        display: none;
+      }
+
+      /* Stopped: the key lights up in the day colour */
+      body.slideshow-stopped .photo-toggle {
+        color: var(--card-color);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .photo-toggle:hover {
+          color: #fff;
+          scale: 1.25;
+        }
+
+        body.slideshow-stopped .photo-toggle:hover {
+          color: var(--card-color);
+        }
+      }
+
+      .photo-toggle:active {
+        scale: 0.85;
+        transition-duration: var(--dur-press);
+      }
+
+      .photo-toggle:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      .photo-dot {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        background: color-mix(in srgb, var(--card-color) 35%, #000);
+        cursor: pointer;
+        transition:
+          width 320ms var(--ease-spring),
+          background-color var(--dur-hover) var(--ease-out);
+      }
+
+      .photo-dot.is-current {
+        width: 28px;
+      }
+
+      .photo-dot.is-current::after {
+        position: absolute;
+        inset: 0;
+        background: var(--card-color);
+        content: "";
+        scale: 0 1;
+        transform-origin: 0 50%;
+        animation: photo-dot-fill 5s steps(14, end) 400ms forwards;
+      }
+
+      /* Stopped with the key: progress frozen and dimmed, no blinking */
+      body.slideshow-stopped .photo-dot.is-current::after {
+        animation-play-state: paused;
+        opacity: 0.5;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .photo-dot:not(.is-current):hover {
+          background: var(--card-color);
+        }
+      }
+
+      .photo-dot:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+      }
+
+      @keyframes photo-dot-fill {
+        to {
+          scale: 1 1;
+        }
       }
 
       .photo-credit {
@@ -1113,10 +1403,10 @@
       .timeline-heading {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        max-width: 1500px;
+        /* Title and its date range read as one group, left-aligned */
+        gap: 10px;
         height: 25px;
-        margin: 0 auto 2px;
+        margin: 0 0 2px;
         padding: 0 2px;
         color: #fff;
         font-family: var(--font-meme);
@@ -1124,10 +1414,33 @@
       }
 
       .timeline-heading span {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
         color: var(--ink-muted);
         font-family: var(--font-crt);
         font-size: 1rem;
         letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      /* Pixel divider in the colour of the day */
+      .timeline-heading span::before {
+        width: 6px;
+        height: 6px;
+        background: var(--day-color);
+        box-shadow: 2px 2px 0 color-mix(in srgb, var(--day-color) 35%, #000);
+        content: "";
+        transition: background-color 0.3s;
+      }
+
+      .timeline-heading .timeline-hint {
+        display: inline;
+        color: color-mix(in srgb, var(--ink-muted) 60%, transparent);
+      }
+
+      .timeline-heading .timeline-hint::before {
+        content: none;
       }
 
       .page-indicators {
@@ -1535,15 +1848,19 @@
       </div>
       <p class="boot-title">KAART LADEN<span class="boot-dots">...</span></p>
       <div class="boot-bar" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span> <span></span
+        ><span></span><span></span><span></span>
       </div>
       <p class="boot-day" id="boot-day"></p>
     </div>
     <!-- NAVIGATION CONTROLS: first in the DOM, so it is the first Tab stop -->
     <div class="nav-controls">
       <div class="timeline-heading">
-        ✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span>
+        ✦ REISDAGBOEK
+        <span
+          >15 FEB — 4 MRT 2027
+          <span class="timeline-hint">· SCROLL DE ROUTE →</span></span
+        >
       </div>
       <nav
         class="page-indicators"
@@ -1642,9 +1959,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
-            <img
-              alt="Wat Rong Khun Chiang Rai"
-            />
+            <img alt="Wat Rong Khun Chiang Rai" />
           </div>
         </div>
       </div>
@@ -1676,9 +1991,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-green)">
-            <img
-              alt="Gibbon Experience Zipline"
-            />
+            <img alt="Gibbon Experience Zipline" />
           </div>
         </div>
       </div>
@@ -1710,9 +2023,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-yellow)">
-            <img
-              alt="Mekong Slowboat Laos"
-            />
+            <img alt="Mekong Slowboat Laos" />
           </div>
         </div>
       </div>
@@ -1745,9 +2056,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-cyan)">
-            <img
-              alt="Wat Xiengthong Luang Prabang"
-            />
+            <img alt="Wat Xiengthong Luang Prabang" />
           </div>
         </div>
       </div>
@@ -1779,9 +2088,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
-            <img
-              alt="Vang Vieng Hot Air Balloon"
-            />
+            <img alt="Vang Vieng Hot Air Balloon" />
           </div>
         </div>
       </div>
@@ -1813,9 +2120,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-cyan)">
-            <img
-              alt="Angkor Wat bij zonsopkomst"
-            />
+            <img alt="Angkor Wat bij zonsopkomst" />
           </div>
         </div>
       </div>
@@ -1845,9 +2150,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-green)">
-            <img
-              alt="Ta Prohm Tree Roots"
-            />
+            <img alt="Ta Prohm Tree Roots" />
           </div>
         </div>
       </div>
@@ -1880,9 +2183,7 @@
             </div>
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
-            <img
-              alt="Phnom Penh Royal Palace"
-            />
+            <img alt="Phnom Penh Royal Palace" />
           </div>
         </div>
       </div>
@@ -2420,7 +2721,7 @@
         {
           date: "DO · 4 MRT",
           flags: "🇰🇭 → 🇳🇱",
-          title: "Terug naar Amsterdam",
+          title: "Terug naar Hoesoe",
           location: {
             name: "Amsterdam · Nederland",
             coordinates: [52.3105, 4.7683],
@@ -2430,7 +2731,7 @@
             "\"Don't cry because it's over, smile because it was absolutely legendary.\" — Dr. Seuss",
           detail:
             "Vroeg de koffers dichtrammen, vlieger in en met een vrachtlading aan memories en aura naar huis.",
-          sleep: "Slaap: thuis in Amsterdam",
+          sleep: "Slaap: thuis",
           icon: "✈️",
           iconLabel: "Terugvlucht",
           photo: "flight",
@@ -2499,7 +2800,9 @@
           doubleClickZoom: false,
           interactive: true,
           // Screen-reader name of the canvas (MapLibre default is "Map")
-          locale: { "Map.Title": "Kaart: pijltjes verschuiven, plus en min zoomen" },
+          locale: {
+            "Map.Title": "Kaart: pijltjes verschuiven, plus en min zoomen",
+          },
           style: "https://tiles.openfreemap.org/styles/positron",
           zoom: initialLocation.zoom,
         });
@@ -2581,13 +2884,9 @@
         const visibleCenterY =
           mapBounds.top + (timelineTop - mapBounds.top) / 2;
         const popupBottom = visibleCenterY + popupHeight / 2;
-        requestedPopupOffset = Math.max(
-          14,
-          (timelineTop - popupBottom) / 2,
-        );
+        requestedPopupOffset = Math.max(14, (timelineTop - popupBottom) / 2);
         activeMapPopup?.popup.setOffset(requestedPopupOffset);
-        const targetY =
-          visibleCenterY + popupHeight / 2 + requestedPopupOffset;
+        const targetY = visibleCenterY + popupHeight / 2 + requestedPopupOffset;
         const offsetY = targetY - (mapBounds.top + mapBounds.height / 2);
         const camera = {
           center,
@@ -2643,8 +2942,7 @@
 
       function markerButtonForSlide(slideIndex) {
         const day = tripDayNumbers.get(itinerary[slideIndex].date);
-        return mapDayMarkers.find((mapMarker) => mapMarker.day === day)
-          ?.button;
+        return mapDayMarkers.find((mapMarker) => mapMarker.day === day)?.button;
       }
 
       // Little "gulp" on the marker when a card leaves or enters it
@@ -2768,8 +3066,7 @@
 
         const sourceX =
           markerBounds.left + markerBounds.width / 2 - mapBounds.left;
-        const cardX =
-          popupBounds.left + popupBounds.width / 2 - mapBounds.left;
+        const cardX = popupBounds.left + popupBounds.width / 2 - mapBounds.left;
         const beamInset = Math.min(18, popupBounds.width * 0.1);
         const bottomWidth = markerBounds.width;
         const topWidth = Math.max(
@@ -2791,9 +3088,7 @@
 
         // Spread the bars evenly so the top bar touches the card
         const pitch =
-          barCount > 1
-            ? (stackHeight - BEAM_BAR_HEIGHT) / (barCount - 1)
-            : 0;
+          barCount > 1 ? (stackHeight - BEAM_BAR_HEIGHT) / (barCount - 1) : 0;
         Array.from(mapPopupBeamBarsEl.children).forEach((bar, index) => {
           // index 0 sits on the marker, the last bar touches the card
           const t = barCount > 1 ? index / (barCount - 1) : 0.5;
@@ -2938,6 +3233,7 @@
         setPopupOriginToMarker(slide, slideIndex);
         updateMapPopupBeam();
 
+        resetGallery(slide);
         if (!reducedMotion) {
           // The card springs out of the centre of its marker
           restartAnimationClass(slide, "is-entering");
@@ -3059,9 +3355,8 @@
           markerButton.className = "map-day-marker";
           markerButton.style.setProperty(
             "--marker-color",
-            getComputedStyle(
-              slides[stop.slideIndex].querySelector(".card"),
-            ).borderTopColor,
+            getComputedStyle(slides[stop.slideIndex].querySelector(".card"))
+              .borderTopColor,
           );
           markerButton.textContent = String(day);
           markerButton.setAttribute(
@@ -3087,18 +3382,239 @@
               stop.location.coordinates[0],
             ])
             .addTo(tripMap);
-            mapDayMarkers.push({
-              button: markerButton,
-              coordinates: [
-                stop.location.coordinates[1],
-                stop.location.coordinates[0],
-              ],
-              day,
-            });
+          mapDayMarkers.push({
+            button: markerButton,
+            coordinates: [
+              stop.location.coordinates[1],
+              stop.location.coordinates[0],
+            ],
+            day,
+          });
         });
         updateMapDayMarkers(
           tripDayNumbers.get(itinerary[currentTimelineIndex].date),
         );
+      }
+
+      /*
+       * Photo gallery per slide. Photos live in img/slides/<slide>/NN.webp
+       * (see scripts/optimize-photos.sh); the app finds them by loading 01,
+       * 02, 03… until one is missing. They play one after another: the
+       * current pixel in the indicator fills up (CSS animation) and its end
+       * starts the next photo with an arcade bar wipe in the day colour.
+       */
+      const PHOTO_BARS = 6;
+      const galleries = new WeakMap();
+      const reducedMotionQuery = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
+
+      function slidePhotoSrc(stop, number) {
+        return `img/slides/${caricatureNames.get(stop)}/${String(number).padStart(2, "0")}.webp`;
+      }
+
+      function galleryFor(slide) {
+        return galleries.get(slide);
+      }
+
+      function createGallery(slide, stop, firstImage, placeName) {
+        const box = firstImage.closest(".img-box");
+        const bars = document.createElement("span");
+        bars.className = "photo-bars";
+        bars.setAttribute("aria-hidden", "true");
+        for (let i = 0; i < PHOTO_BARS; i++) {
+          bars.append(document.createElement("span"));
+        }
+        const controls = document.createElement("span");
+        controls.className = "photo-controls";
+        controls.setAttribute("role", "group");
+        controls.setAttribute("aria-label", `Foto's van ${placeName}`);
+        controls.hidden = true;
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "photo-toggle";
+        toggle.addEventListener("click", toggleSlideshow);
+        const dots = document.createElement("span");
+        dots.className = "photo-dots";
+        controls.append(toggle, dots);
+        box.append(bars, controls);
+        syncSlideshowToggle(toggle);
+        const gallery = {
+          slide,
+          stop,
+          box,
+          bars,
+          controls,
+          dots,
+          placeName,
+          images: [firstImage],
+          index: 0,
+          done: false,
+          probing: false,
+          animating: false,
+        };
+        galleries.set(slide, gallery);
+        addPhotoDot(gallery, 0);
+      }
+
+      function addPhotoDot(gallery, index) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "photo-dot";
+        dot.setAttribute(
+          "aria-label",
+          `Foto ${index + 1} van ${gallery.placeName}`,
+        );
+        dot.addEventListener("click", () => showPhoto(gallery, index));
+        dot.addEventListener("animationend", (event) => {
+          if (event.animationName === "photo-dot-fill") advanceGallery(gallery);
+        });
+        gallery.dots.append(dot);
+        gallery.controls.hidden = gallery.images.length < 2;
+        syncPhotoDots(gallery);
+      }
+
+      // One switch for every slideshow (WCAG 2.2.2: moving content can be
+      // paused). Only this key pauses; hover and focus don't.
+      function syncSlideshowToggle(toggle) {
+        const stopped = document.body.classList.contains("slideshow-stopped");
+        toggle.setAttribute("aria-label", "Diashow pauzeren");
+        toggle.setAttribute("aria-pressed", String(stopped));
+        toggle.title = stopped ? "Diashow afspelen" : "Diashow pauzeren";
+      }
+
+      function toggleSlideshow() {
+        document.body.classList.toggle("slideshow-stopped");
+        playBeep(
+          document.body.classList.contains("slideshow-stopped") ? 330 : 494,
+          "square",
+          0.06,
+        );
+        document.querySelectorAll(".photo-toggle").forEach(syncSlideshowToggle);
+      }
+
+      function syncPhotoDots(gallery) {
+        [...gallery.dots.children].forEach((dot, index) => {
+          const current = index === gallery.index;
+          dot.classList.toggle("is-current", current);
+          if (current) {
+            dot.setAttribute("aria-current", "true");
+          } else {
+            dot.removeAttribute("aria-current");
+          }
+          // One Tab stop for the whole indicator; ← → switch photos
+          dot.tabIndex = current ? 0 : -1;
+        });
+        const currentDot = gallery.dots.children[gallery.index];
+        if (currentDot) restartAnimationClass(currentDot, "is-current");
+      }
+
+      // Find 02, 03… one after another, only for a slide that is on screen
+      function probeGallery(gallery) {
+        if (gallery.done || gallery.probing) return;
+        gallery.probing = true;
+        const number = gallery.images.length + 1;
+        const image = new Image();
+        image.className = "slide-photo";
+        image.alt = `Sfeerfoto ${number} van ${gallery.placeName}`;
+        image.decoding = "async";
+        image.onload = () => {
+          gallery.probing = false;
+          gallery.box.insertBefore(image, gallery.bars);
+          gallery.images.push(image);
+          addPhotoDot(gallery, gallery.images.length - 1);
+          probeGallery(gallery);
+        };
+        image.onerror = () => {
+          gallery.probing = false;
+          gallery.done = true;
+        };
+        image.src = slidePhotoSrc(gallery.stop, number);
+      }
+
+      function visibleGallerySlide() {
+        if (activeMapPopup && !activeMapPopup.closing) {
+          return activeMapPopup.slide;
+        }
+        return mapStyleReady ? null : slides[currentSlide];
+      }
+
+      function resetGallery(slide) {
+        const gallery = galleryFor(slide);
+        if (!gallery) return;
+        gallery.bars
+          .getAnimations({ subtree: true })
+          .forEach((a) => a.cancel());
+        gallery.animating = false;
+        setCurrentPhoto(gallery, 0);
+        probeGallery(gallery);
+      }
+
+      function setCurrentPhoto(gallery, index) {
+        gallery.images.forEach((image, i) =>
+          image.classList.toggle("is-current", i === index),
+        );
+        gallery.index = index;
+        syncPhotoDots(gallery);
+      }
+
+      function advanceGallery(gallery) {
+        if (reducedMotionQuery.matches || gallery.images.length < 2) return;
+        if (document.body.classList.contains("slideshow-stopped")) return;
+        if (visibleGallerySlide() !== gallery.slide) return;
+        showPhoto(gallery, (gallery.index + 1) % gallery.images.length);
+      }
+
+      async function showPhoto(gallery, index) {
+        if (index === gallery.index || gallery.animating) return;
+        if (reducedMotionQuery.matches) {
+          setCurrentPhoto(gallery, index);
+          return;
+        }
+        gallery.animating = true;
+        const bars = [...gallery.bars.children];
+        const step = 38;
+        // Cover: bars shoot in from the left in chunky steps, top to bottom
+        const cover = bars.map((bar, i) =>
+          bar.animate(
+            [
+              { scale: "0 1", transformOrigin: "0 50%" },
+              { scale: "1 1", transformOrigin: "0 50%" },
+            ],
+            {
+              duration: 220,
+              delay: i * step,
+              easing: "steps(5, end)",
+              fill: "both",
+            },
+          ),
+        );
+        await cover.at(-1).finished.catch(() => {});
+        if (!gallery.animating) return;
+        setCurrentPhoto(gallery, index);
+        gallery.images[index].animate(
+          [{ scale: 1.08, filter: "saturate(1.6) brightness(1.25)" }, {}],
+          { duration: 700, easing: "cubic-bezier(0.23, 1, 0.32, 1)" },
+        );
+        // Reveal: bars leave to the right, bottom bar first
+        const reveal = bars.map((bar, i) =>
+          bar.animate(
+            [
+              { scale: "1 1", transformOrigin: "100% 50%" },
+              { scale: "0 1", transformOrigin: "100% 50%" },
+            ],
+            {
+              duration: 220,
+              delay: (bars.length - 1 - i) * step,
+              easing: "steps(5, end)",
+              fill: "both",
+            },
+          ),
+        );
+        // The top bar leaves last
+        await reveal[0].finished.catch(() => {});
+        cover.concat(reveal).forEach((a) => a.cancel());
+        gallery.animating = false;
       }
 
       const slideTemplates = slides;
@@ -3123,18 +3639,32 @@
         imageBox.style.borderColor = stopThemes[stop.theme];
         slide.setAttribute("role", "dialog");
         slide.setAttribute("aria-label", stop.title);
-        // Loaded later: the opening day first, the rest once it is ready
-        slideImage.dataset.src = photo.src;
-        slideImage.alt = photo.alt;
-        if (photo.credit && photo.creditUrl) {
-          const credit = document.createElement("a");
-          credit.className = "photo-credit";
-          credit.href = photo.creditUrl;
-          credit.target = "_blank";
-          credit.rel = "noopener noreferrer";
-          credit.textContent = photo.credit;
-          imageBox.append(credit);
-        }
+        // Photos come from img/slides/<08 | 08-s1>/01.webp, 02.webp…; the first
+        // one is loaded later (opening day first, the rest once it is ready).
+        // No folder for this slide: fall back to its single photo in `photos`.
+        const placeName = stop.location.name.split(" · ")[0];
+        slideImage.className = "slide-photo is-current";
+        slideImage.dataset.src = slidePhotoSrc(stop, 1);
+        slideImage.alt = `Sfeerfoto 1 van ${placeName}`;
+        slideImage.addEventListener(
+          "error",
+          () => {
+            slideImage.src = photo.src;
+            slideImage.alt = photo.alt;
+            galleryFor(slide).done = true;
+            if (photo.credit && photo.creditUrl) {
+              const credit = document.createElement("a");
+              credit.className = "photo-credit";
+              credit.href = photo.creditUrl;
+              credit.target = "_blank";
+              credit.rel = "noopener noreferrer";
+              credit.textContent = photo.credit;
+              imageBox.append(credit);
+            }
+          },
+          { once: true },
+        );
+        createGallery(slide, stop, slideImage, placeName);
         slide.classList.toggle("active", idx === currentSlide);
         tag.textContent = `${stop.date} · ${stop.flags}`;
         heading.textContent = stop.title;
@@ -3245,7 +3775,12 @@
         button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
         image.className = "timeline-thumb";
-        image.dataset.src = photos[stop.photo].src;
+        image.dataset.src = slidePhotoSrc(stop, 1);
+        image.addEventListener(
+          "error",
+          () => (image.src = photos[stop.photo].src),
+          { once: true },
+        );
         image.alt = "";
         image.loading = "lazy";
         image.decoding = "async";
@@ -3432,9 +3967,7 @@
         mapDayMarkers
           .find(
             ({ day }) =>
-              day === tripDayNumbers.get(
-                itinerary[currentTimelineIndex].date,
-              ),
+              day === tripDayNumbers.get(itinerary[currentTimelineIndex].date),
           )
           ?.button.focus();
       }
@@ -3543,35 +4076,52 @@
        * own arrow keys for panning. Capture phase: MapLibre handles (and
        * prevents) arrow keys for everything inside the map, markers included.
        */
-      document.addEventListener("keydown", (e) => {
-        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
-        const target = e.target instanceof Element ? e.target : null;
-        if (target?.closest(".maplibregl-canvas, input, textarea, select")) {
-          return;
-        }
-        const group = target?.closest("#page-indicators")
-          ? "timeline"
-          : target?.closest(".map-day-marker")
-            ? "markers"
-            : null;
-        if (e.key === "ArrowRight") {
-          nextSlide();
-        } else if (e.key === "ArrowLeft") {
-          prevSlide();
-        } else if (group && e.key === "Home") {
-          goToSlide(itinerary[0].slideIndex, 0);
-        } else if (group && e.key === "End") {
-          goToSlide(itinerary.at(-1).slideIndex, itinerary.length - 1);
-        } else {
-          return;
-        }
-        e.preventDefault();
-        if (group) {
-          // Don't let the map pan as well when a marker has focus
-          e.stopPropagation();
-          focusCurrentDay(group);
-        }
-      }, true);
+      document.addEventListener(
+        "keydown",
+        (e) => {
+          if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+          const target = e.target instanceof Element ? e.target : null;
+          if (target?.closest(".maplibregl-canvas, input, textarea, select")) {
+            return;
+          }
+          const photoDots = target?.closest(".photo-dots");
+          if (photoDots && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+            const gallery = galleryFor(photoDots.closest(".slide"));
+            const count = gallery.images.length;
+            const next =
+              (gallery.index + (e.key === "ArrowRight" ? 1 : count - 1)) %
+              count;
+            e.preventDefault();
+            e.stopPropagation();
+            showPhoto(gallery, next);
+            photoDots.children[next]?.focus({ preventScroll: true });
+            return;
+          }
+          const group = target?.closest("#page-indicators")
+            ? "timeline"
+            : target?.closest(".map-day-marker")
+              ? "markers"
+              : null;
+          if (e.key === "ArrowRight") {
+            nextSlide();
+          } else if (e.key === "ArrowLeft") {
+            prevSlide();
+          } else if (group && e.key === "Home") {
+            goToSlide(itinerary[0].slideIndex, 0);
+          } else if (group && e.key === "End") {
+            goToSlide(itinerary.at(-1).slideIndex, itinerary.length - 1);
+          } else {
+            return;
+          }
+          e.preventDefault();
+          if (group) {
+            // Don't let the map pan as well when a marker has focus
+            e.stopPropagation();
+            focusCurrentDay(group);
+          }
+        },
+        true,
+      );
 
       // Touch Swipe Controls for Mobile
       // Disabled while only the map is visible, so panning/zooming isn't hijacked

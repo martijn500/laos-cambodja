@@ -1,0 +1,9 @@
+{
+  "name": "laos-cambodja",
+  "private": true,
+  "description": "Reisdagboek Laos & Cambodja",
+  "scripts": {
+    "photos": "bash scripts/optimize-photos.sh",
+    "dev": "npx serve ."
+  }
+}
