@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,700&family=Press+Start+2P&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
       rel="stylesheet"
     />
     <link
@@ -45,7 +45,9 @@
         --radius: 4px;
         --radius-lg: 6px;
         --font-meme: "Press Start 2P", monospace;
-        --font-sans: "Plus Jakarta Sans", sans-serif;
+        /* Two fonts only: Press Start 2P for headings, labels and keys;
+           VT323 (CRT terminal) for everything you read */
+        --font-crt: "VT323", monospace;
         /* Motion tokens: fast, ease-out by default, spring for "pop" moments */
         --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
         --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -118,7 +120,7 @@
       body {
         background-color: var(--bg);
         color: #fff;
-        font-family: var(--font-sans);
+        font-family: var(--font-crt);
         overflow: hidden;
         height: 100vh;
         width: 100vw;
@@ -224,8 +226,8 @@
         border-radius: var(--radius-sm);
         background: var(--panel-bg);
         color: var(--ink-muted);
-        font-size: 0.6rem;
-        line-height: 1.3;
+        font-size: 0.85rem;
+        line-height: 1.1;
       }
 
       .map-attribution a {
@@ -855,11 +857,16 @@
         .slide .card .desc {
           grid-column: 1 / -1;
           grid-row: 4;
+          margin-bottom: 0.9rem;
+          font-size: 1.3rem;
+          line-height: 1.1;
         }
 
         .slide .card blockquote {
           grid-column: 1 / -1;
           grid-row: 5;
+          padding: 0.55rem 0.9rem;
+          font-size: 1.15rem;
         }
 
         .slide .card .stats-bar {
@@ -926,7 +933,7 @@
           bottom: calc(var(--timeline-height) + 7px);
           left: 7px;
           padding: 3px 5px;
-          font-size: 0.54rem;
+          font-size: 0.78rem;
         }
 
         .slide-close {
@@ -969,23 +976,27 @@
         margin-bottom: 1rem;
       }
 
+      /* CRT terminal text: pixel font that stays readable at body size */
       p.desc {
-        font-size: 1.1rem;
-        line-height: 1.5;
-        color: #ddd;
+        font-family: var(--font-crt);
+        font-size: 1.5rem;
+        line-height: 1.15;
+        letter-spacing: 0.02em;
+        color: #e6e3f0;
         margin-bottom: 1.25rem;
       }
 
       blockquote {
         background: rgba(0, 0, 0, 0.5);
         border-left: 5px solid var(--neon-cyan);
-        padding: 0.8rem 1.2rem;
-        font-style: italic;
+        padding: 0.7rem 1.1rem;
         color: var(--neon-cyan);
         border-radius: 0 var(--radius) var(--radius) 0;
         margin-bottom: 1rem;
-        font-weight: 700;
-        font-size: 0.95rem;
+        font-family: var(--font-crt);
+        font-size: 1.35rem;
+        line-height: 1.1;
+        text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
       }
 
       /* Visual Media / Meme Image Wrapper */
@@ -1016,7 +1027,8 @@
         border-radius: var(--radius-sm);
         background: rgba(0, 0, 0, 0.72);
         color: #fff;
-        font-size: 0.6rem;
+        font-size: 0.85rem;
+        line-height: 1;
         text-decoration: none;
       }
 
@@ -1113,9 +1125,8 @@
 
       .timeline-heading span {
         color: var(--ink-muted);
-        font-family: var(--font-sans);
-        font-size: 0.68rem;
-        font-weight: 700;
+        font-family: var(--font-crt);
+        font-size: 1rem;
         letter-spacing: 0.04em;
       }
 
@@ -1151,6 +1162,7 @@
         background: transparent;
         color: #fff;
         cursor: pointer;
+        font: inherit;
         text-align: left;
       }
 
@@ -1186,9 +1198,10 @@
         inset: 0;
         background: linear-gradient(
           180deg,
-          rgba(8, 8, 14, 0.45),
-          rgba(8, 8, 14, 0.1) 38%,
-          rgba(8, 8, 14, 0.94)
+          rgba(8, 8, 14, 0.5),
+          rgba(8, 8, 14, 0.2) 28%,
+          rgba(8, 8, 14, 0.85) 56%,
+          rgba(8, 8, 14, 0.96)
         );
         content: "";
       }
@@ -1233,6 +1246,13 @@
         white-space: nowrap;
       }
 
+      /* Side quest: inverted badge, so it reads as a bonus stop */
+      .side-quest .timeline-date-badge {
+        background: #000;
+        color: var(--indicator-color);
+        box-shadow: inset 0 0 0 1px var(--indicator-color);
+      }
+
       .timeline-flags {
         overflow: hidden;
         color: #fff;
@@ -1246,37 +1266,21 @@
         display: -webkit-box;
         overflow: hidden;
         color: #fff;
-        font-size: 0.72rem;
-        font-weight: 800;
-        line-height: 1.2;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        font-size: 1.12rem;
+        line-height: 0.9;
+        text-shadow: 0 1px 0 #000;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
       }
 
       .timeline-copy {
         position: absolute;
-        right: 8px;
-        bottom: 6px;
-        left: 8px;
+        right: 7px;
+        bottom: 5px;
+        left: 7px;
         z-index: 1;
         display: block;
         min-width: 0;
-      }
-
-      .timeline-kind {
-        display: block;
-        overflow: hidden;
-        margin-top: 4px;
-        color: var(--indicator-color);
-        font-size: 0.56rem;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        line-height: 1;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-        text-overflow: ellipsis;
-        text-transform: uppercase;
-        white-space: nowrap;
       }
 
       .timeline-connector {
@@ -2801,8 +2805,9 @@
             ) * BEAM_PIXEL;
           const centerX = sourceX + (cardX - sourceX) * flare;
           const y = stackBottom - BEAM_BAR_HEIGHT - index * pitch;
-          const barHue = (hue + t * 42 + 360) % 360;
-          const barLightness = Math.min(78, lightness + t * 14);
+          // Calm: small hue drift, a shade darker than the day colour
+          const barHue = (hue + t * 20 + 360) % 360;
+          const barLightness = Math.max(28, lightness - 12 + t * 6);
           bar.setAttribute("x", (centerX - width / 2).toFixed(1));
           bar.setAttribute("y", y.toFixed(1));
           bar.setAttribute("width", width);
@@ -2811,7 +2816,9 @@
             "fill",
             `hsl(${barHue.toFixed(0)} ${saturation.toFixed(0)}% ${barLightness.toFixed(0)}%)`,
           );
-          bar.setAttribute("fill-opacity", (0.95 - t * 0.6).toFixed(2));
+          // Like a motion trail: solid where the card is, fading towards the
+          // marker it came out of
+          bar.setAttribute("fill-opacity", (0.18 + t * 0.52).toFixed(2));
         });
       }
 
@@ -3210,7 +3217,6 @@
         const meta = document.createElement("span");
         const dateBadge = document.createElement("span");
         const stopTitle = document.createElement("span");
-        const stopKind = document.createElement("span");
         const copy = document.createElement("span");
         const card = document.createElement("span");
         const connector = document.createElement("span");
@@ -3250,15 +3256,16 @@
         flags.setAttribute("aria-hidden", "true");
         meta.append(flags);
         dateBadge.className = "timeline-date-badge";
-        dateBadge.textContent = stop.date.replace(/^[^·]+·\s*/, "");
+        // Side quests share their date with the main day: label them instead
+        dateBadge.textContent = stop.sideQuest
+          ? "SIDE QUEST"
+          : stop.date.replace(/^[^·]+·\s*/, "");
         dateBadge.setAttribute("aria-hidden", "true");
         thumbnail.append(image, dateBadge, meta);
         stopTitle.className = "timeline-title";
-        stopTitle.textContent = stop.title;
-        stopKind.className = "timeline-kind";
-        stopKind.textContent = stop.iconLabel;
+        stopTitle.textContent = stop.title.replace(/^SIDE QUEST:\s*/i, "");
         copy.className = "timeline-copy";
-        copy.append(stopTitle, stopKind);
+        copy.append(stopTitle);
         card.className = "timeline-card";
         connector.className = "timeline-connector";
         node.className = "timeline-node";
