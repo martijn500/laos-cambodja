@@ -188,14 +188,9 @@
         pointer-events: none;
       }
 
-      .map-popup-beam-shape {
-        fill: url(#map-popup-beam-fill);
-      }
-
-      .map-popup-beam-glow {
-        fill: var(--popup-color, var(--neon-pink));
-        opacity: 0.2;
-        filter: url(#map-popup-beam-glow-filter);
+      /* Pixel "stack" of bars between marker and card; colours set from JS */
+      .map-popup-beam-bars rect {
+        shape-rendering: crispEdges;
       }
 
       .map-background .maplibregl-canvas:focus {
@@ -1363,30 +1358,7 @@
     >
       <div class="map-shade" aria-hidden="true"></div>
       <svg class="map-popup-beam" id="map-popup-beam" aria-hidden="true">
-        <defs>
-          <filter
-            id="map-popup-beam-glow-filter"
-            x="-20%"
-            y="-20%"
-            width="140%"
-            height="140%"
-          >
-            <feGaussianBlur stdDeviation="14"></feGaussianBlur>
-          </filter>
-          <linearGradient
-            id="map-popup-beam-fill"
-            x1="0"
-            y1="1"
-            x2="0"
-            y2="0"
-          >
-            <stop offset="0" stop-color="#0b1820" stop-opacity="0"></stop>
-            <stop offset="0.62" stop-color="#0b1820" stop-opacity="0.08"></stop>
-            <stop offset="1" stop-color="#0b1820" stop-opacity="0.38"></stop>
-          </linearGradient>
-        </defs>
-        <path class="map-popup-beam-glow"></path>
-        <path class="map-popup-beam-shape"></path>
+        <g class="map-popup-beam-bars"></g>
       </svg>
     </div>
     <div class="map-attribution">
@@ -2305,12 +2277,6 @@
       const mapStatusEl = document.getElementById("map-status");
       const mapContainerEl = document.getElementById("trip-map");
       const mapPopupBeamEl = document.getElementById("map-popup-beam");
-      const mapPopupBeamShapeEl = mapPopupBeamEl.querySelector(
-        ".map-popup-beam-shape",
-      );
-      const mapPopupBeamGlowEl = mapPopupBeamEl.querySelector(
-        ".map-popup-beam-glow",
-      );
       const deck = document.querySelector(".deck");
       let tripMap = null;
       const mapDayMarkers = [];
@@ -2514,10 +2480,44 @@
         slide.style.transformOrigin = `${originX}px ${originY}px`;
       }
 
+      // "rgb(r, g, b)" -> [h, s, l] (h in degrees, s/l in 0..100)
+      function rgbStringToHsl(color) {
+        const [r, g, b] = (color.match(/[\d.]+/g) ?? [255, 0, 127])
+          .slice(0, 3)
+          .map((value) => Number(value) / 255);
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const lightness = (max + min) / 2;
+        const delta = max - min;
+        if (delta === 0) return [0, 0, lightness * 100];
+        const saturation = delta / (1 - Math.abs(2 * lightness - 1));
+        let hue;
+        if (max === r) hue = ((g - b) / delta) % 6;
+        else if (max === g) hue = (b - r) / delta + 2;
+        else hue = (r - g) / delta + 4;
+        return [(hue * 60 + 360) % 360, saturation * 100, lightness * 100];
+      }
+
+      const BEAM_BAR_HEIGHT = 4;
+      const BEAM_BAR_GAP = 3;
+      const BEAM_PIXEL = 4;
+      const mapPopupBeamBarsEl = mapPopupBeamEl.querySelector(
+        ".map-popup-beam-bars",
+      );
+
+      function clearMapPopupBeam() {
+        mapPopupBeamBarsEl.replaceChildren();
+      }
+
+      /*
+       * Arcade beam: a stack of horizontal bars from the marker up to the
+       * card. Bars widen in pixel steps, each gets its own hue step of the
+       * card colour and they fade out towards the card, so the card looks
+       * like it pops out of the marker.
+       */
       function updateMapPopupBeam() {
         if (!activeMapPopup) {
-          mapPopupBeamShapeEl.removeAttribute("d");
-          mapPopupBeamGlowEl.removeAttribute("d");
+          clearMapPopupBeam();
           return;
         }
 
@@ -2532,56 +2532,74 @@
         mapPopupBeamEl.style.opacity = getComputedStyle(
           activeMapPopup.slide,
         ).opacity;
-        if (popupBounds.width < 8) {
-          mapPopupBeamShapeEl.removeAttribute("d");
-          mapPopupBeamGlowEl.removeAttribute("d");
-          return;
-        }
-        const source = {
-          x: markerBounds.left + markerBounds.width / 2 - mapBounds.left,
-          y: markerBounds.top + markerBounds.height / 2 - mapBounds.top,
-        };
-        const baseY = Math.min(
-          popupBounds.bottom - mapBounds.top,
-          source.y - 20,
-        );
-        const beamInset = Math.min(18, popupBounds.width * 0.1);
-        const leftX = popupBounds.left - mapBounds.left + beamInset;
-        const rightX = popupBounds.right - mapBounds.left - beamInset;
-        const gap = Math.max(0, source.y - baseY);
-        const leftControl2 = {
-          x: source.x - (source.x - leftX) * 0.002,
-          y: baseY + gap * 0.08,
-        };
-        const rightControl2 = {
-          x: source.x + (rightX - source.x) * 0.002,
-          y: baseY + gap * 0.08,
-        };
-        const pathPoint = ({ x, y }) => `${x.toFixed(1)} ${y.toFixed(1)}`;
         mapPopupBeamEl.setAttribute(
           "viewBox",
           `0 0 ${mapBounds.width} ${mapBounds.height}`,
         );
-        mapPopupBeamEl.style.setProperty(
-          "--popup-color",
-          activeMapPopup.color,
-        );
 
-        if (gap < 1) {
-          mapPopupBeamShapeEl.removeAttribute("d");
-          mapPopupBeamGlowEl.removeAttribute("d");
+        // Bottom of the stack: just above the marker; top: the card edge
+        const stackBottom = markerBounds.top - mapBounds.top - 3;
+        const stackTop = popupBounds.bottom - mapBounds.top;
+        const stackHeight = stackBottom - stackTop;
+        const barCount = Math.floor(
+          (stackHeight + BEAM_BAR_GAP) / (BEAM_BAR_HEIGHT + BEAM_BAR_GAP),
+        );
+        if (popupBounds.width < 8 || barCount < 1) {
+          clearMapPopupBeam();
           return;
         }
 
-        const leftBase = { x: leftX, y: baseY };
-        const rightBase = { x: rightX, y: baseY };
-        const path =
-          `M ${pathPoint(source)} ` +
-          `C ${pathPoint(source)} ${pathPoint(leftControl2)} ${pathPoint(leftBase)} ` +
-          `L ${pathPoint(rightBase)} ` +
-          `C ${pathPoint(rightControl2)} ${pathPoint(source)} ${pathPoint(source)} Z`;
-        mapPopupBeamShapeEl.setAttribute("d", path);
-        mapPopupBeamGlowEl.setAttribute("d", path);
+        const sourceX =
+          markerBounds.left + markerBounds.width / 2 - mapBounds.left;
+        const cardX =
+          popupBounds.left + popupBounds.width / 2 - mapBounds.left;
+        const beamInset = Math.min(18, popupBounds.width * 0.1);
+        const bottomWidth = markerBounds.width;
+        const topWidth = Math.max(
+          bottomWidth,
+          popupBounds.width - beamInset * 2,
+        );
+        const [hue, saturation, lightness] = rgbStringToHsl(
+          activeMapPopup.color,
+        );
+
+        while (mapPopupBeamBarsEl.childElementCount > barCount) {
+          mapPopupBeamBarsEl.lastElementChild.remove();
+        }
+        while (mapPopupBeamBarsEl.childElementCount < barCount) {
+          mapPopupBeamBarsEl.append(
+            document.createElementNS("http://www.w3.org/2000/svg", "rect"),
+          );
+        }
+
+        // Spread the bars evenly so the top bar touches the card
+        const pitch =
+          barCount > 1
+            ? (stackHeight - BEAM_BAR_HEIGHT) / (barCount - 1)
+            : 0;
+        Array.from(mapPopupBeamBarsEl.children).forEach((bar, index) => {
+          // index 0 sits on the marker, the last bar touches the card
+          const t = barCount > 1 ? index / (barCount - 1) : 0.5;
+          // Flare out towards the card, snapped to a pixel grid
+          const flare = t ** 1.4;
+          const width =
+            Math.round(
+              (bottomWidth + (topWidth - bottomWidth) * flare) / BEAM_PIXEL,
+            ) * BEAM_PIXEL;
+          const centerX = sourceX + (cardX - sourceX) * flare;
+          const y = stackBottom - BEAM_BAR_HEIGHT - index * pitch;
+          const barHue = (hue + t * 42 + 360) % 360;
+          const barLightness = Math.min(78, lightness + t * 14);
+          bar.setAttribute("x", (centerX - width / 2).toFixed(1));
+          bar.setAttribute("y", y.toFixed(1));
+          bar.setAttribute("width", width);
+          bar.setAttribute("height", BEAM_BAR_HEIGHT);
+          bar.setAttribute(
+            "fill",
+            `hsl(${barHue.toFixed(0)} ${saturation.toFixed(0)}% ${barLightness.toFixed(0)}%)`,
+          );
+          bar.setAttribute("fill-opacity", (0.95 - t * 0.6).toFixed(2));
+        });
       }
 
       function popupTransitionDuration(fromIndex, toIndex) {
