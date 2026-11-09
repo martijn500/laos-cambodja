@@ -1,37 +1,53 @@
 <!doctype html>
 <html lang="nl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dag laden…</title>
-  <meta name="color-scheme" content="dark">
-  <!-- Same dark backdrop as the app, so the hand-over to the loader doesn't flash white -->
-  <style>html, body { margin: 0; background: #09090b; } #status { position: absolute; left: -9999px; }</style>
-</head>
-<body>
-  <p id="status">Reisdag laden…</p>
-  <script>
-    const match = window.location.pathname.match(/^(.*\/)dag-(\d+)\/?$/);
-    if (match) {
-      fetch(`${match[1]}index.html`)
-        .then(response => {
-          if (!response.ok) throw new Error(`Index laden mislukt (${response.status})`);
-          return response.text();
-        })
-        .then(html => {
-          const baseTag = `<base href="${new URL(match[1], window.location.origin).href}">`;
-          const routedHtml = html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`);
-          document.open();
-          document.write(routedHtml);
-          document.close();
-        })
-        .catch(error => {
-          console.error(error);
-          document.getElementById('status').textContent = 'De reisdag kon niet worden geladen.';
-        });
-    } else {
-      document.getElementById('status').textContent = 'Deze pagina bestaat niet.';
-    }
-  </script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dag laden…</title>
+    <meta name="color-scheme" content="dark" />
+    <!-- Same dark backdrop as the app, so the hand-over to the loader doesn't flash white -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #09090b;
+      }
+      #status {
+        position: absolute;
+        left: -9999px;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="status">Reisdag laden…</p>
+    <script>
+      const match = window.location.pathname.match(/^(.*\/)dag-(\d+)\/?$/);
+      if (match) {
+        fetch(`${match[1]}index.html`)
+          .then((response) => {
+            if (!response.ok)
+              throw new Error(`Index laden mislukt (${response.status})`);
+            return response.text();
+          })
+          .then((html) => {
+            const baseTag = `<base href="${new URL(match[1], window.location.origin).href}">`;
+            const routedHtml = html.replace(
+              /<head([^>]*)>/i,
+              `<head$1>${baseTag}`,
+            );
+            document.open();
+            document.write(routedHtml);
+            document.close();
+          })
+          .catch((error) => {
+            console.error(error);
+            document.getElementById("status").textContent =
+              "De reisdag kon niet worden geladen.";
+          });
+      } else {
+        document.getElementById("status").textContent =
+          "Deze pagina bestaat niet.";
+      }
+    </script>
+  </body>
 </html>
