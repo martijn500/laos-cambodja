@@ -1403,44 +1403,83 @@
       .timeline-heading {
         display: flex;
         align-items: center;
-        /* Title and its date range read as one group, left-aligned */
         gap: 10px;
         height: 25px;
         margin: 0 0 2px;
         padding: 0 2px;
+        white-space: nowrap;
+      }
+
+      .timeline-heading-title,
+      .timeline-heading-meta,
+      .timeline-hint {
+        line-height: 1;
+        text-box: trim-both cap alphabetic;
+      }
+
+      .timeline-heading-title {
+        /* Press Start 2P's cap-height metric is a bit taller than its ink */
+        translate: 0 0.5px;
         color: #fff;
         font-family: var(--font-meme);
         font-size: 0.6rem;
       }
 
-      .timeline-heading span {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--ink-muted);
+      /* Pixel star (replaces the ✦ glyph, which isn't in the pixel font) */
+      .timeline-star {
+        flex: 0 0 auto;
+        width: 7px;
+        margin-right: -2px;
+        height: 7px;
+        clip-path: polygon(
+          42.9% 0,
+          57.1% 0,
+          57.1% 28.6%,
+          71.4% 28.6%,
+          71.4% 42.9%,
+          100% 42.9%,
+          100% 57.1%,
+          71.4% 57.1%,
+          71.4% 71.4%,
+          57.1% 71.4%,
+          57.1% 100%,
+          42.9% 100%,
+          42.9% 71.4%,
+          28.6% 71.4%,
+          28.6% 57.1%,
+          0 57.1%,
+          0 42.9%,
+          28.6% 42.9%,
+          28.6% 28.6%,
+          42.9% 28.6%
+        );
+        background: #fff;
+      }
+
+      .timeline-heading-meta,
+      .timeline-hint {
         font-family: var(--font-crt);
         font-size: 1rem;
         letter-spacing: 0.04em;
-        white-space: nowrap;
+      }
+
+      .timeline-heading-meta {
+        color: var(--ink-muted);
       }
 
       /* Pixel divider in the colour of the day */
-      .timeline-heading span::before {
+      .timeline-divider {
+        flex: 0 0 auto;
         width: 6px;
+        translate: 0 -0.5px;
         height: 6px;
         background: var(--day-color);
         box-shadow: 2px 2px 0 color-mix(in srgb, var(--day-color) 35%, #000);
-        content: "";
         transition: background-color 0.3s;
       }
 
-      .timeline-heading .timeline-hint {
-        display: inline;
+      .timeline-hint {
         color: color-mix(in srgb, var(--ink-muted) 60%, transparent);
-      }
-
-      .timeline-heading .timeline-hint::before {
-        content: none;
       }
 
       .page-indicators {
@@ -1856,11 +1895,11 @@
     <!-- NAVIGATION CONTROLS: first in the DOM, so it is the first Tab stop -->
     <div class="nav-controls">
       <div class="timeline-heading">
-        ✦ REISDAGBOEK
-        <span
-          >15 FEB — 4 MRT 2027
-          <span class="timeline-hint">· SCROLL DE ROUTE →</span></span
-        >
+        <span class="timeline-star" aria-hidden="true"></span>
+        <span class="timeline-heading-title">REISDAGBOEK</span>
+        <span class="timeline-divider" aria-hidden="true"></span>
+        <span class="timeline-heading-meta">15 FEB — 4 MRT 2027</span>
+        <span class="timeline-hint">· SCROLL DE ROUTE →</span>
       </div>
       <nav
         class="page-indicators"
