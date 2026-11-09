@@ -1536,6 +1536,43 @@
       </div>
       <p class="boot-day" id="boot-day"></p>
     </div>
+    <!-- NAVIGATION CONTROLS: first in the DOM, so it is the first Tab stop -->
+    <div class="nav-controls">
+      <div class="timeline-heading">
+        ✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span>
+      </div>
+      <nav
+        class="page-indicators"
+        id="page-indicators"
+        aria-label="Reistijdlijn: pijltjestoetsen wisselen van dag"
+      ></nav>
+      <div class="nav-actions">
+        <button
+          class="nav-btn nav-btn-prev"
+          onclick="prevSlide()"
+          aria-label="Vorige pagina"
+        >
+          <span class="nav-arrow" aria-hidden="true">▶</span>
+        </button>
+        <span
+          class="progress-text"
+          id="progress"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span class="progress-day">Dag 1</span>
+          <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
+        </span>
+        <button
+          class="nav-btn nav-btn-next"
+          onclick="nextSlide()"
+          aria-label="Volgende pagina"
+        >
+          <span class="nav-arrow" aria-hidden="true">▶</span>
+        </button>
+      </div>
+    </div>
+
     <div
       class="map-background"
       id="trip-map"
@@ -1547,6 +1584,10 @@
         <g class="map-popup-beam-bars"></g>
       </svg>
     </div>
+    <div class="map-status" id="map-status" role="status">Kaart laden…</div>
+    <button class="sound-btn" onclick="toggleAudio()" aria-pressed="true">
+      SFX: ON 🔊
+    </button>
     <div class="map-attribution">
       <a
         href="https://openfreemap.org/"
@@ -1569,10 +1610,6 @@
         >© OpenStreetMap</a
       >
     </div>
-    <div class="map-status" id="map-status" role="status">Kaart laden…</div>
-    <button class="sound-btn" onclick="toggleAudio()" aria-pressed="true">
-      SFX: ON 🔊
-    </button>
     <div class="deck">
       <!-- SLIDE 1: CHIANG RAI -->
       <div class="slide active">
@@ -1844,43 +1881,6 @@
             />
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- NAVIGATION CONTROLS -->
-    <div class="nav-controls">
-      <div class="timeline-heading">
-        ✦ REISDAGBOEK <span>15 FEB — 4 MRT 2027 · SCROLL DE ROUTE →</span>
-      </div>
-      <nav
-        class="page-indicators"
-        id="page-indicators"
-        aria-label="Klikbare reistijdlijn"
-      ></nav>
-      <div class="nav-actions">
-        <button
-          class="nav-btn nav-btn-prev"
-          onclick="prevSlide()"
-          aria-label="Vorige pagina"
-        >
-          <span class="nav-arrow" aria-hidden="true">▶</span>
-        </button>
-        <span
-          class="progress-text"
-          id="progress"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span class="progress-day">Dag 1</span>
-          <span class="progress-icon" role="img" aria-label="Vlucht">✈️</span>
-        </span>
-        <button
-          class="nav-btn nav-btn-next"
-          onclick="nextSlide()"
-          aria-label="Volgende pagina"
-        >
-          <span class="nav-arrow" aria-hidden="true">▶</span>
-        </button>
       </div>
     </div>
 
@@ -2494,6 +2494,8 @@
           container: mapContainerEl,
           doubleClickZoom: false,
           interactive: true,
+          // Screen-reader name of the canvas (MapLibre default is "Map")
+          locale: { "Map.Title": "Kaart: pijltjes verschuiven, plus en min zoomen" },
           style: "https://tiles.openfreemap.org/styles/positron",
           zoom: initialLocation.zoom,
         });
@@ -3060,6 +3062,7 @@
             `Reisdag ${day}: ${stop.title} in ${stop.location.name}`,
           );
           markerButton.title = `Dag ${day} · ${stop.title}`;
+          markerButton.tabIndex = -1;
           markerButton.addEventListener("click", () => {
             goToSlide(stop.slideIndex, index);
           });
@@ -3337,6 +3340,8 @@
           } else {
             indicator.removeAttribute("aria-current");
           }
+          // Roving tabindex: only the current day is a Tab stop
+          indicator.tabIndex = idx === currentTimelineIndex ? 0 : -1;
         });
         const activeIndicator = pageIndicators[currentTimelineIndex];
         document.body.style.setProperty(
@@ -3382,6 +3387,12 @@
         setActiveMapPopup(currentStop);
       }
 
+      function setMarkerTabStop(activeDay) {
+        mapDayMarkers.forEach(({ button, day }) => {
+          button.tabIndex = day === activeDay ? 0 : -1;
+        });
+      }
+
       function updateMapDayMarkers(activeDay) {
         mapDayMarkers.forEach(({ button, day }) => {
           if (day === activeDay) {
@@ -3390,6 +3401,21 @@
             button.removeAttribute("aria-current");
           }
         });
+        setMarkerTabStop(activeDay);
+      }
+
+      // Keep keyboard focus on the current day inside the timeline / markers
+      function focusCurrentDay(group) {
+        if (group === "timeline") {
+          pageIndicators[currentTimelineIndex]?.focus({ preventScroll: true });
+          return;
+        }
+        const day = tripDayNumbers.get(itinerary[currentTimelineIndex].date);
+        const marker = mapDayMarkers.find((entry) => entry.day === day);
+        if (!marker) return;
+        setMarkerTabStop(day);
+        // preventScroll: the map container must never be scrolled by focus
+        marker.button.focus({ preventScroll: true });
       }
 
       function closeSlidePopup() {
@@ -3503,11 +3529,42 @@
       updateSlideUrl(true);
       updateDeck();
 
-      // Keyboard Arrow Controls
+      /*
+       * Keyboard: ← / → = previous / next day, anywhere in the app. Inside the
+       * timeline or the map markers focus follows the current day, and
+       * Home / End jump to the first / last day. The map canvas keeps its
+       * own arrow keys for panning. Capture phase: MapLibre handles (and
+       * prevents) arrow keys for everything inside the map, markers included.
+       */
       document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight" || e.key === "Space") nextSlide();
-        if (e.key === "ArrowLeft") prevSlide();
-      });
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+        const target = e.target instanceof Element ? e.target : null;
+        if (target?.closest(".maplibregl-canvas, input, textarea, select")) {
+          return;
+        }
+        const group = target?.closest("#page-indicators")
+          ? "timeline"
+          : target?.closest(".map-day-marker")
+            ? "markers"
+            : null;
+        if (e.key === "ArrowRight") {
+          nextSlide();
+        } else if (e.key === "ArrowLeft") {
+          prevSlide();
+        } else if (group && e.key === "Home") {
+          goToSlide(itinerary[0].slideIndex, 0);
+        } else if (group && e.key === "End") {
+          goToSlide(itinerary.at(-1).slideIndex, itinerary.length - 1);
+        } else {
+          return;
+        }
+        e.preventDefault();
+        if (group) {
+          // Don't let the map pan as well when a marker has focus
+          e.stopPropagation();
+          focusCurrentDay(group);
+        }
+      }, true);
 
       // Touch Swipe Controls for Mobile
       // Disabled while only the map is visible, so panning/zooming isn't hijacked
