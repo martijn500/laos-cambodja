@@ -342,6 +342,161 @@
         pointer-events: auto;
       }
 
+      /*
+       * While booting, the deck (static template slides, then the slide that
+       * is being built) stays hidden: the day appears once, as the popup
+       * growing out of its map marker. Only if the map can't load does the
+       * plain deck slide show as a fallback.
+       */
+      /* opacity, not visibility: .slide.active sets visibility: visible and
+         would punch through an inherited hidden */
+      body.is-booting .deck {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      body.is-booting .slide {
+        transition: none;
+      }
+
+      /*
+       * Boot loader: a pixel map pin in the colour of the day hops over its
+       * own shadow, above a chase of neon blocks (same language as the beam
+       * bars and the arcade keys). Fades away when the day pops out.
+       */
+      .boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 22px;
+        background:
+          radial-gradient(
+            circle at 50% 45%,
+            color-mix(in srgb, var(--day-color) 14%, transparent),
+            transparent 55%
+          ),
+          var(--bg);
+        color: #fff;
+        font-family: var(--font-meme);
+        text-align: center;
+        transition:
+          opacity 320ms var(--ease-out),
+          visibility 0s linear 320ms;
+      }
+
+      body:not(.is-booting) .boot-loader {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .boot-pin {
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+      }
+
+      .boot-pin svg {
+        width: 48px;
+        height: 60px;
+        color: var(--day-color);
+        filter: drop-shadow(
+          4px 4px 0
+            color-mix(in srgb, var(--day-color) 35%, #000)
+        );
+        shape-rendering: crispEdges;
+        transform-origin: 50% 100%;
+        animation: boot-hop 900ms var(--ease-out) infinite;
+      }
+
+      .boot-pin-shadow {
+        width: 32px;
+        height: 4px;
+        background: color-mix(in srgb, var(--day-color) 45%, transparent);
+        animation: boot-shadow 900ms var(--ease-out) infinite;
+      }
+
+      .boot-bar {
+        display: flex;
+        gap: 4px;
+      }
+
+      .boot-bar span {
+        width: 12px;
+        height: 12px;
+        background: var(--c);
+        box-shadow: 2px 2px 0 color-mix(in srgb, var(--c) 35%, #000);
+        opacity: 0.15;
+        animation: boot-chase 1.2s steps(1, end) infinite;
+      }
+
+      .boot-bar span:nth-child(6n + 1) { --c: var(--neon-pink); }
+      .boot-bar span:nth-child(6n + 2) { --c: var(--neon-orange); }
+      .boot-bar span:nth-child(6n + 3) { --c: var(--neon-yellow); }
+      .boot-bar span:nth-child(6n + 4) { --c: var(--neon-green); }
+      .boot-bar span:nth-child(6n + 5) { --c: var(--neon-cyan); }
+      .boot-bar span:nth-child(6n + 6) { --c: var(--neon-purple); }
+      .boot-bar span:nth-child(1) { animation-delay: 0ms; }
+      .boot-bar span:nth-child(2) { animation-delay: 100ms; }
+      .boot-bar span:nth-child(3) { animation-delay: 200ms; }
+      .boot-bar span:nth-child(4) { animation-delay: 300ms; }
+      .boot-bar span:nth-child(5) { animation-delay: 400ms; }
+      .boot-bar span:nth-child(6) { animation-delay: 500ms; }
+      .boot-bar span:nth-child(7) { animation-delay: 600ms; }
+      .boot-bar span:nth-child(8) { animation-delay: 700ms; }
+
+      .boot-title {
+        margin: 0;
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-shadow: 3px 3px 0 var(--neon-pink);
+      }
+
+      /* Dots type out one by one, like an arcade terminal */
+      .boot-title .boot-dots {
+        display: inline-block;
+        width: 3ch;
+        overflow: hidden;
+        vertical-align: bottom;
+        text-align: left;
+        animation: boot-dots 1.2s steps(4, jump-none) infinite;
+      }
+
+      .boot-day {
+        min-height: 1em;
+        margin: 0;
+        color: var(--day-color);
+        font-size: 0.6rem;
+        line-height: 1.6;
+      }
+
+      @keyframes boot-hop {
+        0%, 100% { translate: 0 0; scale: 1.08 0.9; }
+        12% { scale: 1; }
+        45% { translate: 0 -16px; scale: 0.96 1.06; }
+        80% { translate: 0 0; scale: 1; }
+      }
+
+      @keyframes boot-shadow {
+        0%, 100% { scale: 1.1 1; opacity: 1; }
+        45% { scale: 0.55 1; opacity: 0.45; }
+        80% { scale: 1 1; opacity: 1; }
+      }
+
+      @keyframes boot-chase {
+        0% { opacity: 1; translate: 0 -3px; }
+        25% { opacity: 0.55; translate: 0 0; }
+        50%, 100% { opacity: 0.15; translate: 0 0; }
+      }
+
+      @keyframes boot-dots {
+        from { width: 0; }
+        to { width: 3ch; }
+      }
+
       body.popup-closed .deck {
         display: none;
       }
@@ -679,14 +834,22 @@
           margin-right: 44px;
         }
 
+        /*
+         * Title spans the full photo width; the cartoon (z-index 3) is
+         * layered on top of it, so the cartoon overlaps the text, not the
+         * other way round.
+         */
         .slide .card > div:first-child > h2 {
-          grid-column: 1;
+          grid-column: 1 / -1;
           grid-row: 3;
           align-self: start;
-          z-index: 3;
-          margin: 0.75rem 0.25rem;
+          z-index: 2;
+          min-width: 0;
+          margin: 0.9rem;
           padding: 0;
-          font-size: clamp(1.1rem, 6.5vw, 1.6rem);
+          font-size: clamp(1.1rem, 5.6vw, 1.5rem);
+          line-height: 1.15;
+          overflow-wrap: break-word;
         }
 
         .slide .card .desc {
@@ -711,7 +874,7 @@
           grid-row: 3;
           right: auto;
           bottom: auto;
-          z-index: 2;
+          z-index: 3;
           align-self: end;
           justify-self: stretch;
           width: 100%;
@@ -1215,10 +1378,15 @@
         scale: 1.2;
       }
 
+      /* Ring the card itself, not the whole button with the route line above;
+         sized to fit the 5px left below the card in the scroller */
       .page-indicator:focus-visible {
-        outline: 3px solid #fff;
+        outline: none;
+      }
+
+      .page-indicator:focus-visible .timeline-card {
+        outline: 2px solid #fff;
         outline-offset: 2px;
-        border-radius: var(--radius);
       }
 
       .nav-actions {
@@ -1349,7 +1517,25 @@
       }
     </style>
   </head>
-  <body>
+  <body class="is-booting">
+    <div class="boot-loader" role="status" aria-live="polite">
+      <div class="boot-pin" aria-hidden="true">
+        <svg viewBox="0 0 10 13">
+          <path
+            fill="currentColor"
+            fill-rule="evenodd"
+            d="M3 0h4v1h1v1h1v5h-1v2h-1v2h-1v2h-2v-2h-1v-2h-1v-2h-1v-5h1v-1h1zM4 3v2h2v-2z"
+          />
+        </svg>
+        <span class="boot-pin-shadow"></span>
+      </div>
+      <p class="boot-title">KAART LADEN<span class="boot-dots">...</span></p>
+      <div class="boot-bar" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <p class="boot-day" id="boot-day"></p>
+    </div>
     <div
       class="map-background"
       id="trip-map"
@@ -1416,7 +1602,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg"
               alt="Wat Rong Khun Chiang Rai"
             />
           </div>
@@ -1451,7 +1636,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-green)">
             <img
-              src="https://www.gibbonexperience.org/wp-content/uploads/2023/11/THE-GIBBON-EXPERIENCE-TH5-copy.jpg"
               alt="Gibbon Experience Zipline"
             />
           </div>
@@ -1486,7 +1670,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-yellow)">
             <img
-              src="https://images.squarespace-cdn.com/content/v1/6298cb774cf3830bc9b342bf/98985556-5e42-4b39-a818-c9cb74e907c2/Slow+boat+Mekong.jpg"
               alt="Mekong Slowboat Laos"
             />
           </div>
@@ -1522,7 +1705,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-cyan)">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
               alt="Wat Xiengthong Luang Prabang"
             />
           </div>
@@ -1557,7 +1739,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
             <img
-              src="https://discoverlaos.today/img/tour/dbc0ccdc54718dc9794591fac62a4242.jpg?p=original"
               alt="Vang Vieng Hot Air Balloon"
             />
           </div>
@@ -1592,7 +1773,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-cyan)">
             <img
-              src="https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg/1280px-Angkor_Wat_-_007_Sunrise_%288580658827%29.jpg"
               alt="Angkor Wat bij zonsopkomst"
             />
           </div>
@@ -1625,7 +1805,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-green)">
             <img
-              src="https://toursbyjeeps.com/wp-content/uploads/2021/07/Ta-Phrom4.jpg"
               alt="Ta Prohm Tree Roots"
             />
           </div>
@@ -1661,7 +1840,6 @@
           </div>
           <div class="img-box" style="border-color: var(--neon-pink)">
             <img
-              src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG"
               alt="Phnom Penh Royal Palace"
             />
           </div>
@@ -1733,7 +1911,7 @@
           alt: "Vliegtuig boven de wolken",
         },
         chiangRai: {
-          src: "https://upload.wikimedia.org/wikipedia/commons/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg",
+          src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Wat_Rong_Khun_-_Chiang_Rai.jpg/1280px-Wat_Rong_Khun_-_Chiang_Rai.jpg",
           alt: "Witte tempel Wat Rong Khun in Chiang Rai",
         },
         vientiane: {
@@ -1766,7 +1944,7 @@
           alt: "Zipline tussen de bomen van de Laotiaanse jungle",
         },
         luangPrabang: {
-          src: "https://upload.wikimedia.org/wikipedia/commons/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original",
+          src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG/1280px-Wat_Xieng_Thong_-_Luang_Prabang_-_Laos.JPG",
           alt: "Wat Xiengthong in Luang Prabang",
         },
         waterfall: {
@@ -1797,7 +1975,7 @@
           alt: "Bus voor de rit naar Phnom Penh",
         },
         phnomPenh: {
-          src: "https://upload.wikimedia.org/wikipedia/commons/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG",
+          src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Phnom_Penh_Royal_Palace_by_Night.JPG/1280px-Phnom_Penh_Royal_Palace_by_Night.JPG",
           alt: "Koninklijk Paleis in Phnom Penh in de avond",
         },
         nagini: {
@@ -1805,7 +1983,7 @@
           alt: "Nagini Bar bij 3 Nagas in Luang Prabang",
         },
         buddhaPark: {
-          src: "https://commons.wikimedia.org/wiki/Special:FilePath/Buddha_Park_01.jpg",
+          src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Buddha_Park_01.jpg/1280px-Buddha_Park_01.jpg",
           alt: "Buddha Park Xieng Khuan in Vientiane",
         },
         street08: {
@@ -1893,7 +2071,7 @@
         {
           date: "DO · 18 FEB",
           flags: "🇱🇦",
-          title: "Gibbon Experience · dag 1",
+          title: "Gibbon Experience: dag 1",
           location: {
             name: "Bokeo Nature Reserve · Laos",
             coordinates: [20.337, 100.618],
@@ -1913,7 +2091,7 @@
         {
           date: "VR · 19 FEB",
           flags: "🇱🇦",
-          title: "Gibbon Experience · dag 2",
+          title: "Gibbon Experience: dag 2",
           location: {
             name: "Huay Xai · Laos",
             coordinates: [20.2761, 100.4134],
@@ -1973,7 +2151,7 @@
         {
           date: "MA · 22 FEB",
           flags: "🇱🇦",
-          title: "Luang Prabang · oude stad",
+          title: "Luang Prabang: oude stad",
           location: {
             name: "Luang Prabang · Laos",
             coordinates: [19.8833, 102.1347],
@@ -2054,7 +2232,7 @@
         {
           date: "DO · 25 FEB",
           flags: "🇱🇦",
-          title: "Vang Vieng · natuurdag",
+          title: "Vang Vieng: natuurdag",
           location: {
             name: "Vang Vieng · Laos",
             coordinates: [18.925, 102.447],
@@ -2157,7 +2335,7 @@
         {
           date: "MA · 1 MRT",
           flags: "🇰🇭",
-          title: "Siem Reap · extra dag",
+          title: "Siem Reap: extra dag",
           location: {
             name: "Siem Reap · Cambodja",
             coordinates: [13.3633, 103.8564],
@@ -2218,7 +2396,7 @@
         {
           date: "WO · 3 MRT",
           flags: "🇰🇭",
-          title: "Phnom Penh · volle dag",
+          title: "Phnom Penh: volle dag",
           location: {
             name: "Phnom Penh · Cambodja",
             coordinates: [11.5564, 104.9282],
@@ -2288,8 +2466,24 @@
       let pendingMapDay = null;
       let suppressMapMarkerCommit = false;
 
+      function finishBooting() {
+        document.body.classList.remove("is-booting");
+      }
+
+      // Day from the /dag-N path, so the map can start at the right place
+      function dayFromPath() {
+        const dayRoute = window.location.pathname
+          .slice(appBasePath.length)
+          .match(/^dag-(\d+)\/?$/);
+        return dayRoute ? Number(dayRoute[1]) : 1;
+      }
+
       if (window.maplibregl) {
-        const initialLocation = itinerary[0].location;
+        const initialStop =
+          itinerary.find(
+            (stop) => tripDayNumbers.get(stop.date) === dayFromPath(),
+          ) ?? itinerary[0];
+        const initialLocation = initialStop.location;
         tripMap = new maplibregl.Map({
           attributionControl: false,
           boxZoom: false,
@@ -2304,14 +2498,22 @@
           zoom: initialLocation.zoom,
         });
 
+        // Fall back to the plain slide if the map takes far too long
+        setTimeout(() => {
+          if (!mapStyleReady) finishBooting();
+        }, 8000);
+
         tripMap.once("load", () => {
           mapStyleReady = true;
           mapStatusEl.hidden = true;
           addMinimapMarkers();
-          showMapLocation(itinerary[currentTimelineIndex]);
-          if (!document.body.classList.contains("popup-closed")) {
-            setActiveMapPopup(itinerary[currentTimelineIndex]);
-          }
+          // Settle the final framing without animation on first load
+          showMapLocation(itinerary[currentTimelineIndex], { instant: true });
+          initialImagesReady.then(() => {
+            if (!document.body.classList.contains("popup-closed")) {
+              setActiveMapPopup(itinerary[currentTimelineIndex]);
+            }
+          });
         });
         tripMap.on("error", () => {
           if (!mapStatusEl.hidden) {
@@ -2343,10 +2545,12 @@
         });
       } else {
         mapStatusEl.textContent = "Kaartbibliotheek kon niet laden";
+        // After the rest of this script has picked and shown the right day
+        queueMicrotask(() => initialImagesReady.then(finishBooting));
       }
 
-      function showMapLocation(stop) {
-        if (!tripMap || !mapStyleReady) return;
+      function showMapLocation(stop, { instant = false } = {}) {
+        if (!tripMap) return;
 
         const { coordinates, zoom } = stop.location;
         const day = tripDayNumbers.get(stop.date);
@@ -2414,9 +2618,16 @@
           }
         }
 
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        // Before the style has loaded (first paint of a /dag-N page) jump
+        // straight to the final framing, so the map never visibly scrolls
+        if (
+          instant ||
+          !mapStyleReady ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
           pendingMapDay = null;
-          tripMap.jumpTo(camera);
+          // jumpTo ignores `offset`; a zero-length easeTo honours it
+          tripMap.easeTo({ ...camera, duration: 0 });
           updateMapDayMarkers(day);
         } else {
           pendingMapDay = day;
@@ -2737,6 +2948,7 @@
           trackPopupBeam(animation);
         }
         slide.classList.remove("map-popup-pending");
+        finishBooting();
         document.body.classList.remove("map-popup-transition");
       }
 
@@ -2901,7 +3113,8 @@
         imageBox.style.borderColor = stopThemes[stop.theme];
         slide.setAttribute("role", "dialog");
         slide.setAttribute("aria-label", stop.title);
-        slideImage.src = photo.src;
+        // Loaded later: the opening day first, the rest once it is ready
+        slideImage.dataset.src = photo.src;
         slideImage.alt = photo.alt;
         if (photo.credit && photo.creditUrl) {
           const credit = document.createElement("a");
@@ -2943,7 +3156,7 @@
           once: true,
         });
         if (stop.caricature !== false) {
-          caricatureImage.src = `img/${caricatureNames.get(stop)}.png`;
+          caricatureImage.dataset.src = `img/${caricatureNames.get(stop)}.png`;
           caricature.append(caricatureImage);
           card.append(caricature);
         }
@@ -2951,10 +3164,7 @@
       });
       slideTemplates.forEach((slide) => slide.remove());
       deck.append(...slides);
-      const initialRoute = window.location.pathname
-        .slice(appBasePath.length)
-        .match(/^dag-(\d+)\/?$/);
-      const initialDay = initialRoute ? Number(initialRoute[1]) : 1;
+      const initialDay = dayFromPath();
       const initialTimelineIndex = itinerary.findIndex(
         (stop) => tripDayNumbers.get(stop.date) === initialDay,
       );
@@ -2962,6 +3172,31 @@
         currentTimelineIndex = initialTimelineIndex;
         currentSlide = itinerary[initialTimelineIndex].slideIndex;
       }
+      /*
+       * Preload the opening day's photo and cartoon with high priority; the
+       * popup waits for them (at most 4s) so the card appears complete. Every
+       * other image only starts afterwards, so it doesn't steal bandwidth.
+       */
+      function loadDeferredImage(image, priority = "auto") {
+        image.fetchPriority = priority;
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      }
+      const bootImages = [
+        ...slides[currentSlide].querySelectorAll("img[data-src]"),
+      ];
+      bootImages.forEach((image) => loadDeferredImage(image, "high"));
+      const initialImagesReady = Promise.race([
+        Promise.allSettled(bootImages.map((image) => image.decode())),
+        new Promise((resolve) => setTimeout(resolve, 4000)),
+      ]);
+      initialImagesReady.then(() => {
+        document
+          .querySelectorAll("img[data-src]")
+          .forEach((image) => loadDeferredImage(image));
+      });
+      document.getElementById("boot-day").textContent =
+        `DAG ${tripDayNumbers.get(itinerary[currentTimelineIndex].date)}: ${itinerary[currentTimelineIndex].location.name.split(" · ")[0].toUpperCase()}`;
       const pageIndicators = itinerary.map((stop, idx) => {
         const slide = slides[stop.slideIndex];
         const button = document.createElement("button");
@@ -3001,7 +3236,7 @@
         button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
         image.className = "timeline-thumb";
-        image.src = slide.querySelector(".img-box img").src;
+        image.dataset.src = photos[stop.photo].src;
         image.alt = "";
         image.loading = "lazy";
         image.decoding = "async";
