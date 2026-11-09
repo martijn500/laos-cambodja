@@ -31,6 +31,29 @@
     <link rel="stylesheet" href="css/slide.css" />
     <link rel="stylesheet" href="css/controls.css" />
     <!--
+      Fetch every module at once instead of one import level at a time.
+      Keep in sync with js/ (a test checks this).
+    -->
+    <link rel="modulepreload" href="js/main.js" />
+    <link rel="modulepreload" href="js/audio.js" />
+    <link rel="modulepreload" href="js/boot.js" />
+    <link rel="modulepreload" href="js/data/itinerary.js" />
+    <link rel="modulepreload" href="js/data/photos.js" />
+    <link rel="modulepreload" href="js/data/themes.js" />
+    <link rel="modulepreload" href="js/deck.js" />
+    <link rel="modulepreload" href="js/input.js" />
+    <link rel="modulepreload" href="js/map/beam.js" />
+    <link rel="modulepreload" href="js/map/map.js" />
+    <link rel="modulepreload" href="js/map/markers.js" />
+    <link rel="modulepreload" href="js/map/popup.js" />
+    <link rel="modulepreload" href="js/router.js" />
+    <link rel="modulepreload" href="js/slides/build.js" />
+    <link rel="modulepreload" href="js/slides/gallery.js" />
+    <link rel="modulepreload" href="js/state.js" />
+    <link rel="modulepreload" href="js/timeline.js" />
+    <link rel="modulepreload" href="js/utils/color.js" />
+    <link rel="modulepreload" href="js/utils/dom.js" />
+    <!--
       Day routes (/dag-8) arrive via 404.html, which writes this page with
       document.write; stylesheets don't block painting then. Keep the page
       hidden until the script runs: scripts do wait for the stylesheets above.
