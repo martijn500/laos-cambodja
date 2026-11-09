@@ -1,0 +1,209 @@
+/* Map: background, popup, beam between marker and card, day markers, credits */
+
+.map-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #10191d;
+}
+
+/* MapLibre sets Helvetica on the map container; popups live inside it */
+.map-background.maplibregl-map {
+  font: inherit;
+}
+
+.map-background .map-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 9, 14, 0.12),
+      rgba(7, 9, 14, 0.02) 45%,
+      rgba(7, 9, 14, 0.24)
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 18%,
+      rgba(7, 9, 14, 0.1) 100%
+    );
+  pointer-events: none;
+}
+
+.map-background .maplibregl-canvas {
+  filter: grayscale(0.42) saturate(0.88) brightness(0.78) contrast(1.04);
+}
+
+.map-background .maplibregl-popup {
+  z-index: 4;
+}
+
+.map-background .maplibregl-popup-content {
+  width: min(1100px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  overflow: visible;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  box-shadow: none;
+}
+
+.map-background .maplibregl-popup-tip {
+  display: none;
+}
+
+.map-popup-beam {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Pixel "stack" of bars between marker and card; colours set from JS */
+.map-popup-beam-bars rect {
+  shape-rendering: crispEdges;
+}
+
+.map-background .maplibregl-canvas:focus {
+  outline: none;
+}
+
+.map-day-marker,
+.timeline-date-number {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  appearance: none;
+  border: 2px solid #000;
+  border-radius: var(--radius-sm);
+  background-color: var(--marker-color, var(--neon-cyan));
+  color: #000;
+  box-shadow: 3px 3px 0
+    color-mix(in srgb, var(--marker-color, var(--neon-cyan)) 35%, #000);
+  font: 400 0.6rem/1 var(--font-meme);
+}
+
+/* Required map credits (OpenMapTiles CC-BY, OpenStreetMap ODbL):
+   always visible in a map corner, but as quiet as possible */
+.map-attribution {
+  position: fixed;
+  right: 10px;
+  bottom: calc(var(--timeline-height) + 6px);
+  z-index: 5;
+  color: rgba(30, 32, 44, 0.55);
+  font-size: 0.8rem;
+  line-height: 1;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+}
+
+.map-attribution a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.map-attribution a:hover,
+.map-attribution a:focus-visible {
+  color: rgba(30, 32, 44, 0.9);
+  text-decoration: underline;
+}
+
+.map-status {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 5;
+  padding: 7px 9px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  background: var(--panel-bg);
+  color: #fff;
+  font: 0.55rem/1 var(--font-meme);
+}
+
+.map-day-marker:focus-visible,
+.slide-close:focus-visible,
+.nav-btn:focus-visible,
+.sound-btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.map-day-marker-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.map-day-marker {
+  position: relative;
+}
+
+/* Raise the hovered / active marker above its neighbours */
+.map-day-marker-wrap:has(.map-day-marker[aria-current="date"]) {
+  z-index: 1;
+}
+
+.map-day-marker-wrap:hover,
+.map-day-marker-wrap:focus-within {
+  z-index: 2;
+}
+
+/* The active day pops in with a little spring overshoot */
+.map-day-marker[aria-current="date"] {
+  scale: 1.15;
+  filter: brightness(1.12);
+}
+
+.map-day-marker[aria-current="date"]::after {
+  position: absolute;
+  inset: -9px;
+  border: 2px solid var(--marker-color, var(--neon-cyan));
+  border-radius: var(--radius);
+  animation: map-pulse 2s ease-out infinite;
+  content: "";
+  pointer-events: none;
+}
+
+.slide.trip-popup-slide {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  padding: 0;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: none;
+  pointer-events: auto;
+}
+
+.timeline-date-number {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  transform: translate(-50%, -50%);
+  box-shadow: 2px 2px 0
+    color-mix(in srgb, var(--marker-color, var(--neon-cyan)) 35%, #000);
+  font-size: 0.5rem;
+  pointer-events: none;
+}
+
+@keyframes map-pulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
