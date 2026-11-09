@@ -20,7 +20,7 @@ export function loadDeferredImage(image, priority = "auto") {
 
 export function preloadBootImages() {
   const bootImages = [
-    ...state.slides[state.currentSlide].querySelectorAll(
+    ...state.slides[state.current].querySelectorAll(
       /** @type {"img"} */ ("img[data-src]"),
     ),
   ];
@@ -38,5 +38,5 @@ export function preloadBootImages() {
 
 export function showBootDay() {
   document.getElementById("boot-day").textContent =
-    `DAG ${tripDayNumbers.get(itinerary[state.currentTimelineIndex].date)}: ${itinerary[state.currentTimelineIndex].location.name.split(" · ")[0].toUpperCase()}`;
+    `DAG ${tripDayNumbers.get(itinerary[state.current].date)}: ${itinerary[state.current].location.name.split(" · ")[0].toUpperCase()}`;
 }

@@ -121,10 +121,10 @@ export function initMap() {
       mapStatusEl.hidden = true;
       addMinimapMarkers();
       // Settle the final framing without animation on first load
-      showMapLocation(itinerary[state.currentTimelineIndex], { instant: true });
+      showMapLocation(itinerary[state.current], { instant: true });
       initialImagesReady.then(() => {
         if (!document.body.classList.contains("popup-closed")) {
-          setActiveMapPopup(itinerary[state.currentTimelineIndex]);
+          setActiveMapPopup(itinerary[state.current]);
         }
       });
     });
@@ -152,7 +152,7 @@ export function initMap() {
         resizeFrame = null;
         state.tripMap.resize();
         if (state.activeMapPopup) {
-          showMapLocation(itinerary[state.currentTimelineIndex]);
+          showMapLocation(itinerary[state.current]);
         }
       });
     });

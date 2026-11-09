@@ -66,7 +66,7 @@ export function buildSlides() {
       { once: true },
     );
     createGallery(slide, stop, slideImage, placeName);
-    slide.classList.toggle("active", idx === state.currentSlide);
+    slide.classList.toggle("active", idx === state.current);
     tag.textContent = `${stop.date} · ${stop.flags}`;
     heading.textContent = stop.title;
     description.textContent = stop.detail;

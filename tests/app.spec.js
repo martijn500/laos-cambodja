@@ -85,6 +85,10 @@ test("next / previous change the day and the URL", async ({ page }) => {
   await page.goBack();
   await expect(page).toHaveURL(/\/dag-9$/);
   await expect(popupTitle(page)).toHaveText("Kuang Si-watervallen");
+  // Same URL as day 8, but history remembers it was the side quest
+  await page.goBack();
+  await expect(page).toHaveURL(/\/dag-8$/);
+  await expect(popupTitle(page)).toHaveText(/NAGINI BAR/);
   expect(errors).toEqual([]);
 });
 

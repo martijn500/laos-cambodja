@@ -4,9 +4,8 @@
  * changes lives here.
  */
 export const state = {
-  /** Index into `slides` / `itinerary` of the open day */
-  currentSlide: 0,
-  currentTimelineIndex: 0,
+  /** The open stop: index into `itinerary`, `slides` and `pageIndicators` */
+  current: 0,
   /** @type {HTMLElement[]} built from the slide <template> */
   slides: [],
   /** @type {HTMLButtonElement[]} timeline cards */
@@ -31,12 +30,10 @@ const events = new EventTarget();
 /**
  * Switch to another stop. Everything that shows the current day listens to
  * "daychange" (see onDayChange) instead of being called from here.
- * @param {number} slideIndex
- * @param {number} [timelineIndex]
+ * @param {number} index stop in the itinerary
  */
-export function setDay(slideIndex, timelineIndex = slideIndex) {
-  state.currentSlide = slideIndex;
-  state.currentTimelineIndex = timelineIndex;
+export function setDay(index) {
+  state.current = index;
   events.dispatchEvent(new Event("daychange"));
 }
 

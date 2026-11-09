@@ -48,9 +48,9 @@ export function initInput() {
       } else if (e.key === "ArrowLeft") {
         prevSlide();
       } else if (group && e.key === "Home") {
-        goToSlide(itinerary[0].slideIndex, 0);
+        goToSlide(0);
       } else if (group && e.key === "End") {
-        goToSlide(itinerary.at(-1).slideIndex, itinerary.length - 1);
+        goToSlide(itinerary.length - 1);
       } else {
         return;
       }

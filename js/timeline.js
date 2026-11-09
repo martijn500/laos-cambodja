@@ -98,6 +98,6 @@ export function buildTimeline() {
     );
     if (!(button instanceof HTMLElement)) return;
     const index = Number(button.dataset.index);
-    goToSlide(itinerary[index].slideIndex, index);
+    goToSlide(index);
   });
 }

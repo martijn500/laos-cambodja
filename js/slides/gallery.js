@@ -138,7 +138,7 @@ export function visibleGallerySlide() {
   if (state.activeMapPopup && !state.activeMapPopup.closing) {
     return state.activeMapPopup.slide;
   }
-  return state.mapStyleReady ? null : state.slides[state.currentSlide];
+  return state.mapStyleReady ? null : state.slides[state.current];
 }
 
 export function resetGallery(slide) {

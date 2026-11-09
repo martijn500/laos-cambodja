@@ -74,7 +74,7 @@ export function addMinimapMarkers() {
     markerButton.title = `Dag ${day} · ${stop.title}`;
     markerButton.tabIndex = -1;
     markerButton.addEventListener("click", () => {
-      goToSlide(stop.slideIndex, index);
+      goToSlide(index);
     });
     markerElement.append(markerButton);
 
@@ -92,9 +92,7 @@ export function addMinimapMarkers() {
       day,
     });
   });
-  updateMapDayMarkers(
-    tripDayNumbers.get(itinerary[state.currentTimelineIndex].date),
-  );
+  updateMapDayMarkers(tripDayNumbers.get(itinerary[state.current].date));
 }
 
 export function setMarkerTabStop(activeDay) {

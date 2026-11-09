@@ -22,7 +22,7 @@ export function updateDeck() {
   const popupPending =
     state.mapStyleReady &&
     !document.body.classList.contains("popup-closed") &&
-    state.activeMapPopup?.slideIndex !== state.currentSlide;
+    state.activeMapPopup?.slideIndex !== state.current;
   if (popupPending) {
     document.body.classList.add("map-popup-transition");
   }
@@ -30,20 +30,20 @@ export function updateDeck() {
   state.slides.forEach((slide, idx) => {
     slide.classList.toggle(
       "map-popup-pending",
-      popupPending && idx === state.currentSlide,
+      popupPending && idx === state.current,
     );
-    slide.classList.toggle("active", idx === state.currentSlide);
+    slide.classList.toggle("active", idx === state.current);
   });
   state.pageIndicators.forEach((indicator, idx) => {
-    if (idx === state.currentTimelineIndex) {
+    if (idx === state.current) {
       indicator.setAttribute("aria-current", "step");
     } else {
       indicator.removeAttribute("aria-current");
     }
     // Roving tabindex: only the current day is a Tab stop
-    indicator.tabIndex = idx === state.currentTimelineIndex ? 0 : -1;
+    indicator.tabIndex = idx === state.current ? 0 : -1;
   });
-  const activeIndicator = state.pageIndicators[state.currentTimelineIndex];
+  const activeIndicator = state.pageIndicators[state.current];
   document.body.style.setProperty(
     "--day-color",
     activeIndicator.style.getPropertyValue("--indicator-color"),
@@ -70,7 +70,7 @@ export function updateDeck() {
         : "smooth",
     });
   }
-  const currentStop = itinerary[state.currentTimelineIndex];
+  const currentStop = itinerary[state.current];
   const progressLabel = `Dag ${tripDayNumbers.get(currentStop.date)}`;
   if (
     progressDayEl.textContent !== progressLabel ||
@@ -89,12 +89,12 @@ export function updateDeck() {
 // Keep keyboard focus on the current day inside the timeline / markers
 export function focusCurrentDay(group) {
   if (group === "timeline") {
-    state.pageIndicators[state.currentTimelineIndex]?.focus({
+    state.pageIndicators[state.current]?.focus({
       preventScroll: true,
     });
     return;
   }
-  const day = tripDayNumbers.get(itinerary[state.currentTimelineIndex].date);
+  const day = tripDayNumbers.get(itinerary[state.current].date);
   const marker = mapDayMarkers.find((entry) => entry.day === day);
   if (!marker) return;
   setMarkerTabStop(day);
@@ -108,35 +108,28 @@ export function closeSlidePopup() {
   setActiveMapPopup(null);
   mapDayMarkers
     .find(
-      ({ day }) =>
-        day === tripDayNumbers.get(itinerary[state.currentTimelineIndex].date),
+      ({ day }) => day === tripDayNumbers.get(itinerary[state.current].date),
     )
     ?.button.focus();
 }
 
-export function goToSlide(
-  index,
-  timelineIndex = itinerary.findIndex((stop) => stop.slideIndex === index),
-) {
+/** @param {number} index stop in the itinerary (= its slide) */
+export function goToSlide(index) {
   const popupWasClosed = document.body.classList.contains("popup-closed");
   document.body.classList.remove("popup-closed");
-  if (
-    index === state.currentSlide &&
-    timelineIndex === state.currentTimelineIndex
-  ) {
-    if (popupWasClosed) {
-      updateDeck();
-    }
+  if (index === state.current) {
+    // Same day: only reopen its popup if it was closed
+    if (popupWasClosed) updateDeck();
     return;
   }
-  if (index !== state.currentSlide) playBeep(587.33, "triangle", 0.12);
-  setDay(index, timelineIndex);
+  playBeep(587.33, "triangle", 0.12);
+  setDay(index);
   updateSlideUrl();
 }
 
 export function nextSlide() {
   document.body.classList.remove("popup-closed");
-  let next = state.currentSlide + 1;
+  let next = state.current + 1;
   if (next < state.slides.length) {
     playBeep(587.33, "triangle", 0.12);
   } else {
@@ -144,21 +137,15 @@ export function nextSlide() {
     next = 0;
     playBeep(880, "sawtooth", 0.2);
   }
-  setDay(
-    next,
-    itinerary.findIndex((stop) => stop.slideIndex === next),
-  );
+  setDay(next);
   updateSlideUrl();
 }
 
 export function prevSlide() {
   document.body.classList.remove("popup-closed");
-  if (state.currentSlide === 0) return;
-  const previous = state.currentSlide - 1;
+  if (state.current === 0) return;
+  const previous = state.current - 1;
   playBeep(349.23, "triangle", 0.12);
-  setDay(
-    previous,
-    itinerary.findIndex((stop) => stop.slideIndex === previous),
-  );
+  setDay(previous);
   updateSlideUrl();
 }
