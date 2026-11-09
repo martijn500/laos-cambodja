@@ -46,36 +46,66 @@
         --radius-lg: 14px;
         --font-meme: "Press Start 2P", monospace;
         --font-sans: "Plus Jakarta Sans", sans-serif;
+        /* Motion tokens: fast, ease-out by default, spring for "pop" moments */
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --dur-press: 80ms;
+        --dur-hover: 180ms;
+        --dur-enter: 460ms;
       }
 
-      /* Arcade key: solid fill with a hard, darker offset shadow */
+      /*
+       * Arcade key: solid fill with a hard, darker offset shadow.
+       * Every clickable element shares the same physics: it lifts 2px towards
+       * the light on hover (shadow grows) and is pushed into its shadow on
+       * press. The individual `translate` property is used so it composes
+       * with other transforms (rotations, active-state scale).
+       */
       .slide-close,
       .nav-btn,
-      .sound-btn {
+      .sound-btn,
+      .map-day-marker {
         --key-color: var(--popup-color, var(--day-color));
+        --key-shadow: color-mix(in srgb, var(--key-color) 35%, #000);
         border: 2px solid #000;
         border-radius: var(--radius-sm);
-        background: var(--key-color);
+        background-color: var(--key-color);
         color: #000;
-        box-shadow: 3px 3px 0 color-mix(in srgb, var(--key-color) 35%, #000);
+        box-shadow: 3px 3px 0 var(--key-shadow);
         cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
         transition:
-          transform 0.1s,
-          box-shadow 0.1s,
-          filter 0.15s;
+          translate var(--dur-hover) var(--ease-out),
+          scale 0.4s var(--ease-spring),
+          box-shadow var(--dur-hover) var(--ease-out),
+          filter var(--dur-hover) var(--ease-out),
+          background-color 0.3s var(--ease-out),
+          outline-offset var(--dur-hover) var(--ease-out);
       }
 
-      .slide-close:hover,
-      .nav-btn:hover,
-      .sound-btn:hover {
-        filter: brightness(1.12);
+      .map-day-marker {
+        --key-color: var(--marker-color, var(--neon-cyan));
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .slide-close:hover,
+        .nav-btn:hover,
+        .sound-btn:hover,
+        .map-day-marker:hover {
+          translate: -2px -2px;
+          box-shadow: 5px 5px 0 var(--key-shadow);
+          filter: brightness(1.12) saturate(1.1);
+        }
       }
 
       .slide-close:active,
       .nav-btn:active,
-      .sound-btn:active {
-        transform: translate(2px, 2px);
-        box-shadow: 1px 1px 0 color-mix(in srgb, var(--key-color) 35%, #000);
+      .sound-btn:active,
+      .map-day-marker:active {
+        translate: 2px 2px;
+        box-shadow: 1px 1px 0 var(--key-shadow);
+        filter: brightness(0.94);
+        transition-duration: var(--dur-press);
       }
 
       * {
@@ -182,7 +212,7 @@
         appearance: none;
         border: 2px solid #000;
         border-radius: var(--radius-sm);
-        background: var(--marker-color, var(--neon-cyan));
+        background-color: var(--marker-color, var(--neon-cyan));
         color: #000;
         box-shadow: 3px 3px 0
           color-mix(in srgb, var(--marker-color, var(--neon-cyan)) 35%, #000);
@@ -235,13 +265,21 @@
 
       .map-day-marker {
         position: relative;
-        cursor: pointer;
-        transition: background 0.15s;
       }
 
-      .map-day-marker:hover,
-      .map-day-marker[aria-current="date"] {
+      /* Raise the hovered / active marker above its neighbours */
+      .map-day-marker-wrap:has(.map-day-marker[aria-current="date"]) {
         z-index: 1;
+      }
+
+      .map-day-marker-wrap:hover,
+      .map-day-marker-wrap:focus-within {
+        z-index: 2;
+      }
+
+      /* The active day pops in with a little spring overshoot */
+      .map-day-marker[aria-current="date"] {
+        scale: 1.15;
         filter: brightness(1.12);
       }
 
@@ -352,6 +390,23 @@
         transform: rotate(-45deg);
       }
 
+      /* The cross spins a quarter turn on hover and squeezes on press */
+      .slide-close span {
+        transition:
+          rotate 0.45s var(--ease-spring),
+          scale var(--dur-hover) var(--ease-out);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .slide-close:hover span {
+          rotate: 90deg;
+        }
+      }
+
+      .slide-close:active span {
+        scale: 0.8;
+      }
+
       /* Slide container & transitions */
       .deck {
         position: relative;
@@ -400,17 +455,155 @@
         filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.45));
       }
 
+      .slide-caricature.align-top {
+        top: 0;
+        bottom: auto;
+      }
+
       .slide-caricature img {
         display: block;
         width: 100%;
         height: auto;
         object-fit: contain;
+        transform-origin: 50% 100%;
       }
 
+      /* Cartoons idle with a slow, gentle float so the card feels alive */
+      .trip-popup-slide .slide-caricature {
+        animation: caricature-float 4.8s ease-in-out infinite;
+      }
+
+      .trip-popup-slide .slide-caricature.align-top {
+        animation-duration: 6.4s;
+      }
+
+      @keyframes caricature-float {
+        0%,
+        100% {
+          translate: 0 0;
+          rotate: 0deg;
+        }
+        50% {
+          translate: 0 -6px;
+          rotate: -1.2deg;
+        }
+      }
+
+      /*
+       * Card entrance: once the popup has grown out of its map marker the
+       * content follows in a short staggered cascade (top to bottom), the
+       * photo wipes open and the cartoon springs up last.
+       */
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+      }
+
+      @keyframes headline-in {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+          text-shadow: 0 0 0 var(--neon-pink);
+        }
+        60% {
+          opacity: 1;
+          text-shadow: 0 0 0 var(--neon-pink);
+        }
+      }
+
+      @keyframes tag-in {
+        from {
+          opacity: 0;
+          transform: translateX(-10px);
+          box-shadow: 0 0 0 var(--neon-pink);
+        }
+      }
+
+      @keyframes photo-wipe {
+        from {
+          clip-path: inset(0 0 100% 0 round var(--radius));
+        }
+        to {
+          clip-path: inset(0 0 0 0 round var(--radius));
+        }
+      }
+
+      @keyframes photo-settle {
+        from {
+          transform: scale(1.12);
+        }
+      }
+
+      @keyframes caricature-pop {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.6) rotate(-8deg);
+        }
+        55% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes close-in {
+        from {
+          opacity: 0;
+          rotate: -90deg;
+          scale: 0.5;
+        }
+      }
+
+      .trip-popup-slide.is-entering .tag {
+        animation: tag-in var(--dur-enter) var(--ease-out) 60ms backwards;
+      }
+
+      .trip-popup-slide.is-entering h2 {
+        animation: headline-in 560ms var(--ease-out) 110ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .desc {
+        animation: rise-in var(--dur-enter) var(--ease-out) 160ms backwards;
+      }
+
+      .trip-popup-slide.is-entering blockquote {
+        animation: rise-in var(--dur-enter) var(--ease-out) 210ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .stat-item {
+        animation: rise-in var(--dur-enter) var(--ease-spring) 260ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .stat-item + .stat-item {
+        animation-delay: 310ms;
+      }
+
+      .trip-popup-slide.is-entering .img-box {
+        animation: photo-wipe 620ms var(--ease-out) 80ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .img-box img {
+        animation: photo-settle 1100ms var(--ease-out) 80ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .slide-caricature img {
+        animation: caricature-pop 620ms var(--ease-spring) 340ms backwards;
+      }
+
+      .trip-popup-slide.is-entering .slide-close {
+        animation: close-in 480ms var(--ease-spring) 220ms backwards;
+      }
+
+      /* Respect the OS setting: keep state changes, drop the movement */
       @media (prefers-reduced-motion: reduce) {
-        .timeline-card,
-        .nav-btn {
-          transition: none;
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-delay: 0ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
         }
       }
 
@@ -450,6 +643,11 @@
           right: 40px;
           bottom: 8px;
           width: clamp(108px, 18vw, 144px);
+        }
+
+        .slide-caricature.align-top {
+          top: 8px;
+          bottom: auto;
         }
       }
 
@@ -526,6 +724,11 @@
           margin: 0;
         }
 
+        .slide-caricature.align-top {
+          top: auto;
+          align-self: start;
+        }
+
         .slide .img-box {
           position: relative;
           grid-column: 1 / -1;
@@ -578,9 +781,8 @@
 
       @media (prefers-reduced-motion: reduce) {
         .map-day-marker[aria-current="date"]::after {
-          animation: none;
+          animation: none !important;
         }
-
       }
 
       /* Typography styling */
@@ -702,6 +904,24 @@
         z-index: 100;
       }
 
+      /* Muted state reads as a "powered down" key */
+      .sound-btn[aria-pressed="false"] {
+        --key-color: #8a8699;
+      }
+
+      @keyframes key-pop {
+        40% {
+          scale: 0.9;
+        }
+        75% {
+          scale: 1.06;
+        }
+      }
+
+      .sound-btn.is-toggled {
+        animation: key-pop 380ms var(--ease-out);
+      }
+
       /* Clickable trip timeline */
       .nav-controls {
         position: fixed;
@@ -790,9 +1010,9 @@
         border-radius: var(--radius);
         background: #0d0e16;
         transition:
-          transform 0.15s,
-          box-shadow 0.15s,
-          border-color 0.15s;
+          translate var(--dur-hover) var(--ease-out),
+          box-shadow var(--dur-hover) var(--ease-out),
+          border-color var(--dur-hover) var(--ease-out);
       }
 
       .timeline-thumb-wrap {
@@ -820,6 +1040,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: scale 0.6s var(--ease-out);
       }
 
       .timeline-meta {
@@ -960,19 +1181,43 @@
         pointer-events: none;
       }
 
-      .page-indicator:hover .timeline-card {
-        transform: translate(-2px, -2px);
-        border-color: var(--indicator-color);
-        box-shadow: 3px 3px 0
-          color-mix(in srgb, var(--indicator-color) 35%, #000);
+      @media (hover: hover) and (pointer: fine) {
+        .page-indicator:hover .timeline-card {
+          translate: -2px -2px;
+          border-color: var(--indicator-color);
+          box-shadow: 3px 3px 0
+            color-mix(in srgb, var(--indicator-color) 35%, #000);
+        }
+
+        .page-indicator:hover .timeline-thumb {
+          scale: 1.08;
+        }
       }
 
       .page-indicator[aria-current="step"] .timeline-card {
-        transform: translate(-3px, -3px);
+        translate: -3px -3px;
         border-color: var(--indicator-color);
         box-shadow:
           4px 4px 0 var(--indicator-color),
           0 0 18px color-mix(in srgb, var(--indicator-color) 35%, transparent);
+        transition-timing-function: var(--ease-spring);
+        transition-duration: 0.4s;
+      }
+
+      .page-indicator:active .timeline-card {
+        translate: 1px 1px;
+        box-shadow: 1px 1px 0
+          color-mix(in srgb, var(--indicator-color) 35%, #000);
+        transition-duration: var(--dur-press);
+      }
+
+      /* Day number on the route line follows the same spring as the map */
+      .timeline-date-number {
+        transition: scale 0.4s var(--ease-spring);
+      }
+
+      .page-indicator[aria-current="step"] .timeline-date-number {
+        scale: 1.2;
       }
 
       .page-indicator:focus-visible {
@@ -1014,6 +1259,49 @@
 
       .nav-btn-prev .nav-arrow {
         transform: rotate(180deg) translateX(1px);
+      }
+
+      /* Arrows nudge in the direction they will take you */
+      .nav-arrow {
+        transition: translate var(--dur-hover) var(--ease-spring);
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .nav-btn-next:hover .nav-arrow {
+          translate: 2px 0;
+        }
+
+        .nav-btn-prev:hover .nav-arrow {
+          translate: -2px 0;
+        }
+      }
+
+      /* Day label ticks over like an arcade counter when the day changes */
+      @keyframes counter-tick {
+        from {
+          opacity: 0;
+          transform: translateY(70%);
+        }
+      }
+
+      @keyframes icon-pop {
+        from {
+          opacity: 0;
+          transform: scale(0.3) rotate(-25deg);
+        }
+      }
+
+      .progress-text.is-updating .progress-day {
+        animation: counter-tick 340ms var(--ease-out);
+      }
+
+      .progress-text.is-updating .progress-icon {
+        display: inline-block;
+        animation: icon-pop 480ms var(--ease-spring) 60ms backwards;
+      }
+
+      .progress-text {
+        overflow: hidden;
       }
 
       .progress-text {
@@ -1124,7 +1412,9 @@
       >
     </div>
     <div class="map-status" id="map-status" role="status">Kaart laden…</div>
-    <button class="sound-btn" onclick="toggleAudio()">SFX: ON 🔊</button>
+    <button class="sound-btn" onclick="toggleAudio()" aria-pressed="true">
+      SFX: ON 🔊
+    </button>
     <div class="deck">
       <!-- SLIDE 1: CHIANG RAI -->
       <div class="slide active">
@@ -1806,6 +2096,8 @@
           icon: "🎈",
           iconLabel: "Ballonvaart of outdoor-avontuur",
           photo: "vangVieng",
+          // The balloon caricature floats at the top of the card
+          caricatureAlign: "top",
           slideIndex: 4,
           theme: "vangVieng",
         },
@@ -2166,25 +2458,85 @@
         }
       }
 
+      function markerButtonForSlide(slideIndex) {
+        const day = tripDayNumbers.get(itinerary[slideIndex].date);
+        return mapDayMarkers.find((mapMarker) => mapMarker.day === day)
+          ?.button;
+      }
+
+      // Little "gulp" on the marker when a card leaves or enters it
+      function pulseMarker(slideIndex) {
+        const marker = markerButtonForSlide(slideIndex);
+        if (
+          !marker ||
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          return;
+        }
+        marker.animate(
+          [
+            { transform: "scale(1)" },
+            { transform: "scale(1.35)", offset: 0.35 },
+            { transform: "scale(0.92)", offset: 0.7 },
+            { transform: "scale(1)" },
+          ],
+          { duration: 420, easing: "ease-out" },
+        );
+      }
+
+      // Keep the beam glued to the card while it scales in or out
+      function trackPopupBeam(animation) {
+        const tick = () => {
+          updateMapPopupBeam();
+          if (
+            animation.playState === "running" ||
+            animation.playState === "pending"
+          ) {
+            requestAnimationFrame(tick);
+          }
+        };
+        requestAnimationFrame(tick);
+      }
+
+      // Scale the popup around the centre of its map marker
+      function setPopupOriginToMarker(slide, slideIndex) {
+        const marker = markerButtonForSlide(slideIndex);
+        if (!marker) {
+          slide.style.transformOrigin = "50% 100%";
+          return;
+        }
+        const slideBounds = slide.getBoundingClientRect();
+        const markerBounds = marker.getBoundingClientRect();
+        const originX =
+          markerBounds.left + markerBounds.width / 2 - slideBounds.left;
+        const originY =
+          markerBounds.top + markerBounds.height / 2 - slideBounds.top;
+        slide.style.transformOrigin = `${originX}px ${originY}px`;
+      }
+
       function updateMapPopupBeam() {
-        if (!activeMapPopup || activeMapPopup.closing) {
+        if (!activeMapPopup) {
           mapPopupBeamShapeEl.removeAttribute("d");
           mapPopupBeamGlowEl.removeAttribute("d");
           return;
         }
 
-        const day = tripDayNumbers.get(
-          itinerary[activeMapPopup.slideIndex].date,
-        );
-        const marker = mapDayMarkers.find(
-          (mapMarker) => mapMarker.day === day,
-        )?.button;
-        const popupElement = activeMapPopup.popup.getElement();
-        if (!marker || !popupElement) return;
+        const marker = markerButtonForSlide(activeMapPopup.slideIndex);
+        // The card's box includes the running scale animation
+        const card = activeMapPopup.slide.querySelector(".card");
+        if (!marker || !card) return;
 
         const mapBounds = mapContainerEl.getBoundingClientRect();
-        const popupBounds = popupElement.getBoundingClientRect();
+        const popupBounds = card.getBoundingClientRect();
         const markerBounds = marker.getBoundingClientRect();
+        mapPopupBeamEl.style.opacity = getComputedStyle(
+          activeMapPopup.slide,
+        ).opacity;
+        if (popupBounds.width < 8) {
+          mapPopupBeamShapeEl.removeAttribute("d");
+          mapPopupBeamGlowEl.removeAttribute("d");
+          return;
+        }
         const source = {
           x: markerBounds.left + markerBounds.width / 2 - mapBounds.left,
           y: markerBounds.top + markerBounds.height / 2 - mapBounds.top,
@@ -2193,8 +2545,9 @@
           popupBounds.bottom - mapBounds.top,
           source.y - 20,
         );
-        const leftX = popupBounds.left - mapBounds.left + 18;
-        const rightX = popupBounds.right - mapBounds.left - 18;
+        const beamInset = Math.min(18, popupBounds.width * 0.1);
+        const leftX = popupBounds.left - mapBounds.left + beamInset;
+        const rightX = popupBounds.right - mapBounds.left - beamInset;
         const gap = Math.max(0, source.y - baseY);
         const leftControl2 = {
           x: source.x - (source.x - leftX) * 0.002,
@@ -2270,13 +2623,14 @@
             return;
           }
           if (activeMapPopup.closing) return;
+          // Duration of the card being absorbed into its marker
           requestedPopupDuration =
             requestedPopupIndex === null
-              ? 220
+              ? 340
               : popupTransitionDuration(
                   activeMapPopup.slideIndex,
                   requestedPopupIndex,
-                );
+                ) + 100;
           closeActiveMapPopup();
           return;
         }
@@ -2311,8 +2665,9 @@
         const reducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
+        // Drop the finished close animation (fill: both) of a previous visit
+        slide.getAnimations().forEach((animation) => animation.cancel());
         slide.classList.add("trip-popup-slide");
-        slide.style.transformOrigin = "50% 100%";
 
         const popup = new maplibregl.Popup({
           anchor: "bottom",
@@ -2342,20 +2697,26 @@
           slideIndex,
           closing: false,
         };
+        setPopupOriginToMarker(slide, slideIndex);
         updateMapPopupBeam();
 
         if (!reducedMotion) {
-          slide.animate(
+          // The card springs out of the centre of its marker
+          restartAnimationClass(slide, "is-entering");
+          pulseMarker(slideIndex);
+          const animation = slide.animate(
             [
-              { transform: "scale(0.08)", opacity: 0, filter: "blur(2px)" },
+              { transform: "scale(0.02)", opacity: 0, filter: "blur(2px)" },
+              { opacity: 1, offset: 0.2 },
               { transform: "scale(1)", opacity: 1, filter: "blur(0)" },
             ],
             {
-              duration: requestedPopupDuration,
-              easing: "cubic-bezier(0.2, 0.75, 0.25, 1)",
+              duration: 480,
+              easing: "cubic-bezier(0.34, 1.22, 0.64, 1)",
               fill: "both",
             },
           );
+          trackPopupBeam(animation);
         }
         slide.classList.remove("map-popup-pending");
         document.body.classList.remove("map-popup-transition");
@@ -2371,11 +2732,13 @@
           closingPopup.popup.remove();
           closingPopup.slide.classList.remove(
             "trip-popup-slide",
+            "is-entering",
           );
           closingPopup.slide.style.removeProperty("transform-origin");
           deck.append(closingPopup.slide);
           activeMapPopup = null;
           updateMapPopupBeam();
+          pulseMarker(closingPopup.slideIndex);
           if (
             requestedPopupIndex !== null &&
             !document.body.classList.contains("popup-closed")
@@ -2394,17 +2757,32 @@
         closingPopup.slide.getAnimations().forEach((animation) => {
           animation.cancel();
         });
+        // The marker may have moved since opening (map resize / re-centre)
+        setPopupOriginToMarker(closingPopup.slide, closingPopup.slideIndex);
+        // Short anticipation swell, then the card is sucked into its marker
         const animation = closingPopup.slide.animate(
           [
-            { transform: "scale(1)", opacity: 1, filter: "blur(0)" },
-            { transform: "scale(0.08)", opacity: 0, filter: "blur(2px)" },
+            {
+              transform: "scale(1)",
+              opacity: 1,
+              filter: "blur(0)",
+              easing: "ease-out",
+            },
+            {
+              transform: "scale(1.025)",
+              opacity: 1,
+              filter: "blur(0)",
+              offset: 0.16,
+              easing: "cubic-bezier(0.55, 0, 0.85, 0.25)",
+            },
+            { transform: "scale(0.02)", opacity: 0, filter: "blur(2px)" },
           ],
           {
             duration: requestedPopupDuration,
-            easing: "cubic-bezier(0.45, 0, 0.8, 0.3)",
             fill: "both",
           },
         );
+        trackPopupBeam(animation);
         animation.onfinish = finishClose;
       }
 
@@ -2538,6 +2916,9 @@
           "",
         );
         caricature.className = "slide-caricature";
+        if (stop.caricatureAlign === "top") {
+          caricature.classList.add("align-top");
+        }
         caricature.setAttribute("aria-hidden", "true");
         caricatureImage.alt = "";
         caricatureImage.addEventListener("error", () => caricature.remove(), {
@@ -2665,10 +3046,19 @@
         } catch (e) {}
       }
 
+      // Re-adding a class restarts its CSS animation (reflow in between)
+      function restartAnimationClass(element, className) {
+        element.classList.remove(className);
+        void element.offsetWidth;
+        element.classList.add(className);
+      }
+
       function toggleAudio() {
         soundEnabled = !soundEnabled;
         const btn = document.querySelector(".sound-btn");
         btn.innerText = soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇";
+        btn.setAttribute("aria-pressed", String(soundEnabled));
+        restartAnimationClass(btn, "is-toggled");
         if (soundEnabled) playBeep(880, "square", 0.15);
       }
 
@@ -2724,7 +3114,14 @@
           });
         }
         const currentStop = itinerary[currentTimelineIndex];
-        progressDayEl.textContent = `Dag ${tripDayNumbers.get(currentStop.date)}`;
+        const progressLabel = `Dag ${tripDayNumbers.get(currentStop.date)}`;
+        if (
+          progressDayEl.textContent !== progressLabel ||
+          progressIconEl.textContent !== currentStop.icon
+        ) {
+          restartAnimationClass(progressEl, "is-updating");
+        }
+        progressDayEl.textContent = progressLabel;
         progressIconEl.textContent = currentStop.icon;
         progressIconEl.setAttribute("aria-label", currentStop.iconLabel);
         updateMapDayMarkers(tripDayNumbers.get(currentStop.date));
@@ -2743,6 +3140,7 @@
       }
 
       function closeSlidePopup() {
+        playBeep(293.66, "triangle", 0.1);
         document.body.classList.add("popup-closed");
         setActiveMapPopup(null);
         mapDayMarkers
