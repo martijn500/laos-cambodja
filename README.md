@@ -37,6 +37,12 @@ Elke push naar `main` draait `.github/workflows/ci.yml`: lint, typecontrole, bui
 
 Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Actions**.
 
+## Commits en versies
+
+Commit-berichten volgen [Conventional Commits](https://www.conventionalcommits.org): `<type>: <wat er verandert>`, met type `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `docs`, `build`, `ci`, `chore`, `security` of `revert`. CI controleert dat bij elke pull request (`scripts/check-commit-messages.sh`).
+
+Elke pagina heeft `<meta name="version" content="<commit> <buildtijd>">`, zodat je in de paginabron van de live site ziet welke commit er draait.
+
 ## Indeling
 
 ```

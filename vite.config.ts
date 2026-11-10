@@ -3,6 +3,7 @@ import { contentSecurityPolicy } from "./build/csp.ts";
 import { dayPages } from "./build/day-pages.ts";
 import { photoManifest } from "./build/photo-manifest.ts";
 import { staticDirs } from "./build/static-dirs.ts";
+import { versionStamp } from "./build/version-stamp.ts";
 
 // GitHub Pages serves the site from https://martijn500.github.io/laos-cambodja/
 const SITE_ORIGIN = "https://martijn500.github.io";
@@ -28,6 +29,7 @@ export default defineConfig({
   plugins: [
     photoManifest(),
     contentSecurityPolicy(),
+    versionStamp(),
     dayPages({ siteOrigin: SITE_ORIGIN, base: BASE }),
     staticDirs(["img/slides", "img/cartoons"]),
   ],

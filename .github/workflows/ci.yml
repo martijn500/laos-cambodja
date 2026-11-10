@@ -50,6 +50,18 @@ jobs:
         with:
           path: dist/
 
+  commits:
+    # Conventional Commits subjects make the history readable as a changelog
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: scripts/check-commit-messages.sh "origin/${GITHUB_BASE_REF}..HEAD^2"
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: check
