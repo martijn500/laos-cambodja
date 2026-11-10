@@ -206,3 +206,22 @@ test("timeline shows one card per stop", async ({ page }, testInfo) => {
   await expect(page.locator(".page-indicator")).toHaveCount(21);
   await expect(page.locator(".page-indicator[aria-current]")).toHaveCount(1);
 });
+
+test("fast clicking ends with exactly one card: the current day", async ({
+  page,
+}) => {
+  const errors = trackErrors(page);
+  await page.goto("dag-3");
+  await waitForBoot(page);
+  await expect(popupTitle(page)).toHaveCount(1);
+  const next = page.locator(".nav-btn-next");
+  // Faster than the close animation, so wishes pile up mid-transition
+  for (let i = 0; i < 6; i++) await next.click({ delay: 0 });
+  await page.locator(".nav-btn-prev").click({ delay: 0 });
+  await expect(page).toHaveURL(/\/dag-8$/);
+  await expect(popupTitle(page)).toHaveText("Luang Prabang: oude stad");
+  await page.waitForTimeout(1000);
+  await expect(page.locator(".trip-day-popup")).toHaveCount(1);
+  await expect(popupTitle(page)).toHaveText("Luang Prabang: oude stad");
+  expect(errors).toEqual([]);
+});

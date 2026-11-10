@@ -160,7 +160,7 @@ function loadRemainingPhotos(gallery: Gallery): void {
 }
 
 export function visibleGallerySlide(): HTMLElement | null {
-  if (state.activeMapPopup && !state.activeMapPopup.closing) {
+  if (state.activeMapPopup && state.popup.phase.name === "open") {
     return state.activeMapPopup.slide;
   }
   return state.mapStyleReady ? null : (state.slides[state.current] ?? null);

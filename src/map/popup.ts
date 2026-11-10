@@ -2,6 +2,7 @@ import { Popup } from "maplibre-gl";
 import { slideAt, state } from "../state.ts";
 import { finishBooting } from "../boot.ts";
 import { stopAt, type Stop } from "../data/itinerary.ts";
+import { stepPopup, type PopupEvent } from "./popup-machine.ts";
 import { trackPopupBeam, updateMapPopupBeam } from "./beam.ts";
 import { markerButtonForSlide, markerForDay, pulseMarker } from "./markers.ts";
 import { deck } from "../slides/build.ts";
@@ -42,58 +43,51 @@ export function popupTransitionDuration(
   return 250;
 }
 
-export function setActiveMapPopup(stop: Stop | null): void {
-  state.requestedPopupIndex = stop ? stop.index : null;
-  if (!state.tripMap || !state.mapStyleReady) return;
+/** Whether a card may appear on the map right now */
+function canOpenPopup(): boolean {
+  const map = state.tripMap;
+  return (
+    map !== null &&
+    state.mapStyleReady &&
+    !map.isMoving() &&
+    !document.body.classList.contains("popup-closed")
+  );
+}
 
-  if (state.requestedPopupIndex !== null) {
-    if (state.activeMapPopup?.index !== state.requestedPopupIndex) {
-      slideAt(state.requestedPopupIndex).classList.add("map-popup-pending");
+/** Feed the popup machine and carry out what it decides */
+function stepAndApply(event: PopupEvent): void {
+  const { machine, effect } = stepPopup(state.popup, event, canOpenPopup());
+  state.popup = machine;
+  if (effect?.type === "open") openMapPopup(effect.index);
+  if (effect?.type === "close") closeMapPopup(effect.toward);
+}
+
+/** Show this stop's card on the map (null: no card), animating as needed */
+export function setActiveMapPopup(stop: Stop | null): void {
+  const wanted = stop ? stop.index : null;
+  if (state.tripMap && state.mapStyleReady && wanted !== null) {
+    if (state.activeMapPopup?.index !== wanted) {
+      slideAt(wanted).classList.add("map-popup-pending");
     }
     document.body.classList.add("map-popup-transition");
   }
-
-  if (state.activeMapPopup) {
-    if (
-      state.activeMapPopup.index === state.requestedPopupIndex &&
-      !state.activeMapPopup.closing
-    ) {
-      return;
-    }
-    if (state.activeMapPopup.closing) return;
-    // Duration of the card being absorbed into its marker
-    state.requestedPopupDuration =
-      state.requestedPopupIndex === null
-        ? 340
-        : popupTransitionDuration(
-            state.activeMapPopup.index,
-            state.requestedPopupIndex,
-          ) + 100;
-    closeActiveMapPopup();
-    return;
-  }
-
-  if (state.requestedPopupIndex !== null) {
-    openRequestedMapPopup();
-  } else {
+  stepAndApply({ type: "want", index: wanted });
+  if (state.popup.phase.name === "closed" && wanted === null) {
     document.body.classList.remove("map-popup-transition");
   }
 }
 
+/**
+ * Open the wanted card if it couldn't open before: called when the map
+ * has loaded or stopped moving.
+ */
 export function openRequestedMapPopup(): void {
-  const map = state.tripMap;
-  if (
-    !map ||
-    state.activeMapPopup ||
-    state.requestedPopupIndex === null ||
-    document.body.classList.contains("popup-closed") ||
-    !state.mapStyleReady ||
-    map.isMoving()
-  ) {
-    return;
-  }
+  stepAndApply({ type: "want", index: state.popup.wanted });
+}
 
-  const slideIndex = state.requestedPopupIndex;
+function openMapPopup(slideIndex: number): void {
+  const map = state.tripMap;
+  if (!map) return;
   const slide = slideAt(slideIndex);
   const stop = stopAt(slideIndex);
   const color = getComputedStyle(requireElement(".card", slide)).borderTopColor;
@@ -122,7 +116,6 @@ export function openRequestedMapPopup(): void {
     popup,
     slide,
     index: slideIndex,
-    closing: false,
   };
   setPopupOriginToMarker(slide, slideIndex);
   updateMapPopupBeam();
@@ -151,10 +144,18 @@ export function openRequestedMapPopup(): void {
   document.body.classList.remove("map-popup-transition");
 }
 
-export function closeActiveMapPopup(): void {
+/** Absorb the open card into its marker; `toward` is the next stop */
+function closeMapPopup(toward: number | null): void {
   const closingPopup = state.activeMapPopup;
-  if (!closingPopup || closingPopup.closing) return;
-  closingPopup.closing = true;
+  if (!closingPopup) {
+    stepAndApply({ type: "closed" });
+    return;
+  }
+  // Longer when the next card is far away on the map
+  const duration =
+    toward === null
+      ? 340
+      : popupTransitionDuration(closingPopup.index, toward) + 100;
 
   const finishClose = () => {
     if (state.activeMapPopup !== closingPopup) return;
@@ -166,11 +167,14 @@ export function closeActiveMapPopup(): void {
     updateMapPopupBeam();
     pulseMarker(closingPopup.index);
     if (
-      state.requestedPopupIndex !== null &&
+      state.popup.wanted !== null &&
       !document.body.classList.contains("popup-closed")
     ) {
+      // Next card one frame later, so the two never share a frame
+      state.popup = stepPopup(state.popup, { type: "closed" }, false).machine;
       requestAnimationFrame(openRequestedMapPopup);
     } else {
+      stepAndApply({ type: "closed" });
       document.body.classList.remove("map-popup-transition");
     }
   };
@@ -204,7 +208,7 @@ export function closeActiveMapPopup(): void {
       { transform: "scale(0.02)", opacity: 0, filter: "blur(2px)" },
     ],
     {
-      duration: state.requestedPopupDuration,
+      duration,
       fill: "both",
     },
   );

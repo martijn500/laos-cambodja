@@ -1,5 +1,6 @@
 import type { Map as MapLibreMap, Popup } from "maplibre-gl";
 import { stopAt, type Stop } from "./data/itinerary.ts";
+import { initialPopupMachine, type PopupMachine } from "./map/popup-machine.ts";
 
 /** The day card that is open on the map, anchored to its marker */
 export interface ActiveMapPopup {
@@ -9,8 +10,6 @@ export interface ActiveMapPopup {
   slide: HTMLElement;
   /** stop index (= slide index) */
   index: number;
-  /** true while it is being absorbed back into its marker */
-  closing: boolean;
 }
 
 interface AppState {
@@ -24,10 +23,9 @@ interface AppState {
   /** null until (and unless) the map could be created */
   tripMap: MapLibreMap | null;
   mapStyleReady: boolean;
+  /** the card on the map, also while it closes (see popup-machine.ts) */
   activeMapPopup: ActiveMapPopup | null;
-  /** stop whose popup should open next; null = no popup */
-  requestedPopupIndex: number | null;
-  requestedPopupDuration: number;
+  popup: PopupMachine;
   requestedPopupOffset: number;
   /** day whose marker becomes current after the camera move */
   pendingMapDay: number | null;
@@ -46,8 +44,7 @@ export const state: AppState = {
   tripMap: null,
   mapStyleReady: false,
   activeMapPopup: null,
-  requestedPopupIndex: null,
-  requestedPopupDuration: 240,
+  popup: initialPopupMachine,
   requestedPopupOffset: 14,
   pendingMapDay: null,
   suppressMapMarkerCommit: false,

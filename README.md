@@ -48,7 +48,7 @@ src/
   router.ts     /dag-N in de URL
   deck.ts       huidige dag tonen, vorige / volgende
   timeline.ts   tijdlijnkaarten
-  map/          kaart, markers, popup, balken tussen marker en kaart
+  map/          kaart, markers, popup (+ popup-machine.ts), balken tussen marker en kaart
   slides/       kaarten opbouwen uit <template>, fotogalerij
   boot.ts       loader en voorladen van de eerste foto's
   input.ts      toetsenbord en swipe
