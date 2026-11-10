@@ -7,6 +7,7 @@ import { findTripProblems, type MediaOnDisk } from "./validate.ts";
 function completeMedia(): MediaOnDisk {
   return {
     photoCounts: Object.fromEntries(itinerary.map((stop) => [stop.slug, 1])),
+    thumbs: new Set(itinerary.map((stop) => stop.slug)),
     cartoons: new Set(itinerary.map((stop) => stop.slug)),
     strayPhotos: [],
   };

@@ -20,12 +20,14 @@ function countPhotos(files: ReadonlySet<string>): number {
 export function readMedia(): MediaOnDisk {
   const photoCounts: Record<string, number> = {};
   const strayPhotos: string[] = [];
+  const thumbs = new Set<string>();
   for (const entry of readdirSync(SLIDES_DIR, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     const folder = `${SLIDES_DIR}/${entry.name}`;
     const files = new Set(readdirSync(folder));
     const count = countPhotos(files);
     photoCounts[entry.name] = count;
+    if (files.has("thumb.webp")) thumbs.add(entry.name);
     for (const file of files) {
       const number = /^(\d+)\.webp$/.exec(file)?.[1];
       if (number && Number(number) > count)
@@ -39,7 +41,7 @@ export function readMedia(): MediaOnDisk {
           .map((file) => file.slice(0, -".webp".length))
       : [],
   );
-  return { photoCounts, cartoons, strayPhotos };
+  return { photoCounts, thumbs, cartoons, strayPhotos };
 }
 
 /**

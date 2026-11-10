@@ -40,6 +40,11 @@ export function slidePhotoSrc(stop: Stop, number: number): string {
   return `${import.meta.env.BASE_URL}img/slides/${stop.slug}/${String(number).padStart(2, "0")}.webp`;
 }
 
+/** Small version of photo 1 for the timeline (npm run images thumbs) */
+export function slideThumbSrc(stop: Stop): string {
+  return `${import.meta.env.BASE_URL}img/slides/${stop.slug}/thumb.webp`;
+}
+
 export function galleryFor(slide: HTMLElement): Gallery | undefined {
   return galleries.get(slide);
 }

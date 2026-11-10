@@ -1,7 +1,7 @@
 import { slideAt, state } from "./state.ts";
 import { itinerary } from "./data/itinerary.ts";
 import { goToSlide } from "./deck.ts";
-import { slidePhotoSrc } from "./slides/gallery.ts";
+import { slideThumbSrc } from "./slides/gallery.ts";
 import { requireElement } from "./utils/dom.ts";
 
 export const pageIndicatorsEl = requireElement("#page-indicators");
@@ -42,7 +42,7 @@ export function buildTimeline(): void {
     button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
     image.className = "timeline-thumb";
-    image.dataset.src = slidePhotoSrc(stop, 1);
+    image.dataset.src = slideThumbSrc(stop);
     image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";

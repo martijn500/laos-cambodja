@@ -3,6 +3,8 @@
 #
 #   img/slides-src/<slide>/<any photo>  (originals, any size, not in git)
 #     ->  img/slides/<slide>/01.webp, 02.webp, …
+#   img/slides/<slide>/01.webp
+#     ->  img/slides/<slide>/thumb.webp  (timeline thumbnail, 360px wide)
 #   img/cartoons-src/<slide>.png  (originals with transparency, not in git)
 #     ->  img/cartoons/<slide>.webp
 #
@@ -48,6 +50,17 @@ photos() {
   echo "Klaar: $total foto's in $out ($(du -sh "$out" | cut -f1))"
 }
 
+thumbs() {
+  local total=0
+  for photo in img/slides/*/01.webp; do
+    # Shown at ~172x61 CSS px in the timeline: 360px wide is sharp at 2x
+    cwebp -quiet -resize 360 0 -q 70 -m 6 -metadata none "$photo" \
+      -o "$(dirname "$photo")/thumb.webp"
+    total=$((total + 1))
+  done
+  echo "Klaar: $total thumbnails in img/slides/*/thumb.webp"
+}
+
 cartoons() {
   local src=img/cartoons-src out=img/cartoons total=0
   [[ -d $src ]] || { echo "Geen $src, cartoons overgeslagen"; return; }
@@ -61,11 +74,11 @@ cartoons() {
   echo "Klaar: $total cartoons in $out ($(du -sh "$out" | cut -f1))"
 }
 
-# npm run images            both
-# npm run images cartoons   only one of them
-for step in "${@:-photos cartoons}"; do
+# npm run images            everything
+# npm run images cartoons   only one step (photos, thumbs, cartoons)
+for step in "${@:-photos thumbs cartoons}"; do
   case $step in
-    photos | cartoons) "$step" ;;
-    *) echo "Onbekend: $step (photos of cartoons)" >&2; exit 1 ;;
+    photos | thumbs | cartoons) "$step" ;;
+    *) echo "Onbekend: $step (photos, thumbs of cartoons)" >&2; exit 1 ;;
   esac
 done

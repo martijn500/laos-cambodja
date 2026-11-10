@@ -4,6 +4,8 @@ import type { Stop } from "./itinerary.ts";
 export interface MediaOnDisk {
   /** slug -> number of photos 01.webp, 02.webp… (no gaps) */
   photoCounts: Readonly<Record<string, number>>;
+  /** slugs that have img/slides/<slug>/thumb.webp */
+  thumbs: ReadonlySet<string>;
   /** slugs that have img/cartoons/<slug>.webp */
   cartoons: ReadonlySet<string>;
   /** files in img/slides/ after a gap in the numbering, never shown */
@@ -24,6 +26,11 @@ export function findTripProblems(
     const where = `${stop.slug} (${stop.title})`;
     if (!media.photoCounts[stop.slug]) {
       problems.push(`${where}: geen foto's in img/slides/${stop.slug}/`);
+    }
+    if (!media.thumbs.has(stop.slug)) {
+      problems.push(
+        `${where}: geen img/slides/${stop.slug}/thumb.webp (npm run images thumbs)`,
+      );
     }
     if (stop.caricature !== false && !media.cartoons.has(stop.slug)) {
       problems.push(`${where}: geen cartoon img/cartoons/${stop.slug}.webp`);
