@@ -20,5 +20,8 @@
     "serve": "^14.2.7",
     "typescript": "^7.0.2"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  }
 }
