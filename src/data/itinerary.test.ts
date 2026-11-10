@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { itinerary, stopAt } from "../../src/data/itinerary.ts";
+import { itinerary, stopAt } from "./itinerary.ts";
 
 describe("itinerary", () => {
   it("numbers days in order and gives side quests their day's number", () => {

@@ -4,7 +4,7 @@ import {
   initialPopupMachine,
   stepPopup,
   type PopupMachine,
-} from "../../src/map/popup-machine.ts";
+} from "./popup-machine.ts";
 
 const want = (index: number | null) => ({ type: "want", index }) as const;
 const closed = { type: "closed" } as const;

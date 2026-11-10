@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { rgbStringToHsl } from "../../src/utils/color.ts";
+import { rgbStringToHsl } from "./color.ts";
 
 describe("rgbStringToHsl", () => {
   it("converts the neon colours the beam uses", () => {

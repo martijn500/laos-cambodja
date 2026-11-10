@@ -39,7 +39,7 @@ export default defineConfig(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ["tests/unit/**/*.ts"],
+    files: ["src/**/*.test.ts"],
     rules: {
       // node:test's describe/it return promises the runner handles
       "@typescript-eslint/no-floating-promises": [
@@ -55,7 +55,7 @@ export default defineConfig(
     },
   },
   {
-    files: ["*.ts", "build/**/*.ts", "tests/**/*.ts"],
+    files: ["*.ts", "build/**/*.ts", "e2e/**/*.ts", "src/**/*.test.ts"],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 );

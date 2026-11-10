@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { itinerary } from "../../src/data/itinerary.ts";
-import { findTripProblems, type MediaOnDisk } from "../../src/data/validate.ts";
+import { itinerary } from "./itinerary.ts";
+import { findTripProblems, type MediaOnDisk } from "./validate.ts";
 
 /** Everything present: one photo and a cartoon for every stop */
 function completeMedia(): MediaOnDisk {

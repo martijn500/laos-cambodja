@@ -56,12 +56,15 @@ src/
   input.ts      toetsenbord en swipe
   audio.ts      8-bit geluidjes
 public/         favicons en 404.html, ongewijzigd naar dist/
+e2e/            Playwright-tests (desktop en mobiel, toegankelijkheid met axe)
 img/
   slides/<dag>/ foto's per dag (01.webp, 02.webp…), gemaakt door npm run images
   cartoons/     cartoon per dag (08.webp, side quest 08-s1.webp), gemaakt door npm run images
   cartoons-src/ originele cartoons als PNG, niet in git
   slides-src/   originele foto's met bronnen (CREDITS.md), niet in git
 ```
+
+Unit-tests staan naast hun bestand: `popup-machine.ts` → `popup-machine.test.ts`. Ze testen de pure logica; wat de DOM en de kaart aanstuurt, testen de Playwright-tests in `e2e/`.
 
 Een dag heet `08`, een side quest op die dag `08-s1`. Die naam wordt gebruikt voor de fotomap en de cartoon.
 

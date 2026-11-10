@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 // Tests the production build, served under the same base path as on
 // GitHub Pages. Use relative URLs in tests: page.goto("dag-8").
 export default defineConfig({
-  testDir: "tests/e2e",
+  testDir: "e2e",
   fullyParallel: true,
   // A stray test.only must not make CI pass with half the tests
   forbidOnly: !!process.env.CI,

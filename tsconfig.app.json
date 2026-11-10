@@ -24,5 +24,7 @@
     "noUnusedParameters": true,
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Unit tests run in Node: tsconfig.node.json checks them
+  "exclude": ["src/**/*.test.ts"]
 }

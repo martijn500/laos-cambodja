@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "images": "bash scripts/optimize-images.sh",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "node --test \"tests/unit/**/*.test.ts\"",
+    "test:unit": "node --test \"src/**/*.test.ts\"",
     "test:e2e": "playwright test",
     "lint": "eslint --flag unstable_native_nodejs_ts_config . && stylelint \"src/**/*.css\"",
     "typecheck": "tsc -b",
