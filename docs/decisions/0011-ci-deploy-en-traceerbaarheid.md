@@ -14,7 +14,7 @@ Controles draaiden alleen lokaal, als iemand eraan dacht. GitHub Pages publiceer
 - **Eén workflow** (`.github/workflows/ci.yml`): `npm ci`, lint, typecheck, unit- en e2e-tests op de build; bij een push naar `main` die slaagt: deployen met `upload-pages-artifact` + `deploy-pages`. Pages-instelling: Source = GitHub Actions.
 - **Conventional Commits** (`type: wat`), gecontroleerd per pull request door `scripts/check-commit-messages.sh`. Types horen bij secties in `CHANGELOG.md` (Keep a Changelog).
 - **Versiestempel**: `<meta name="version" content="<commit> <buildtijd>">`.
-- **Branch protection** op `main` (PR verplicht, CI groen): moet in de repo-instellingen.
+- **Ruleset op `main`** ("main: PR met groene CI", ingesteld via `gh api`): alleen via een pull request, `check` en `commits` moeten groen zijn op een branch die bijgewerkt is met `main`, geen force-push, niet verwijderen. Geen verplichte review: er is één ontwikkelaar, en die kan zijn eigen PR niet goedkeuren.
 
 ### Gevolgen
 

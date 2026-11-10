@@ -12,7 +12,7 @@ git fetch origin
 git switch -c <type>/<onderwerp> origin/main   # bv. fix/popup-snel-klikken
 ```
 
-Werk je verder op een bestaande branch, controleer dan eerst dat hij **niet al gemerged is**:
+In Claude Code houdt de hook `.claude/hooks/block-merged-branch.sh` een commit of push op `main` of op een gemergede/gesloten PR-branch tegen. Wordt je commit geweigerd met "is al gemerged", ga dan naar de stappen hieronder. Zonder Claude Code (of zonder `gh`), of om het vooraf te weten, controleer je zelf of de branch **niet al gemerged is**:
 
 ```sh
 git branch -r --merged origin/main | grep "origin/$(git branch --show-current)$" && echo "GEMERGED: nieuwe branch maken"
@@ -58,5 +58,7 @@ gh pr create --fill --base main
 ```
 
 `gh` moet ingelogd zijn (`gh auth status`; anders laat de gebruiker `gh auth login` zelf draaien, dat gaat via de browser). Zet in de beschrijving wat er verandert, hoe het gecontroleerd is, en wat de gebruiker nog moet doen.
+
+Kan de PR niet gemerged worden omdat hij achterloopt op `main` (de ruleset eist dat), dan `gh pr update-branch <nr>` en CI opnieuw afwachten (`gh pr checks <nr> --watch`).
 
 Na de merge: `git switch main && git pull --ff-only`, en voor het volgende werk een nieuwe branch. **Nooit** zelf naar `main` pushen of force-pushen.
