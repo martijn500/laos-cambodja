@@ -40,6 +40,8 @@ Niet-voor-de-hand-liggende feiten die een nieuwe ontwikkelaar of AI-agent fout z
 - **CSP-overtredingen zijn geen `pageerror`.** De browser logt ze alleen; `trackErrors()` in `e2e/app.spec.ts` vangt ze uit de console.
 - **`@axe-core/playwright` wil een page uit `browser.newContext()`**, niet uit `browser.newPage()`.
 - **`page.addStyleTag()` faalt op de build** door de CSP (`style-src 'self'`). Geef de testcontext `bypassCSP: true`; alleen in hulpscripts, niet in de e2e-tests, die moeten de echte CSP zien.
+- **E2e-tests mogen niet van OpenFreeMap afhangen.** Met de echte kaartstijl hing de timing af van hun server: dezelfde test slaagde op `main` en faalde op een Dependabot-PR. `e2e/fixtures.ts` geeft een lokale stijl met één achtergrondlaag; importeer `test` en `expect` in e2e-tests daarom uit `./fixtures.ts`, niet uit `@playwright/test`.
+- **LCP ziet de dagkaart niet** (desktop): die schaalt in vanuit `scale(0.02)` in een MapLibre-popup, en het enige LCP-element is dan het attributieregeltje. Een LCP-controle slaagt daardoor zonder iets te meten. Meet `performance.mark("day-card-shown")` (gezet in `finishBooting()`).
 - **Kaarttegels verschillen per keer.** Verberg `.maplibregl-canvas` bij screenshotvergelijkingen (`scripts/compare-screenshots.ts`).
 
 ## npm en omgeving

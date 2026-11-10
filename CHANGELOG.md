@@ -14,6 +14,12 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 - Skills in `.claude/skills/`: committen, controleren, een dag toevoegen, dependencies bijwerken (`7c3cd96`). Waarom deze opzet: [ADR 0012](docs/decisions/0012-agents-md-skills-en-kennisbank.md).
 - `npm run compare`: screenshots van voor en na een wijziging pixel voor pixel vergelijken (`f158438`).
 
+### Opgelost
+
+- De e2e-tests hingen af van de kaartserver van OpenFreeMap en faalden daardoor soms in CI; ze gebruiken nu een lokale kaartstijl (`df9c372`).
+- De LCP-controle mat op desktop niets (de kaart telt daar niet als LCP); het budget geldt nu voor het moment waarop de dagkaart verschijnt (`454a06c`).
+- Dependabot stelt geen `@types/node` meer voor van een nieuwere Node dan 24 (`8595a15`).
+
 ## [2026-11-10] Modernisering
 
 Pull request [#2](https://github.com/martijn500/laos-cambodja/pull/2). Achtergrond en afwegingen: [ADR 0002 t/m 0011](docs/decisions/).
