@@ -39,6 +39,7 @@ Niet-voor-de-hand-liggende feiten die een nieuwe ontwikkelaar of AI-agent fout z
 - **Playwright `baseURL` met pad:** `page.goto("/dag-8")` negeert `/laos-cambodja/`. Gebruik relatieve URL's: `page.goto("dag-8")`.
 - **CSP-overtredingen zijn geen `pageerror`.** De browser logt ze alleen; `trackErrors()` in `e2e/app.spec.ts` vangt ze uit de console.
 - **`@axe-core/playwright` wil een page uit `browser.newContext()`**, niet uit `browser.newPage()`.
+- **`page.addStyleTag()` faalt op de build** door de CSP (`style-src 'self'`). Geef de testcontext `bypassCSP: true`; alleen in hulpscripts, niet in de e2e-tests, die moeten de echte CSP zien.
 - **Kaarttegels verschillen per keer.** Verberg `.maplibregl-canvas` bij screenshotvergelijkingen (`scripts/compare-screenshots.ts`).
 
 ## npm en omgeving
