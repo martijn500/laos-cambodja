@@ -13,7 +13,7 @@ export default [
   },
   js.configs.recommended,
   {
-    files: ["js/**/*.js"],
+    files: ["src/**/*.js"],
     languageOptions: {
       sourceType: "module",
       globals: globals.browser,

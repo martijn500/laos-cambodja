@@ -38,9 +38,10 @@ Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Action
 ## Indeling
 
 ```
-css/            main.css importeert MapLibre, de fonts en base, map, boot, slide, controls
-js/
+index.html      de pagina; vite.config.js maakt er bij de build dag-N.html van
+src/
   main.js       opstartvolgorde
+  styles/       main.css importeert MapLibre, de fonts en base, map, boot, slide, controls
   state.js      gedeelde staat + setDay() / "daychange"
   data/         reisdagen, kleuren per bestemming
   router.js     /dag-N in de URL

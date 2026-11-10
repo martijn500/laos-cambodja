@@ -4,7 +4,7 @@ import {
   itinerary,
   caricatureNames,
   tripDayNumbers,
-} from "./js/data/itinerary.js";
+} from "./src/data/itinerary.js";
 
 // GitHub Pages serves the site from https://martijn500.github.io/laos-cambodja/
 const SITE_ORIGIN = "https://martijn500.github.io";
