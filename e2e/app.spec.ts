@@ -1,4 +1,4 @@
-import { test, expect, type Page, type TestInfo } from "@playwright/test";
+import { test, expect, type Page, type TestInfo } from "./fixtures.ts";
 
 // Titles painted so far, recorded by the first test in the page
 declare global {

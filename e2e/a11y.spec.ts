@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./fixtures.ts";
 
 // Automated checks catch roughly a third of WCAG issues; they guard what
 // is already right (labels, roles, contrast, focus order) against

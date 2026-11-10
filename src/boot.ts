@@ -7,8 +7,16 @@ import { requireElement } from "./utils/dom.ts";
  */
 export let initialImagesReady: Promise<unknown> = Promise.resolve();
 
+/**
+ * The day card is on screen: the loader goes. The first time also leaves
+ * a performance mark, the app's own "content is visible" moment; LCP
+ * can't see the card (it scales in inside a map popup), so the budget
+ * test in e2e/performance.spec.ts measures this mark instead.
+ */
 export function finishBooting(): void {
+  if (!document.body.classList.contains("is-booting")) return;
   document.body.classList.remove("is-booting");
+  performance.mark("day-card-shown");
 }
 
 /*
