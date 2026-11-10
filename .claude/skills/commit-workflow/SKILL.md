@@ -59,4 +59,6 @@ gh pr create --fill --base main
 
 `gh` moet ingelogd zijn (`gh auth status`; anders laat de gebruiker `gh auth login` zelf draaien, dat gaat via de browser). Zet in de beschrijving wat er verandert, hoe het gecontroleerd is, en wat de gebruiker nog moet doen.
 
+Kan de PR niet gemerged worden omdat hij achterloopt op `main` (de ruleset eist dat), dan `gh pr update-branch <nr>` en CI opnieuw afwachten (`gh pr checks <nr> --watch`).
+
 Na de merge: `git switch main && git pull --ff-only`, en voor het volgende werk een nieuwe branch. **Nooit** zelf naar `main` pushen of force-pushen.
