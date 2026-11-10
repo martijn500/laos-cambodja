@@ -97,7 +97,7 @@ export function buildSlides() {
       once: true,
     });
     if (stop.caricature !== false) {
-      caricatureImage.dataset.src = `img/cartoons/${caricatureNames.get(stop)}.png`;
+      caricatureImage.dataset.src = `img/cartoons/${caricatureNames.get(stop)}.webp`;
       caricature.append(caricatureImage);
       card.append(caricature);
     }

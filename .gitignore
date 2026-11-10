@@ -4,3 +4,5 @@ test-results/
 playwright-report/
 # Original photos (large); the web versions in img/slides are committed
 img/bg/
+# Cartoon originals (PNG); npm run images makes img/cartoons/*.webp
+img/cartoons-src/

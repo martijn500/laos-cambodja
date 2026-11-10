@@ -4,7 +4,7 @@
   "description": "Reisdagboek Laos & Cambodja",
   "scripts": {
     "dev": "serve .",
-    "photos": "bash scripts/optimize-photos.sh",
+    "images": "bash scripts/optimize-images.sh",
     "test": "playwright test",
     "lint": "eslint .",
     "typecheck": "tsc -p .",

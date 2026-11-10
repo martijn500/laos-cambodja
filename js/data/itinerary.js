@@ -428,7 +428,7 @@ export const itinerary = [
 
 export const tripDayNumbers = new Map();
 
-// Cartoons: img/cartoons/08.png for the day itself, 08-s1.png, 08-s2.png… for its side quests
+// Cartoons: img/cartoons/08.webp for the day itself, 08-s1.webp, 08-s2.webp… for its side quests
 export const caricatureNames = new Map();
 
 export const sideQuestCounts = new Map();
