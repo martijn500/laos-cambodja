@@ -15,17 +15,19 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 
 `npm run dev` herlaadt automatisch: CSS-wijzigingen verschijnen zonder herladen, wijzigingen in JS of HTML herladen de pagina.
 
-| Script              | Wat het doet                                        |
-| ------------------- | --------------------------------------------------- |
-| `npm run dev`       | Ontwikkelserver met hot reload                      |
-| `npm run build`     | Productiebuild in `dist/`                           |
-| `npm run preview`   | Serveert `dist/` zoals GitHub Pages (poort 4173)    |
-| `npm run images`    | Zet originele foto's en cartoons om naar WebP       |
-| `npm test`          | Bouwt en test met Playwright op desktop en mobiel   |
-| `npm run lint`      | ESLint (typescript-eslint, type-aware) en stylelint |
-| `npm run typecheck` | TypeScript (strict), browser- en Node-code apart    |
-| `npm run format`    | Prettier                                            |
-| `npm run check`     | Lint, typecontrole en tests in één keer             |
+| Script              | Wat het doet                                                 |
+| ------------------- | ------------------------------------------------------------ |
+| `npm run dev`       | Ontwikkelserver met hot reload                               |
+| `npm run build`     | Productiebuild in `dist/`                                    |
+| `npm run preview`   | Serveert `dist/` zoals GitHub Pages (poort 4173)             |
+| `npm run images`    | Zet originele foto's en cartoons om naar WebP                |
+| `npm test`          | Unit-tests en daarna de Playwright-tests                     |
+| `npm run test:unit` | Unit-tests (`node --test`), zonder browser, in milliseconden |
+| `npm run test:e2e`  | Bouwt en test met Playwright op desktop en mobiel            |
+| `npm run lint`      | ESLint (typescript-eslint, type-aware) en stylelint          |
+| `npm run typecheck` | TypeScript (strict), browser- en Node-code apart             |
+| `npm run format`    | Prettier                                                     |
+| `npm run check`     | Lint, typecontrole en tests in één keer                      |
 
 Nieuwe packages worden pas geïnstalleerd als ze een week oud zijn (`.npmrc`), als bescherming tegen gekaapte releases.
 

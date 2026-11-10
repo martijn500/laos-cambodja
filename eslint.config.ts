@@ -39,7 +39,23 @@ export default defineConfig(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ["*.ts", "tests/**/*.ts"],
+    files: ["tests/unit/**/*.ts"],
+    rules: {
+      // node:test's describe/it return promises the runner handles
+      "@typescript-eslint/no-floating-promises": [
+        "error",
+        {
+          allowForKnownSafeCalls: [
+            { from: "package", package: "node:test", name: ["describe", "it"] },
+          ],
+        },
+      ],
+      // `list[0]!` after asserting the length is clearer than a guard
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
+  {
+    files: ["*.ts", "build/**/*.ts", "tests/**/*.ts"],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 );
