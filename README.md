@@ -23,7 +23,7 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 | `npm run images`    | Zet originele foto's en cartoons om naar WebP     |
 | `npm test`          | Bouwt en test met Playwright op desktop en mobiel |
 | `npm run lint`      | ESLint                                            |
-| `npm run typecheck` | Typecontrole                                      |
+| `npm run typecheck` | TypeScript (strict), browser- en Node-code apart  |
 | `npm run format`    | Prettier                                          |
 | `npm run check`     | Lint, typecontrole en tests in één keer           |
 
@@ -38,20 +38,20 @@ Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Action
 ## Indeling
 
 ```
-index.html      de pagina; vite.config.js maakt er bij de build dag-N.html van
+index.html      de pagina; vite.config.ts maakt er bij de build dag-N.html van
 src/
-  main.js       opstartvolgorde
+  main.ts       opstartvolgorde
   styles/       main.css importeert MapLibre, de fonts en base, map, boot, slide, controls
-  state.js      gedeelde staat + setDay() / "daychange"
+  state.ts      gedeelde staat, currentStop(), setDay() / "daychange"
   data/         reisdagen, kleuren per bestemming
-  router.js     /dag-N in de URL
-  deck.js       huidige dag tonen, vorige / volgende
-  timeline.js   tijdlijnkaarten
+  router.ts     /dag-N in de URL
+  deck.ts       huidige dag tonen, vorige / volgende
+  timeline.ts   tijdlijnkaarten
   map/          kaart, markers, popup, balken tussen marker en kaart
   slides/       kaarten opbouwen uit <template>, fotogalerij
-  boot.js       loader en voorladen van de eerste foto's
-  input.js      toetsenbord en swipe
-  audio.js      8-bit geluidjes
+  boot.ts       loader en voorladen van de eerste foto's
+  input.ts      toetsenbord en swipe
+  audio.ts      8-bit geluidjes
 public/         favicons en 404.html, ongewijzigd naar dist/
 img/
   slides/<dag>/ foto's per dag (01.webp, 02.webp…), gemaakt door npm run images

@@ -1,18 +1,17 @@
-import { state } from "../state.js";
-import { mapContainerEl } from "./map.js";
-import { markerButtonForSlide } from "./markers.js";
-import { rgbStringToHsl } from "../utils/color.js";
+import { state } from "../state.ts";
+import { mapContainerEl } from "./map.ts";
+import { markerButtonForSlide } from "./markers.ts";
+import { rgbStringToHsl } from "../utils/color.ts";
+import { requireElement } from "../utils/dom.ts";
 
-export const mapPopupBeamEl = document.getElementById("map-popup-beam");
+export const mapPopupBeamEl = requireElement<SVGSVGElement>("#map-popup-beam");
 
 // Keep the beam glued to the card while it scales in or out
-export function trackPopupBeam(animation) {
+export function trackPopupBeam(animation: Animation): void {
   const tick = () => {
     updateMapPopupBeam();
-    if (
-      animation.playState === "running" ||
-      animation.playState === "pending"
-    ) {
+    // "pending": play() was called but the first frame isn't out yet
+    if (animation.playState === "running" || animation.pending) {
       requestAnimationFrame(tick);
     }
   };
@@ -25,11 +24,12 @@ export const BEAM_BAR_GAP = 3;
 
 export const BEAM_PIXEL = 4;
 
-export const mapPopupBeamBarsEl = mapPopupBeamEl.querySelector(
+export const mapPopupBeamBarsEl = requireElement<SVGGElement>(
   ".map-popup-beam-bars",
+  mapPopupBeamEl,
 );
 
-export function clearMapPopupBeam() {
+export function clearMapPopupBeam(): void {
   mapPopupBeamBarsEl.replaceChildren();
 }
 
@@ -39,13 +39,13 @@ export function clearMapPopupBeam() {
  * card colour and they fade out towards the card, so the card looks
  * like it pops out of the marker.
  */
-export function updateMapPopupBeam() {
+export function updateMapPopupBeam(): void {
   if (!state.activeMapPopup) {
     clearMapPopupBeam();
     return;
   }
 
-  const marker = markerButtonForSlide(state.activeMapPopup.slideIndex);
+  const marker = markerButtonForSlide(state.activeMapPopup.index);
   // The card's box includes the running scale animation
   const card = state.activeMapPopup.slide.querySelector(".card");
   if (!marker || !card) return;
@@ -83,7 +83,7 @@ export function updateMapPopupBeam() {
   );
 
   while (mapPopupBeamBarsEl.childElementCount > barCount) {
-    mapPopupBeamBarsEl.lastElementChild.remove();
+    mapPopupBeamBarsEl.lastElementChild?.remove();
   }
   while (mapPopupBeamBarsEl.childElementCount < barCount) {
     mapPopupBeamBarsEl.append(

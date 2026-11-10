@@ -1,7 +1,11 @@
-import { state } from "../state.js";
-import { playBeep } from "../audio.js";
-import { caricatureNames } from "../data/itinerary.js";
-import { reducedMotionQuery, restartAnimationClass } from "../utils/dom.js";
+import { state } from "../state.ts";
+import { playBeep } from "../audio.ts";
+import type { Stop } from "../data/itinerary.ts";
+import {
+  reducedMotionQuery,
+  requireElement,
+  restartAnimationClass,
+} from "../utils/dom.ts";
 
 /*
  * Photo gallery per slide. Photos live in img/slides/<slide>/NN.webp
@@ -12,18 +16,38 @@ import { reducedMotionQuery, restartAnimationClass } from "../utils/dom.js";
  */
 export const PHOTO_BARS = 6;
 
-export const galleries = new WeakMap();
-
-export function slidePhotoSrc(stop, number) {
-  return `${import.meta.env.BASE_URL}img/slides/${caricatureNames.get(stop)}/${String(number).padStart(2, "0")}.webp`;
+export interface Gallery {
+  slide: HTMLElement;
+  stop: Stop;
+  box: HTMLElement;
+  bars: HTMLElement;
+  controls: HTMLElement;
+  dots: HTMLElement;
+  images: HTMLImageElement[];
+  /** the photo on screen */
+  index: number;
+  /** every photo of this slide has been found */
+  done: boolean;
+  probing: boolean;
+  animating: boolean;
 }
 
-export function galleryFor(slide) {
+const galleries = new WeakMap<HTMLElement, Gallery>();
+
+export function slidePhotoSrc(stop: Stop, number: number): string {
+  return `${import.meta.env.BASE_URL}img/slides/${stop.slug}/${String(number).padStart(2, "0")}.webp`;
+}
+
+export function galleryFor(slide: HTMLElement): Gallery | undefined {
   return galleries.get(slide);
 }
 
-export function createGallery(slide, stop, firstImage, placeName) {
-  const box = firstImage.closest(".img-box");
+export function createGallery(
+  slide: HTMLElement,
+  stop: Stop,
+  firstImage: HTMLImageElement,
+): void {
+  const box = requireElement(".img-box", slide);
   const bars = document.createElement("span");
   bars.className = "photo-bars";
   bars.setAttribute("aria-hidden", "true");
@@ -33,7 +57,7 @@ export function createGallery(slide, stop, firstImage, placeName) {
   const controls = document.createElement("span");
   controls.className = "photo-controls";
   controls.setAttribute("role", "group");
-  controls.setAttribute("aria-label", `Foto's van ${placeName}`);
+  controls.setAttribute("aria-label", `Foto's van ${stop.place}`);
   controls.hidden = true;
   const toggle = document.createElement("button");
   toggle.type = "button";
@@ -44,14 +68,13 @@ export function createGallery(slide, stop, firstImage, placeName) {
   controls.append(toggle, dots);
   box.append(bars, controls);
   syncSlideshowToggle(toggle);
-  const gallery = {
+  const gallery: Gallery = {
     slide,
     stop,
     box,
     bars,
     controls,
     dots,
-    placeName,
     images: [firstImage],
     index: 0,
     done: false,
@@ -62,11 +85,11 @@ export function createGallery(slide, stop, firstImage, placeName) {
   addPhotoDot(gallery, 0);
 }
 
-export function addPhotoDot(gallery, index) {
+export function addPhotoDot(gallery: Gallery, index: number): void {
   const dot = document.createElement("button");
   dot.type = "button";
   dot.className = "photo-dot";
-  dot.setAttribute("aria-label", `Foto ${index + 1} van ${gallery.placeName}`);
+  dot.setAttribute("aria-label", `Foto ${index + 1} van ${gallery.stop.place}`);
   dot.addEventListener("click", () => showPhoto(gallery, index));
   dot.addEventListener("animationend", (event) => {
     if (event.animationName === "photo-dot-fill") advanceGallery(gallery);
@@ -78,47 +101,53 @@ export function addPhotoDot(gallery, index) {
 
 // One switch for every slideshow (WCAG 2.2.2: moving content can be
 // paused). Only this key pauses; hover and focus don't.
-export function syncSlideshowToggle(toggle) {
+export function syncSlideshowToggle(toggle: HTMLElement): void {
   const stopped = document.body.classList.contains("slideshow-stopped");
   toggle.setAttribute("aria-label", "Diashow pauzeren");
   toggle.setAttribute("aria-pressed", String(stopped));
   toggle.title = stopped ? "Diashow afspelen" : "Diashow pauzeren";
 }
 
-export function toggleSlideshow() {
+export function toggleSlideshow(): void {
   document.body.classList.toggle("slideshow-stopped");
   playBeep(
     document.body.classList.contains("slideshow-stopped") ? 330 : 494,
     "square",
     0.06,
   );
-  document.querySelectorAll(".photo-toggle").forEach(syncSlideshowToggle);
+  document
+    .querySelectorAll<HTMLElement>(".photo-toggle")
+    .forEach(syncSlideshowToggle);
 }
 
-export function syncPhotoDots(gallery) {
-  [...gallery.dots.children].forEach((dot, index) => {
-    const current = index === gallery.index;
-    dot.classList.toggle("is-current", current);
-    if (current) {
-      dot.setAttribute("aria-current", "true");
-    } else {
-      dot.removeAttribute("aria-current");
-    }
-    // One Tab stop for the whole indicator; ← → switch photos
-    dot.tabIndex = current ? 0 : -1;
-  });
+export function syncPhotoDots(gallery: Gallery): void {
+  [...gallery.dots.querySelectorAll<HTMLElement>(".photo-dot")].forEach(
+    (dot, index) => {
+      const current = index === gallery.index;
+      dot.classList.toggle("is-current", current);
+      if (current) {
+        dot.setAttribute("aria-current", "true");
+      } else {
+        dot.removeAttribute("aria-current");
+      }
+      // One Tab stop for the whole indicator; ← → switch photos
+      dot.tabIndex = current ? 0 : -1;
+    },
+  );
   const currentDot = gallery.dots.children[gallery.index];
-  if (currentDot) restartAnimationClass(currentDot, "is-current");
+  if (currentDot instanceof HTMLElement) {
+    restartAnimationClass(currentDot, "is-current");
+  }
 }
 
 // Find 02, 03… one after another, only for a slide that is on screen
-export function probeGallery(gallery) {
+export function probeGallery(gallery: Gallery): void {
   if (gallery.done || gallery.probing) return;
   gallery.probing = true;
   const number = gallery.images.length + 1;
   const image = new Image();
   image.className = "slide-photo";
-  image.alt = `Sfeerfoto ${number} van ${gallery.placeName}`;
+  image.alt = `Sfeerfoto ${number} van ${gallery.stop.place}`;
   image.decoding = "async";
   image.onload = () => {
     gallery.probing = false;
@@ -134,14 +163,14 @@ export function probeGallery(gallery) {
   image.src = slidePhotoSrc(gallery.stop, number);
 }
 
-export function visibleGallerySlide() {
+export function visibleGallerySlide(): HTMLElement | null {
   if (state.activeMapPopup && !state.activeMapPopup.closing) {
     return state.activeMapPopup.slide;
   }
-  return state.mapStyleReady ? null : state.slides[state.current];
+  return state.mapStyleReady ? null : (state.slides[state.current] ?? null);
 }
 
-export function resetGallery(slide) {
+export function resetGallery(slide: HTMLElement): void {
   const gallery = galleryFor(slide);
   if (!gallery) return;
   gallery.bars.getAnimations({ subtree: true }).forEach((a) => a.cancel());
@@ -150,7 +179,7 @@ export function resetGallery(slide) {
   probeGallery(gallery);
 }
 
-export function setCurrentPhoto(gallery, index) {
+export function setCurrentPhoto(gallery: Gallery, index: number): void {
   gallery.images.forEach((image, i) =>
     image.classList.toggle("is-current", i === index),
   );
@@ -158,21 +187,24 @@ export function setCurrentPhoto(gallery, index) {
   syncPhotoDots(gallery);
 }
 
-export function advanceGallery(gallery) {
+export function advanceGallery(gallery: Gallery): void {
   if (reducedMotionQuery.matches || gallery.images.length < 2) return;
   if (document.body.classList.contains("slideshow-stopped")) return;
   if (visibleGallerySlide() !== gallery.slide) return;
   showPhoto(gallery, (gallery.index + 1) % gallery.images.length);
 }
 
-export async function showPhoto(gallery, index) {
+export async function showPhoto(
+  gallery: Gallery,
+  index: number,
+): Promise<void> {
   if (index === gallery.index || gallery.animating) return;
   if (reducedMotionQuery.matches) {
     setCurrentPhoto(gallery, index);
     return;
   }
   gallery.animating = true;
-  const bars = [...gallery.bars.children];
+  const bars = [...gallery.bars.querySelectorAll("span")];
   const step = 38;
   // Cover: bars shoot in from the left in chunky steps, top to bottom
   const cover = bars.map((bar, i) =>
@@ -189,10 +221,10 @@ export async function showPhoto(gallery, index) {
       },
     ),
   );
-  await cover.at(-1).finished.catch(() => {});
+  await cover.at(-1)?.finished.catch(() => {});
   if (!gallery.animating) return;
   setCurrentPhoto(gallery, index);
-  gallery.images[index].animate(
+  gallery.images[index]?.animate(
     [{ scale: 1.08, filter: "saturate(1.6) brightness(1.25)" }, {}],
     { duration: 700, easing: "cubic-bezier(0.23, 1, 0.32, 1)" },
   );
@@ -212,7 +244,7 @@ export async function showPhoto(gallery, index) {
     ),
   );
   // The top bar leaves last
-  await reveal[0].finished.catch(() => {});
+  await reveal[0]?.finished.catch(() => {});
   cover.concat(reveal).forEach((a) => a.cancel());
   gallery.animating = false;
 }

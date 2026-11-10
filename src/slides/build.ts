@@ -1,57 +1,47 @@
-import { state } from "../state.js";
-import {
-  caricatureNames,
-  itinerary,
-  tripDayNumbers,
-} from "../data/itinerary.js";
-import { stopThemes } from "../data/themes.js";
-import { closeSlidePopup } from "../deck.js";
-import { createGallery, galleryFor, slidePhotoSrc } from "./gallery.js";
+import { state } from "../state.ts";
+import { itinerary } from "../data/itinerary.ts";
+import { stopThemes } from "../data/themes.ts";
+import { closeSlidePopup } from "../deck.ts";
+import { requireElement } from "../utils/dom.ts";
+import { createGallery, galleryFor, slidePhotoSrc } from "./gallery.ts";
 
-export const deck = document.querySelector(".deck");
+export const deck = requireElement(".deck");
 
-export function buildSlides() {
-  const template = /** @type {HTMLTemplateElement} */ (
-    document.getElementById("slide-template")
-  );
+export function buildSlides(): void {
+  const template = requireElement<HTMLTemplateElement>("#slide-template");
+  const slideTemplate = requireElement(".slide", template.content);
   state.slides = itinerary.map((stop, idx) => {
-    const slide = /** @type {HTMLElement} */ (
-      template.content.firstElementChild.cloneNode(true)
-    );
-    const tag = slide.querySelector(".tag");
-    const heading = slide.querySelector("h2");
-    const description = slide.querySelector(".desc");
-    const quote = slide.querySelector("blockquote");
-    const slideImage = slide.querySelector("img");
-    const imageBox = /** @type {HTMLElement} */ (
-      slide.querySelector(".img-box")
-    );
-    const card = /** @type {HTMLElement} */ (slide.querySelector(".card"));
-    const [routeStat, sleepStat] = slide.querySelectorAll(".stat-item");
-    const tripDay = tripDayNumbers.get(stop.date);
+    const slide = slideTemplate.cloneNode(true) as HTMLElement;
+    const tag = requireElement(".tag", slide);
+    const heading = requireElement("h2", slide);
+    const description = requireElement(".desc", slide);
+    const quote = requireElement("blockquote", slide);
+    const slideImage = requireElement<HTMLImageElement>("img", slide);
+    const imageBox = requireElement(".img-box", slide);
+    const card = requireElement(".card", slide);
+    const [routeValue, sleepValue] = slide.querySelectorAll(".stat-value");
     const caricature = document.createElement("span");
     const caricatureImage = document.createElement("img");
     const closeButton = document.createElement("button");
 
-    stop.slideIndex = idx;
     card.style.borderColor = stopThemes[stop.theme];
     imageBox.style.borderColor = stopThemes[stop.theme];
     slide.setAttribute("role", "dialog");
     slide.setAttribute("aria-label", stop.title);
     // Photos come from img/slides/<08 | 08-s1>/01.webp, 02.webp…; the first
     // one is loaded later (opening day first, the rest once it is ready).
-    const placeName = stop.location.name.split(" · ")[0];
     slideImage.className = "slide-photo is-current";
     slideImage.dataset.src = slidePhotoSrc(stop, 1);
-    slideImage.alt = `Sfeerfoto 1 van ${placeName}`;
+    slideImage.alt = `Sfeerfoto 1 van ${stop.place}`;
     slideImage.addEventListener(
       "error",
       () => {
-        galleryFor(slide).done = true;
+        const gallery = galleryFor(slide);
+        if (gallery) gallery.done = true;
       },
       { once: true },
     );
-    createGallery(slide, stop, slideImage, placeName);
+    createGallery(slide, stop, slideImage);
     slide.classList.toggle("active", idx === state.current);
     tag.textContent = `${stop.date} · ${stop.flags}`;
     heading.textContent = stop.title;
@@ -66,13 +56,10 @@ export function buildSlides() {
     closeButton.append(closeIcon);
     closeButton.addEventListener("click", closeSlidePopup);
     card.append(closeButton);
-    routeStat.firstChild.textContent = "REISDAG";
-    routeStat.querySelector(".stat-value").textContent = tripDay;
-    sleepStat.firstChild.textContent = "OVERNACHTING";
-    sleepStat.querySelector(".stat-value").textContent = stop.sleep.replace(
-      /^Slaap: /,
-      "",
-    );
+    if (routeValue) routeValue.textContent = String(stop.day);
+    if (sleepValue) {
+      sleepValue.textContent = stop.sleep.replace(/^Slaap: /, "");
+    }
     caricature.className = "slide-caricature";
     if (stop.caricatureAlign === "top") {
       caricature.classList.add("align-top");
@@ -83,7 +70,7 @@ export function buildSlides() {
       once: true,
     });
     if (stop.caricature !== false) {
-      caricatureImage.dataset.src = `${import.meta.env.BASE_URL}img/cartoons/${caricatureNames.get(stop)}.webp`;
+      caricatureImage.dataset.src = `${import.meta.env.BASE_URL}img/cartoons/${stop.slug}.webp`;
       caricature.append(caricatureImage);
       card.append(caricature);
     }

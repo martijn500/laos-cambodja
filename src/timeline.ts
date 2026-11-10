@@ -1,15 +1,20 @@
-import { state } from "./state.js";
-import { itinerary, tripDayNumbers } from "./data/itinerary.js";
-import { goToSlide } from "./deck.js";
-import { slidePhotoSrc } from "./slides/gallery.js";
+import { slideAt, state } from "./state.ts";
+import { itinerary } from "./data/itinerary.ts";
+import { goToSlide } from "./deck.ts";
+import { slidePhotoSrc } from "./slides/gallery.ts";
+import { requireElement } from "./utils/dom.ts";
 
-export const pageIndicatorsEl = document.getElementById("page-indicators");
+export const pageIndicatorsEl = requireElement("#page-indicators");
 
-export function buildTimeline() {
+/** The day colour as the browser resolved it, "rgb(…)" */
+function cardColor(slide: HTMLElement): string {
+  return getComputedStyle(requireElement(".card", slide)).borderTopColor;
+}
+
+export function buildTimeline(): void {
   state.pageIndicators = itinerary.map((stop, idx) => {
-    const slide = state.slides[stop.slideIndex];
+    const slide = slideAt(stop.index);
     const button = document.createElement("button");
-    const title = slide.querySelector("h2").textContent.trim();
     const image = document.createElement("img");
     const thumbnail = document.createElement("span");
     const flags = document.createElement("span");
@@ -24,14 +29,11 @@ export function buildTimeline() {
 
     button.type = "button";
     button.className = "page-indicator";
-    const indicatorColor = getComputedStyle(
-      slide.querySelector(".card"),
-    ).borderTopColor;
+    const indicatorColor = cardColor(slide);
     const nextStop = itinerary[idx + 1];
-    const nextSlide = nextStop ? state.slides[nextStop.slideIndex] : slide;
-    const nextIndicatorColor = getComputedStyle(
-      nextSlide.querySelector(".card"),
-    ).borderTopColor;
+    const nextIndicatorColor = cardColor(
+      nextStop ? slideAt(nextStop.index) : slide,
+    );
     button.style.setProperty("--indicator-color", indicatorColor);
     button.style.setProperty("--next-indicator-color", nextIndicatorColor);
     if (stop.sideQuest) {
@@ -39,7 +41,7 @@ export function buildTimeline() {
     }
     button.setAttribute(
       "aria-label",
-      `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${title}.`,
+      `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${stop.title}.`,
     );
     button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
@@ -71,10 +73,9 @@ export function buildTimeline() {
     node.setAttribute("aria-hidden", "true");
     dateNumber.className = "timeline-date-number";
     dateNumber.style.setProperty("--marker-color", indicatorColor);
-    const isFirstStopOfDate =
-      idx === 0 || itinerary[idx - 1].date !== stop.date;
+    const isFirstStopOfDate = itinerary[idx - 1]?.date !== stop.date;
     if (isFirstStopOfDate) {
-      dateNumber.textContent = String(tripDayNumbers.get(stop.date));
+      dateNumber.textContent = String(stop.day);
       dateNumber.setAttribute("aria-hidden", "true");
     }
 
@@ -87,11 +88,8 @@ export function buildTimeline() {
 
   // One listener for the whole timeline (event delegation)
   pageIndicatorsEl.addEventListener("click", (event) => {
-    const button = /** @type {HTMLElement} */ (event.target).closest(
-      ".page-indicator",
-    );
-    if (!(button instanceof HTMLElement)) return;
-    const index = Number(button.dataset.index);
-    goToSlide(index);
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLElement>(".page-indicator");
+    if (button) goToSlide(Number(button.dataset.index));
   });
 }

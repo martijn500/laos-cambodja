@@ -1,18 +1,22 @@
-import { restartAnimationClass } from "./utils/dom.js";
+import { requireElement, restartAnimationClass } from "./utils/dom.ts";
 
 export let soundEnabled = true;
 
 // Browsers only allow audio after a user gesture: create the context on the
 // first beep (always triggered by a click or key press), not at page load.
-let audioCtx = null;
+let audioCtx: AudioContext | null = null;
 
-function audioContext() {
+function audioContext(): AudioContext {
   audioCtx ??= new AudioContext();
-  if (audioCtx.state === "suspended") audioCtx.resume();
+  if (audioCtx.state === "suspended") void audioCtx.resume();
   return audioCtx;
 }
 
-export function playBeep(freq = 440, type = "sine", duration = 0.1) {
+export function playBeep(
+  freq = 440,
+  type: OscillatorType = "sine",
+  duration = 0.1,
+): void {
   if (!soundEnabled) return;
   try {
     const audioCtx = audioContext();
@@ -34,9 +38,9 @@ export function playBeep(freq = 440, type = "sine", duration = 0.1) {
   }
 }
 
-export function toggleAudio() {
+export function toggleAudio(): void {
   soundEnabled = !soundEnabled;
-  const btn = document.querySelector(".sound-btn");
+  const btn = requireElement(".sound-btn");
   btn.textContent = soundEnabled ? "SFX: ON 🔊" : "SFX: OFF 🔇";
   btn.setAttribute("aria-pressed", String(soundEnabled));
   restartAnimationClass(btn, "is-toggled");

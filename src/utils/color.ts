@@ -1,6 +1,8 @@
+export type Hsl = [hue: number, saturation: number, lightness: number];
+
 // "rgb(r, g, b)" -> [h, s, l] (h in degrees, s/l in 0..100)
-export function rgbStringToHsl(color) {
-  const [r, g, b] = (color.match(/[\d.]+/g) ?? [255, 0, 127])
+export function rgbStringToHsl(color: string): Hsl {
+  const [r = 1, g = 0, b = 0.5] = (color.match(/[\d.]+/g) ?? [255, 0, 127])
     .slice(0, 3)
     .map((value) => Number(value) / 255);
   const max = Math.max(r, g, b);

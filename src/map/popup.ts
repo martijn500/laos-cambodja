@@ -1,15 +1,22 @@
 import { Popup } from "maplibre-gl";
-import { state } from "../state.js";
-import { finishBooting } from "../boot.js";
-import { itinerary, tripDayNumbers } from "../data/itinerary.js";
-import { trackPopupBeam, updateMapPopupBeam } from "./beam.js";
-import { mapDayMarkers, markerButtonForSlide, pulseMarker } from "./markers.js";
-import { deck } from "../slides/build.js";
-import { resetGallery } from "../slides/gallery.js";
-import { restartAnimationClass } from "../utils/dom.js";
+import { slideAt, state } from "../state.ts";
+import { finishBooting } from "../boot.ts";
+import { stopAt, type Stop } from "../data/itinerary.ts";
+import { trackPopupBeam, updateMapPopupBeam } from "./beam.ts";
+import { markerButtonForSlide, markerForDay, pulseMarker } from "./markers.ts";
+import { deck } from "../slides/build.ts";
+import { resetGallery } from "../slides/gallery.ts";
+import {
+  reducedMotionQuery,
+  requireElement,
+  restartAnimationClass,
+} from "../utils/dom.ts";
 
 // Scale the popup around the centre of its map marker
-export function setPopupOriginToMarker(slide, slideIndex) {
+export function setPopupOriginToMarker(
+  slide: HTMLElement,
+  slideIndex: number,
+): void {
   const marker = markerButtonForSlide(slideIndex);
   if (!marker) {
     slide.style.transformOrigin = "50% 100%";
@@ -22,39 +29,33 @@ export function setPopupOriginToMarker(slide, slideIndex) {
   slide.style.transformOrigin = `${originX}px ${originY}px`;
 }
 
-export function popupTransitionDuration(fromIndex, toIndex) {
-  const from = itinerary[fromIndex];
-  const to = itinerary[toIndex];
-  const fromPoint = state.tripMap.project([
-    from.location.coordinates[1],
-    from.location.coordinates[0],
-  ]);
-  const toPoint = state.tripMap.project([
-    to.location.coordinates[1],
-    to.location.coordinates[0],
-  ]);
+export function popupTransitionDuration(
+  fromIndex: number,
+  toIndex: number,
+): number {
+  if (!state.tripMap) return 250;
+  const fromPoint = state.tripMap.project(stopAt(fromIndex).lngLat);
+  const toPoint = state.tripMap.project(stopAt(toIndex).lngLat);
   const distance = Math.hypot(fromPoint.x - toPoint.x, fromPoint.y - toPoint.y);
   if (distance < 120) return 140;
   if (distance < 360) return 180;
   return 250;
 }
 
-export function setActiveMapPopup(stop) {
-  state.requestedPopupIndex = stop ? stop.slideIndex : null;
+export function setActiveMapPopup(stop: Stop | null): void {
+  state.requestedPopupIndex = stop ? stop.index : null;
   if (!state.tripMap || !state.mapStyleReady) return;
 
   if (state.requestedPopupIndex !== null) {
-    if (state.activeMapPopup?.slideIndex !== state.requestedPopupIndex) {
-      state.slides[state.requestedPopupIndex].classList.add(
-        "map-popup-pending",
-      );
+    if (state.activeMapPopup?.index !== state.requestedPopupIndex) {
+      slideAt(state.requestedPopupIndex).classList.add("map-popup-pending");
     }
     document.body.classList.add("map-popup-transition");
   }
 
   if (state.activeMapPopup) {
     if (
-      state.activeMapPopup.slideIndex === state.requestedPopupIndex &&
+      state.activeMapPopup.index === state.requestedPopupIndex &&
       !state.activeMapPopup.closing
     ) {
       return;
@@ -65,7 +66,7 @@ export function setActiveMapPopup(stop) {
       state.requestedPopupIndex === null
         ? 340
         : popupTransitionDuration(
-            state.activeMapPopup.slideIndex,
+            state.activeMapPopup.index,
             state.requestedPopupIndex,
           ) + 100;
     closeActiveMapPopup();
@@ -79,27 +80,24 @@ export function setActiveMapPopup(stop) {
   }
 }
 
-export function openRequestedMapPopup() {
+export function openRequestedMapPopup(): void {
+  const map = state.tripMap;
   if (
+    !map ||
     state.activeMapPopup ||
     state.requestedPopupIndex === null ||
     document.body.classList.contains("popup-closed") ||
-    !state.tripMap ||
     !state.mapStyleReady ||
-    state.tripMap.isMoving()
+    map.isMoving()
   ) {
     return;
   }
 
   const slideIndex = state.requestedPopupIndex;
-  const slide = state.slides[slideIndex];
-  const stop = itinerary.find((item) => item.slideIndex === slideIndex);
-  const day = tripDayNumbers.get(stop.date);
-  const dayMarker = mapDayMarkers.find((marker) => marker.day === day);
-  const color = getComputedStyle(slide.querySelector(".card")).borderTopColor;
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
+  const slide = slideAt(slideIndex);
+  const stop = stopAt(slideIndex);
+  const color = getComputedStyle(requireElement(".card", slide)).borderTopColor;
+  const reducedMotion = reducedMotionQuery.matches;
   // Drop the finished close animation (fill: both) of a previous visit
   slide.getAnimations().forEach((animation) => animation.cancel());
   slide.classList.add("trip-popup-slide");
@@ -113,14 +111,9 @@ export function openRequestedMapPopup() {
     maxWidth: "none",
     offset: state.requestedPopupOffset,
   })
-    .setLngLat(
-      dayMarker?.coordinates ?? [
-        stop.location.coordinates[1],
-        stop.location.coordinates[0],
-      ],
-    )
+    .setLngLat(markerForDay(stop.day)?.lngLat ?? stop.lngLat)
     .setDOMContent(slide)
-    .addTo(state.tripMap);
+    .addTo(map);
   const popupElement = popup.getElement();
   popupElement.classList.add("trip-day-popup");
   popupElement.style.setProperty("--popup-color", color);
@@ -128,7 +121,7 @@ export function openRequestedMapPopup() {
     color,
     popup,
     slide,
-    slideIndex,
+    index: slideIndex,
     closing: false,
   };
   setPopupOriginToMarker(slide, slideIndex);
@@ -158,7 +151,7 @@ export function openRequestedMapPopup() {
   document.body.classList.remove("map-popup-transition");
 }
 
-export function closeActiveMapPopup() {
+export function closeActiveMapPopup(): void {
   const closingPopup = state.activeMapPopup;
   if (!closingPopup || closingPopup.closing) return;
   closingPopup.closing = true;
@@ -171,7 +164,7 @@ export function closeActiveMapPopup() {
     deck.append(closingPopup.slide);
     state.activeMapPopup = null;
     updateMapPopupBeam();
-    pulseMarker(closingPopup.slideIndex);
+    pulseMarker(closingPopup.index);
     if (
       state.requestedPopupIndex !== null &&
       !document.body.classList.contains("popup-closed")
@@ -182,7 +175,7 @@ export function closeActiveMapPopup() {
     }
   };
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (reducedMotionQuery.matches) {
     finishClose();
     return;
   }
@@ -191,7 +184,7 @@ export function closeActiveMapPopup() {
     animation.cancel();
   });
   // The marker may have moved since opening (map resize / re-centre)
-  setPopupOriginToMarker(closingPopup.slide, closingPopup.slideIndex);
+  setPopupOriginToMarker(closingPopup.slide, closingPopup.index);
   // Short anticipation swell, then the card is sucked into its marker
   const animation = closingPopup.slide.animate(
     [

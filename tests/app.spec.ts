@@ -1,21 +1,28 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page, type TestInfo } from "@playwright/test";
 
-const isMobile = (testInfo) => testInfo.project.name === "mobile";
+// Titles painted so far, recorded by the first test in the page
+declare global {
+  interface Window {
+    __seen: string[];
+  }
+}
+
+const isMobile = (testInfo: TestInfo) => testInfo.project.name === "mobile";
 
 // Collects uncaught errors; every test ends by asserting there were none
-function trackErrors(page) {
-  const errors = [];
+function trackErrors(page: Page): string[] {
+  const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   return errors;
 }
 
-async function waitForBoot(page) {
+async function waitForBoot(page: Page): Promise<void> {
   await page.waitForFunction(
     () => !document.body.classList.contains("is-booting"),
   );
 }
 
-const popupTitle = (page) => page.locator(".trip-popup-slide h2");
+const popupTitle = (page: Page) => page.locator(".trip-popup-slide h2");
 
 test("opens the day from the URL as a popup, without showing other days first", async ({
   page,
@@ -27,7 +34,7 @@ test("opens the day from the URL as a popup, without showing other days first", 
     const visibleTitle = () => {
       for (const h2 of document.querySelectorAll("h2")) {
         if (!h2.getBoundingClientRect().width) continue;
-        let element = h2;
+        let element: HTMLElement | null = h2;
         let opacity = 1;
         let hidden = false;
         while (element && element.nodeType === 1) {
@@ -37,7 +44,7 @@ test("opens the day from the URL as a popup, without showing other days first", 
           opacity *= Number(style.opacity);
           element = element.parentElement;
         }
-        if (!hidden && opacity > 0.05) return h2.textContent.trim();
+        if (!hidden && opacity > 0.05) return h2.textContent?.trim() ?? null;
       }
       return null;
     };
@@ -112,13 +119,17 @@ test("keyboard: few Tab stops, arrows move through days", async ({
   await page.goto("dag-8");
   await waitForBoot(page);
 
-  const stops = [];
+  const stops: string[] = [];
   for (let i = 0; i < 12; i++) {
     await page.keyboard.press("Tab");
     stops.push(
       await page.evaluate(() => {
         const element = document.activeElement;
-        return element.getAttribute("aria-label") || element.textContent.trim();
+        return (
+          element?.getAttribute("aria-label") ||
+          element?.textContent?.trim() ||
+          ""
+        );
       }),
     );
   }
@@ -132,7 +143,7 @@ test("keyboard: few Tab stops, arrows move through days", async ({
     let i = 0;
     i < 10 &&
     !(await page.evaluate(() =>
-      document.activeElement.matches(".page-indicator"),
+      document.activeElement?.matches(".page-indicator"),
     ));
     i++
   ) {

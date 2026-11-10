@@ -1,6 +1,7 @@
-import { itinerary } from "./data/itinerary.js";
-import { focusCurrentDay, goToSlide, nextSlide, prevSlide } from "./deck.js";
-import { galleryFor, showPhoto } from "./slides/gallery.js";
+import { itinerary } from "./data/itinerary.ts";
+import { focusCurrentDay, goToSlide, nextSlide, prevSlide } from "./deck.ts";
+import { galleryFor, showPhoto } from "./slides/gallery.ts";
+import type { DayGroup } from "./deck.ts";
 
 // Touch Swipe Controls for Mobile
 // Disabled while only the map is visible, so panning/zooming isn't hijacked
@@ -8,7 +9,7 @@ export let touchStartX = 0;
 
 export let swipeEnabled = false;
 
-export function initInput() {
+export function initInput(): void {
   /*
    * Keyboard: ← / → = previous / next day, anywhere in the app. Inside the
    * timeline or the map markers focus follows the current day, and
@@ -26,19 +27,20 @@ export function initInput() {
       }
       const photoDots = target?.closest(".photo-dots");
       if (photoDots && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
-        const gallery = galleryFor(photoDots.closest(".slide"));
+        const slide = photoDots.closest<HTMLElement>(".slide");
+        const gallery = slide && galleryFor(slide);
+        if (!gallery) return;
         const count = gallery.images.length;
         const next =
           (gallery.index + (e.key === "ArrowRight" ? 1 : count - 1)) % count;
         e.preventDefault();
         e.stopPropagation();
         showPhoto(gallery, next);
-        /** @type {HTMLElement} */ (photoDots.children[next])?.focus({
-          preventScroll: true,
-        });
+        const dot = photoDots.children[next];
+        if (dot instanceof HTMLElement) dot.focus({ preventScroll: true });
         return;
       }
-      const group = target?.closest("#page-indicators")
+      const group: DayGroup | null = target?.closest("#page-indicators")
         ? "timeline"
         : target?.closest(".map-day-marker")
           ? "markers"
@@ -67,11 +69,12 @@ export function initInput() {
     swipeEnabled =
       e.touches.length === 1 &&
       !document.body.classList.contains("popup-closed");
-    touchStartX = e.changedTouches[0].screenX;
+    touchStartX = e.changedTouches[0]?.screenX ?? 0;
   });
   document.addEventListener("touchend", (e) => {
-    if (!swipeEnabled) return;
-    const touchEndX = e.changedTouches[0].screenX;
+    const touch = e.changedTouches[0];
+    if (!swipeEnabled || !touch) return;
+    const touchEndX = touch.screenX;
     if (touchStartX - touchEndX > 50) nextSlide();
     if (touchEndX - touchStartX > 50) prevSlide();
   });

@@ -1,25 +1,53 @@
-/**
- * One stop on the trip: a day, or a side quest on the same date.
- * @typedef {object} Stop
- * @property {string} date      "MA · 22 FEB"; side quests share their day's date
- * @property {string} flags     country flag(s), "🇹🇭 → 🇱🇦" on a border day
- * @property {string} title
- * @property {{ name: string, coordinates: [number, number], zoom: number }} location
- *   name "Place · Country"; coordinates [lat, lng]
- * @property {string} quote
- * @property {string} detail
- * @property {string} sleep     "Slaap: …"
- * @property {string} icon      emoji for the kind of day
- * @property {string} iconLabel what the icon means (screen readers, tooltips)
- * @property {keyof typeof import("./themes.js").stopThemes} theme
- * @property {boolean} [sideQuest]
- * @property {"top"} [caricatureAlign] cartoon aligned to the top of the photo
- * @property {false} [caricature]       no cartoon for this stop
- * @property {number} [slideIndex]      set by slides/build.js
- */
+import type { stopThemes } from "./themes.ts";
 
-/** @type {Stop[]} */
-export const itinerary = [
+/** One stop on the trip as written below: a day, or a side quest on the same date. */
+interface StopData {
+  /** "MA · 22 FEB"; side quests share their day's date */
+  date: string;
+  /** country flag(s), "🇹🇭 → 🇱🇦" on a border day */
+  flags: string;
+  title: string;
+  location: {
+    /** "Place · Country" */
+    name: string;
+    /** [lat, lng] */
+    coordinates: [lat: number, lng: number];
+    zoom: number;
+  };
+  quote: string;
+  detail: string;
+  /** "Slaap: …" */
+  sleep: string;
+  /** emoji for the kind of day */
+  icon: string;
+  /** what the icon means (screen readers, tooltips) */
+  iconLabel: string;
+  theme: keyof typeof stopThemes;
+  sideQuest?: true;
+  /** cartoon aligned to the top of the photo */
+  caricatureAlign?: "top";
+  /** no cartoon for this stop */
+  caricature?: false;
+}
+
+/** A stop with the fields derived from its place in the trip */
+export interface Stop extends StopData {
+  /** position in `itinerary`, also the index of its slide */
+  readonly index: number;
+  /** travel day, 1-based; side quests share it with their day */
+  readonly day: number;
+  /**
+   * Name of its photo folder and cartoon: "08" for day 8, "08-s1",
+   * "08-s2"… for that day's side quests (img/slides/08/, img/cartoons/08.webp)
+   */
+  readonly slug: string;
+  /** "Luang Prabang": the place without the country */
+  readonly place: string;
+  /** location.coordinates as MapLibre wants them: [lng, lat] */
+  readonly lngLat: [lng: number, lat: number];
+}
+
+const stops: StopData[] = [
   {
     date: "MA · 15 FEB",
     flags: "🇳🇱",
@@ -403,23 +431,30 @@ export const itinerary = [
   },
 ];
 
-export const tripDayNumbers = new Map();
+let day = 0;
+let sideQuests = 0;
 
-// Cartoons: img/cartoons/08.webp for the day itself, 08-s1.webp, 08-s2.webp… for its side quests
-export const caricatureNames = new Map();
-
-export const sideQuestCounts = new Map();
-
-itinerary.forEach((stop) => {
-  if (!tripDayNumbers.has(stop.date)) {
-    tripDayNumbers.set(stop.date, tripDayNumbers.size + 1);
-  }
-  const dayName = String(tripDayNumbers.get(stop.date)).padStart(2, "0");
+export const itinerary: readonly Stop[] = stops.map((stop, index) => {
   if (stop.sideQuest) {
-    const count = (sideQuestCounts.get(stop.date) || 0) + 1;
-    sideQuestCounts.set(stop.date, count);
-    caricatureNames.set(stop, `${dayName}-s${count}`);
+    sideQuests += 1;
   } else {
-    caricatureNames.set(stop, dayName);
+    day += 1;
+    sideQuests = 0;
   }
+  const dayName = String(day).padStart(2, "0");
+  return {
+    ...stop,
+    index,
+    day,
+    slug: sideQuests ? `${dayName}-s${sideQuests}` : dayName,
+    place: stop.location.name.split(" · ")[0] ?? stop.location.name,
+    lngLat: [stop.location.coordinates[1], stop.location.coordinates[0]],
+  };
 });
+
+/** The stop at `index`; throws for an index outside the trip (a bug). */
+export function stopAt(index: number): Stop {
+  const stop = itinerary[index];
+  if (!stop) throw new Error(`No stop at index ${index}`);
+  return stop;
+}
