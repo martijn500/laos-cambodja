@@ -55,7 +55,13 @@ export default defineConfig(
     },
   },
   {
-    files: ["*.ts", "build/**/*.ts", "e2e/**/*.ts", "src/**/*.test.ts"],
+    files: [
+      "*.ts",
+      "build/**/*.ts",
+      "scripts/**/*.ts",
+      "e2e/**/*.ts",
+      "src/**/*.test.ts",
+    ],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 );

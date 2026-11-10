@@ -21,6 +21,7 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 | `npm run build`     | Productiebuild in `dist/`                                    |
 | `npm run preview`   | Serveert `dist/` zoals GitHub Pages (poort 4173)             |
 | `npm run images`    | Zet originele foto's en cartoons om naar WebP                |
+| `npm run compare`   | Vergelijkt screenshots met `origin/main` (of een andere ref) |
 | `npm test`          | Unit-tests en daarna de Playwright-tests                     |
 | `npm run test:unit` | Unit-tests (`node --test`), zonder browser, in milliseconden |
 | `npm run test:e2e`  | Bouwt en test met Playwright op desktop en mobiel            |
@@ -44,6 +45,13 @@ Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Action
 Commit-berichten volgen [Conventional Commits](https://www.conventionalcommits.org): `<type>: <wat er verandert>`, met type `feat`, `fix`, `perf`, `refactor`, `style`, `test`, `docs`, `build`, `ci`, `chore`, `security` of `revert`. CI controleert dat bij elke pull request (`scripts/check-commit-messages.sh`).
 
 Elke pagina heeft `<meta name="version" content="<commit> <buildtijd>">`, zodat je in de paginabron van de live site ziet welke commit er draait.
+
+## Documentatie en afspraken
+
+- [`AGENTS.md`](AGENTS.md): de afspraken die altijd gelden, voor mensen en AI-agents
+- [`.claude/skills/`](.claude/skills/): stappenplannen per taak (committen, controleren, een dag toevoegen, dependencies bijwerken)
+- [`docs/`](docs/README.md): waarom het zo gebouwd is (beslissingen), valkuilen en bronnen
+- [`CHANGELOG.md`](CHANGELOG.md): wat er veranderd is
 
 ## Indeling
 
