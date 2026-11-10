@@ -29,6 +29,12 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 
 Nieuwe packages worden pas geïnstalleerd als ze een week oud zijn (`.npmrc`), als bescherming tegen gekaapte releases.
 
+## Deployen
+
+Elke push naar `main` draait `.github/workflows/ci.yml`: lint, typecontrole, build en tests. Slaagt alles, dan gaat `dist/` naar GitHub Pages. Pull requests krijgen dezelfde controles, zonder deploy.
+
+Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Actions**.
+
 ## Indeling
 
 ```

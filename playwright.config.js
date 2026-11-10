@@ -5,6 +5,8 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
+  // A stray test.only must not make CI pass with half the tests
+  forbidOnly: !!process.env.CI,
   reporter: "list",
   use: {
     baseURL: "http://localhost:4173/laos-cambodja/",
