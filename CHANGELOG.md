@@ -8,6 +8,8 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 
 ### Toegevoegd
 
+- Ruleset op `main`: alleen via een pull request met groene CI, branch bijgewerkt met `main` (`a7cd0a3`).
+- Hook die `git commit` en `git push` tegenhoudt op `main` en op branches waarvan de PR al gemerged of gesloten is (`49523bd`).
 - Deze changelog (`a2b85f9`).
 - Kennisbank in `docs/`: beslissingen (MADR), valkuilen en bronnen (`5f15ca7`).
 - `AGENTS.md` met de afspraken die altijd gelden (`b7b12e3`).
