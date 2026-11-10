@@ -42,7 +42,7 @@ img/
   slides/<dag>/ foto's per dag (01.webp, 02.webp…), gemaakt door npm run images
   cartoons/     cartoon per dag (08.webp, side quest 08-s1.webp), gemaakt door npm run images
   cartoons-src/ originele cartoons als PNG, niet in git
-  bg/           originele foto's, niet in git
+  slides-src/   originele foto's met bronnen (CREDITS.md), niet in git
 ```
 
 Een dag heet `08`, een side quest op die dag `08-s1`. Die naam wordt gebruikt voor de fotomap en de cartoon.

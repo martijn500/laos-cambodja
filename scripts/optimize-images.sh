@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Makes the web versions of the slide photos and cartoons:  npm run images
 #
-#   img/bg/<slide>/<any photo>  (originals, any size, not in git)
+#   img/slides-src/<slide>/<any photo>  (originals, any size, not in git)
 #     ->  img/slides/<slide>/01.webp, 02.webp, …
 #   img/cartoons-src/<slide>.png  (originals with transparency, not in git)
 #     ->  img/cartoons/<slide>.webp
@@ -20,7 +20,7 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 photos() {
-  local src=img/bg out=img/slides total=0
+  local src=img/slides-src out=img/slides total=0
   [[ -d $src ]] || { echo "Geen $src, foto's overgeslagen"; return; }
   rm -rf "$out"
   for dir in "$src"/*/; do
