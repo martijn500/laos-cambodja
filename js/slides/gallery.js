@@ -5,7 +5,7 @@ import { reducedMotionQuery, restartAnimationClass } from "../utils/dom.js";
 
 /*
  * Photo gallery per slide. Photos live in img/slides/<slide>/NN.webp
- * (see scripts/optimize-photos.sh); the app finds them by loading 01,
+ * (see scripts/optimize-images.sh); the app finds them by loading 01,
  * 02, 03… until one is missing. They play one after another: the
  * current pixel in the indicator fills up (CSS animation) and its end
  * starts the next photo with an arcade bar wipe in the day colour.

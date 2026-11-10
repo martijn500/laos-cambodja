@@ -1,6 +1,5 @@
 import { state } from "./state.js";
 import { itinerary, tripDayNumbers } from "./data/itinerary.js";
-import { photos } from "./data/photos.js";
 import { goToSlide } from "./deck.js";
 import { slidePhotoSrc } from "./slides/gallery.js";
 
@@ -46,11 +45,6 @@ export function buildTimeline() {
 
     image.className = "timeline-thumb";
     image.dataset.src = slidePhotoSrc(stop, 1);
-    image.addEventListener(
-      "error",
-      () => (image.src = photos[stop.photo].src),
-      { once: true },
-    );
     image.alt = "";
     image.loading = "lazy";
     image.decoding = "async";

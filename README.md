@@ -29,7 +29,7 @@ css/            base, map, boot, slide, controls (geladen in deze volgorde)
 js/
   main.js       opstartvolgorde
   state.js      gedeelde staat + setDay() / "daychange"
-  data/         reisdagen, terugvalfoto's, kleuren per bestemming
+  data/         reisdagen, kleuren per bestemming
   router.js     /dag-N in de URL
   deck.js       huidige dag tonen, vorige / volgende
   timeline.js   tijdlijnkaarten

@@ -11,8 +11,6 @@
  * @property {string} sleep     "Slaap: …"
  * @property {string} icon      emoji for the kind of day
  * @property {string} iconLabel what the icon means (screen readers, tooltips)
- * @property {keyof typeof import("./photos.js").photos} photo
- *   fallback photo when img/slides/<day>/ has none
  * @property {keyof typeof import("./themes.js").stopThemes} theme
  * @property {boolean} [sideQuest]
  * @property {"top"} [caricatureAlign] cartoon aligned to the top of the photo
@@ -38,7 +36,6 @@ export const itinerary = [
     sleep: "Slaap: aan boord",
     icon: "✈️",
     iconLabel: "Vlucht",
-    photo: "flight",
     theme: "amsterdam",
   },
   {
@@ -57,7 +54,6 @@ export const itinerary = [
     sleep: "Slaap: Chiang Rai",
     icon: "🛬",
     iconLabel: "Aankomst",
-    photo: "chiangRai",
     theme: "chiangRai",
   },
   {
@@ -76,7 +72,6 @@ export const itinerary = [
     sleep: "Slaap: Huay Xai",
     icon: "🚐",
     iconLabel: "Grensovergang per transfer",
-    photo: "mekongBorderSunset",
     theme: "huayXai",
   },
   {
@@ -95,7 +90,6 @@ export const itinerary = [
     sleep: "Slaap: boomhut in de jungle",
     icon: "🪢",
     iconLabel: "Zipline",
-    photo: "jungle",
     theme: "gibbon",
   },
   {
@@ -114,7 +108,6 @@ export const itinerary = [
     sleep: "Slaap: Huay Xai",
     icon: "🥾",
     iconLabel: "Jungletocht",
-    photo: "jungle",
     theme: "gibbon",
   },
   {
@@ -133,7 +126,6 @@ export const itinerary = [
     sleep: "Slaap: Pakbeng",
     icon: "🚤",
     iconLabel: "Slowboat",
-    photo: "mekong",
     theme: "slowboat",
   },
   {
@@ -152,7 +144,6 @@ export const itinerary = [
     sleep: "Slaap: Luang Prabang",
     icon: "🚤",
     iconLabel: "Slowboat",
-    photo: "mekongSlowboat",
     theme: "slowboat",
   },
   {
@@ -171,7 +162,6 @@ export const itinerary = [
     sleep: "Slaap: Luang Prabang",
     icon: "🛕",
     iconLabel: "Tempelbezoek",
-    photo: "luangPrabang",
     theme: "luangPrabang",
   },
   {
@@ -190,7 +180,6 @@ export const itinerary = [
     sleep: "Slaap: Luang Prabang",
     icon: "🍸",
     iconLabel: "Cocktails",
-    photo: "nagini",
     theme: "luangPrabang",
   },
   {
@@ -209,7 +198,6 @@ export const itinerary = [
     sleep: "Slaap: Luang Prabang",
     icon: "💦",
     iconLabel: "Watervallen",
-    photo: "waterfall",
     theme: "luangPrabang",
   },
   {
@@ -227,7 +215,6 @@ export const itinerary = [
     sleep: "Slaap: Vang Vieng",
     icon: "🚆",
     iconLabel: "Trein",
-    photo: "train",
     theme: "vangVieng",
   },
   {
@@ -246,7 +233,6 @@ export const itinerary = [
     sleep: "Slaap: Vang Vieng",
     icon: "🎈",
     iconLabel: "Ballonvaart of outdoor-avontuur",
-    photo: "vangVieng",
     // The balloon caricature floats at the top of the card
     caricatureAlign: "top",
     theme: "vangVieng",
@@ -267,7 +253,6 @@ export const itinerary = [
     sleep: "Slaap: Vientiane",
     icon: "🚆",
     iconLabel: "Trein",
-    photo: "vientiane",
     theme: "vientiane",
   },
   {
@@ -287,7 +272,6 @@ export const itinerary = [
     sleep: "Slaap: Vientiane",
     icon: "🗿",
     iconLabel: "Buddha Park",
-    photo: "buddhaPark",
     theme: "vientiane",
   },
   {
@@ -306,7 +290,6 @@ export const itinerary = [
     sleep: "Slaap: Siem Reap",
     icon: "✈️",
     iconLabel: "Vlucht",
-    photo: "flight",
     theme: "angkor",
   },
   {
@@ -325,7 +308,6 @@ export const itinerary = [
     sleep: "Slaap: Siem Reap",
     icon: "🌅",
     iconLabel: "Tempels bij zonsopkomst",
-    photo: "angkor",
     theme: "angkor",
   },
   {
@@ -344,7 +326,6 @@ export const itinerary = [
     sleep: "Slaap: Siem Reap",
     icon: "🌿",
     iconLabel: "Rust- of tempeldag",
-    photo: "taProhm",
     theme: "angkor",
   },
   {
@@ -364,7 +345,6 @@ export const itinerary = [
     sleep: "Slaap: Siem Reap",
     icon: "🌃",
     iconLabel: "Nightlife",
-    photo: "street08",
     theme: "angkor",
   },
   {
@@ -383,7 +363,6 @@ export const itinerary = [
     sleep: "Slaap: Phnom Penh · nacht 1/2",
     icon: "🚌",
     iconLabel: "Bus",
-    photo: "bus",
     theme: "phnomPenh",
   },
   {
@@ -402,7 +381,6 @@ export const itinerary = [
     sleep: "Slaap: Phnom Penh · nacht 2/2",
     icon: "🏙️",
     iconLabel: "Stadsdag",
-    photo: "phnomPenh",
     theme: "phnomPenh",
   },
   {
@@ -421,7 +399,6 @@ export const itinerary = [
     sleep: "Slaap: thuis",
     icon: "✈️",
     iconLabel: "Terugvlucht",
-    photo: "flight",
     theme: "amsterdam",
   },
 ];

@@ -740,20 +740,6 @@ body.slideshow-stopped .photo-dot.is-current::after {
   }
 }
 
-.photo-credit {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
-  z-index: 1;
-  padding: 4px 6px;
-  border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.72);
-  color: #fff;
-  font-size: 0.85rem;
-  line-height: 1;
-  text-decoration: none;
-}
-
 .card:hover .img-box img {
   transform: scale(1.05);
 }

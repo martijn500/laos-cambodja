@@ -186,21 +186,6 @@ test("photos come from the day's folder", async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test("a day without a photo folder falls back to its single photo", async ({
-  page,
-}) => {
-  const errors = trackErrors(page);
-  await page.route(/img\/slides\/02\//, (route) =>
-    route.fulfill({ status: 404 }),
-  );
-  await page.goto("/dag-2");
-  await waitForBoot(page);
-  const photo = page.locator(".trip-popup-slide .slide-photo.is-current");
-  await expect(photo).toHaveAttribute("src", /wikimedia/);
-  await expect(page.locator(".trip-popup-slide .photo-controls")).toBeHidden();
-  expect(errors).toEqual([]);
-});
-
 test("timeline shows one card per stop", async ({ page }, testInfo) => {
   test.skip(isMobile(testInfo), "timeline is hidden on mobile");
   await page.goto("/");

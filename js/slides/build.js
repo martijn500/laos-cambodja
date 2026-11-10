@@ -4,7 +4,6 @@ import {
   itinerary,
   tripDayNumbers,
 } from "../data/itinerary.js";
-import { photos } from "../data/photos.js";
 import { stopThemes } from "../data/themes.js";
 import { closeSlidePopup } from "../deck.js";
 import { createGallery, galleryFor, slidePhotoSrc } from "./gallery.js";
@@ -23,7 +22,6 @@ export function buildSlides() {
     const heading = slide.querySelector("h2");
     const description = slide.querySelector(".desc");
     const quote = slide.querySelector("blockquote");
-    const photo = photos[stop.photo];
     const slideImage = slide.querySelector("img");
     const imageBox = /** @type {HTMLElement} */ (
       slide.querySelector(".img-box")
@@ -42,7 +40,6 @@ export function buildSlides() {
     slide.setAttribute("aria-label", stop.title);
     // Photos come from img/slides/<08 | 08-s1>/01.webp, 02.webp…; the first
     // one is loaded later (opening day first, the rest once it is ready).
-    // No folder for this slide: fall back to its single photo in `photos`.
     const placeName = stop.location.name.split(" · ")[0];
     slideImage.className = "slide-photo is-current";
     slideImage.dataset.src = slidePhotoSrc(stop, 1);
@@ -50,18 +47,7 @@ export function buildSlides() {
     slideImage.addEventListener(
       "error",
       () => {
-        slideImage.src = photo.src;
-        slideImage.alt = photo.alt;
         galleryFor(slide).done = true;
-        if (photo.credit && photo.creditUrl) {
-          const credit = document.createElement("a");
-          credit.className = "photo-credit";
-          credit.href = photo.creditUrl;
-          credit.target = "_blank";
-          credit.rel = "noopener noreferrer";
-          credit.textContent = photo.credit;
-          imageBox.append(credit);
-        }
       },
       { once: true },
     );
