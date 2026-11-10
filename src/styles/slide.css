@@ -1,0 +1,777 @@
+/* Day card: slide, cartoon, entrance animations, mobile layout, photo gallery, stats */
+
+body.popup-closed .deck {
+  display: none;
+}
+
+.slide-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.slide-close span {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+  font-size: 0;
+
+  /* The cross spins a quarter turn on hover and squeezes on press */
+  transition:
+    rotate 0.45s var(--ease-spring),
+    scale var(--dur-hover) var(--ease-out);
+}
+
+.slide-close span::before,
+.slide-close span::after {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  width: 16px;
+  height: 4px;
+  background: currentcolor;
+  content: "";
+}
+
+.slide-close span::before {
+  transform: rotate(45deg);
+}
+
+.slide-close span::after {
+  transform: rotate(-45deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slide-close:hover span {
+    rotate: 90deg;
+  }
+}
+
+.slide-close:active span {
+  scale: 0.8;
+}
+
+/* Slide container & transitions */
+.deck {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - var(--timeline-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateY(0);
+}
+
+.slide.map-popup-pending {
+  opacity: 0;
+  visibility: hidden;
+  transform: none;
+  transition: none;
+}
+
+.slide-caricature {
+  position: absolute;
+  right: 55px;
+  bottom: 0;
+  z-index: 4;
+  width: clamp(165px, 18vw, 240px);
+  pointer-events: none;
+  filter: drop-shadow(0 5px 8px rgb(0 0 0 / 45%));
+}
+
+.slide-caricature.align-top {
+  top: 0;
+  bottom: auto;
+}
+
+.slide-caricature img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform-origin: 50% 100%;
+}
+
+/* Cartoons idle with a slow, gentle float so the card feels alive */
+.trip-popup-slide .slide-caricature {
+  animation: caricature-float 4.8s ease-in-out infinite;
+}
+
+.trip-popup-slide .slide-caricature.align-top {
+  animation-duration: 6.4s;
+}
+
+@keyframes caricature-float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  50% {
+    translate: 0 -6px;
+    rotate: -1.2deg;
+  }
+}
+
+/*
+ * Card entrance: once the popup has grown out of its map marker the
+ * content follows in a short staggered cascade (top to bottom), the
+ * photo wipes open and the cartoon springs up last.
+ */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes headline-in {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+    text-shadow: 0 0 0 var(--neon-pink);
+  }
+
+  60% {
+    opacity: 1;
+    text-shadow: 0 0 0 var(--neon-pink);
+  }
+}
+
+@keyframes tag-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+    box-shadow: 0 0 0 var(--neon-pink);
+  }
+}
+
+@keyframes photo-wipe {
+  from {
+    clip-path: inset(0 0 100% 0 round var(--radius));
+  }
+
+  to {
+    clip-path: inset(0 0 0 0 round var(--radius));
+  }
+}
+
+@keyframes photo-settle {
+  from {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes caricature-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.6) rotate(-8deg);
+  }
+
+  55% {
+    opacity: 1;
+  }
+}
+
+@keyframes close-in {
+  from {
+    opacity: 0;
+    rotate: -90deg;
+    scale: 0.5;
+  }
+}
+
+.trip-popup-slide.is-entering .tag {
+  animation: tag-in var(--dur-enter) var(--ease-out) 60ms backwards;
+}
+
+.trip-popup-slide.is-entering h2 {
+  animation: headline-in 560ms var(--ease-out) 110ms backwards;
+}
+
+.trip-popup-slide.is-entering .desc {
+  animation: rise-in var(--dur-enter) var(--ease-out) 160ms backwards;
+}
+
+.trip-popup-slide.is-entering blockquote {
+  animation: rise-in var(--dur-enter) var(--ease-out) 210ms backwards;
+}
+
+.trip-popup-slide.is-entering .stat-item {
+  animation: rise-in var(--dur-enter) var(--ease-spring) 260ms backwards;
+}
+
+.trip-popup-slide.is-entering .stat-item + .stat-item {
+  animation-delay: 310ms;
+}
+
+.trip-popup-slide.is-entering .img-box {
+  animation: photo-wipe 620ms var(--ease-out) 80ms backwards;
+}
+
+.trip-popup-slide.is-entering .img-box img {
+  animation: photo-settle 1100ms var(--ease-out) 80ms backwards;
+}
+
+.trip-popup-slide.is-entering .slide-caricature img {
+  animation: caricature-pop 620ms var(--ease-spring) 340ms backwards;
+}
+
+.trip-popup-slide.is-entering .slide-close {
+  animation: close-in 480ms var(--ease-spring) 220ms backwards;
+}
+
+/* Respect the OS setting: keep state changes, drop the movement */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Slide Card Content Layout */
+.card {
+  --card-color: var(--popup-color, var(--day-color));
+
+  background: var(--card-bg);
+  border: 3px solid var(--card-color);
+  box-shadow:
+    0 0 25px color-mix(in srgb, var(--card-color) 40%, transparent),
+    inset 0 0 15px color-mix(in srgb, var(--card-color) 20%, transparent);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 1100px;
+  max-height: min(
+    85vh,
+    max(180px, calc(100vh - var(--timeline-height) - 6.5rem))
+  );
+  overflow-y: auto;
+  padding: 2.5rem;
+  backdrop-filter: blur(12px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+}
+
+@media (width <= 850px) {
+  .card {
+    grid-template-columns: 1fr;
+    max-height: max(180px, calc(100vh - var(--timeline-height) - 6.5rem));
+    padding: 1.5rem;
+  }
+
+  .slide-caricature {
+    right: 40px;
+    bottom: 8px;
+    width: clamp(108px, 18vw, 144px);
+  }
+
+  .slide-caricature.align-top {
+    top: 8px;
+    bottom: auto;
+  }
+}
+
+@media (width <= 600px) {
+  .slide {
+    padding: 0.75rem;
+  }
+
+  .slide.trip-popup-slide {
+    align-items: stretch;
+    justify-content: flex-start;
+    max-height: calc(100dvh - var(--timeline-height) - 120px);
+    overflow-y: auto;
+  }
+
+  .slide .card {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    max-height: 100%;
+    padding: 0.75rem;
+    overflow: hidden;
+    backdrop-filter: none;
+  }
+
+  .slide .card > div:first-child {
+    display: contents;
+  }
+
+  .slide .card > div:first-child > .tag {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    margin-right: 44px;
+  }
+
+  /*
+   * Title spans the full photo width; the cartoon (z-index 3) is
+   * layered on top of it, so the cartoon overlaps the text, not the
+   * other way round.
+   */
+  .slide .card > div:first-child > h2 {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    align-self: start;
+    z-index: 2;
+    min-width: 0;
+    margin: 0.9rem;
+    padding: 0;
+    font-size: clamp(1.1rem, 5.6vw, 1.5rem);
+    line-height: 1.15;
+    overflow-wrap: break-word;
+  }
+
+  .slide .card .desc {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    margin-bottom: 0.9rem;
+    font-size: 1.3rem;
+    line-height: 1.1;
+  }
+
+  .slide .card blockquote {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    padding: 0.55rem 0.9rem;
+    font-size: 1.15rem;
+  }
+
+  .slide .card .stats-bar {
+    grid-column: 1 / -1;
+    grid-row: 6;
+  }
+
+  .slide-caricature {
+    position: relative;
+    display: block;
+    grid-column: 2;
+    grid-row: 3;
+    right: auto;
+    bottom: auto;
+    z-index: 3;
+    place-self: end stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .slide-caricature.align-top {
+    top: auto;
+    align-self: start;
+  }
+
+  .slide .img-box {
+    position: relative;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    inset: auto;
+    z-index: 1;
+    width: 100%;
+    height: clamp(180px, 32vh, 260px);
+    margin-bottom: 0;
+    border: 0;
+    border-radius: var(--radius);
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .slide .img-box::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(7 9 14 / 8%), rgb(7 9 14 / 32%));
+    content: "";
+  }
+
+  .slide .img-box img {
+    opacity: 1;
+  }
+
+  .map-status {
+    top: 10px;
+    left: 8px;
+  }
+
+  .map-attribution {
+    right: 6px;
+    bottom: calc(var(--timeline-height) + 4px);
+    font-size: 0.72rem;
+  }
+
+  .slide-close {
+    top: 6px;
+    right: 6px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-day-marker[aria-current="date"]::after {
+    animation: none !important;
+  }
+}
+
+/* Typography styling */
+.tag {
+  display: inline-block;
+  font-family: var(--font-meme);
+  font-size: 0.75rem;
+  color: #000;
+  background: var(--neon-yellow);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
+  box-shadow: 3px 3px 0 var(--neon-pink);
+}
+
+h2 {
+  font-family: var(--font-meme);
+  font-size: 2.3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: #fff;
+  text-shadow: 3px 3px 0 var(--neon-pink);
+  margin-bottom: 1rem;
+}
+
+/* CRT terminal text: pixel font that stays readable at body size */
+p.desc {
+  font-family: var(--font-crt);
+  font-size: 1.5rem;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: #e6e3f0;
+  margin-bottom: 1.25rem;
+}
+
+blockquote {
+  background: rgb(0 0 0 / 50%);
+  border-left: 5px solid var(--neon-cyan);
+  padding: 0.7rem 1.1rem;
+  color: var(--neon-cyan);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin-bottom: 1rem;
+  font-family: var(--font-crt);
+  font-size: 1.35rem;
+  line-height: 1.1;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--neon-cyan) 45%, transparent);
+}
+
+/* Visual Media / Meme Image Wrapper */
+.img-box {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid var(--neon-green);
+  box-shadow: 0 0 15px
+    color-mix(in srgb, var(--popup-color, var(--day-color)) 30%, transparent);
+}
+
+.img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+/* Gallery: photos stacked, only the current one visible */
+.img-box .slide-photo {
+  position: absolute;
+  inset: 0;
+}
+
+.img-box .slide-photo:not(.is-current) {
+  visibility: hidden;
+}
+
+/* Arcade wipe: stacked bars in shades of the day colour */
+.photo-bars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  pointer-events: none;
+}
+
+.photo-bars span {
+  scale: 0 1;
+  background: color-mix(
+    in srgb,
+    var(--card-color) var(--bar-mix),
+    var(--bar-to)
+  );
+
+  /* 1px overlap so no photo shows through between bars at fractional
+     heights */
+  height: calc(100% + 1px);
+}
+
+.photo-bars span:nth-child(1) {
+  --bar-mix: 70%;
+  --bar-to: #fff;
+}
+
+.photo-bars span:nth-child(2) {
+  --bar-mix: 100%;
+  --bar-to: #000;
+}
+
+.photo-bars span:nth-child(3) {
+  --bar-mix: 82%;
+  --bar-to: #000;
+}
+
+.photo-bars span:nth-child(4) {
+  --bar-mix: 64%;
+  --bar-to: #000;
+}
+
+.photo-bars span:nth-child(5) {
+  --bar-mix: 48%;
+  --bar-to: #000;
+}
+
+.photo-bars span:nth-child(6) {
+  --bar-mix: 34%;
+  --bar-to: #000;
+}
+
+/* Indicator: one pixel per photo; the current one is a bar that fills
+   up in pixel steps and then starts the next photo */
+.photo-controls {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  background: rgb(0 0 0 / 72%);
+  pointer-events: auto;
+}
+
+.photo-controls[hidden] {
+  display: none;
+}
+
+.photo-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Play / pause key: pixel ❚❚ while playing, pixel ▶ when stopped */
+.photo-toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(255 255 255 / 55%);
+  cursor: pointer;
+  transition:
+    color var(--dur-hover) var(--ease-out),
+    scale var(--dur-hover) var(--ease-spring);
+}
+
+.photo-toggle::before,
+.photo-toggle::after {
+  position: absolute;
+  top: 1px;
+  width: 3px;
+  height: 8px;
+  background: currentcolor;
+  content: "";
+}
+
+.photo-toggle::before {
+  left: 1px;
+}
+
+.photo-toggle::after {
+  right: 1px;
+}
+
+body.slideshow-stopped .photo-toggle::before {
+  left: 2px;
+  width: 7px;
+
+  /* Pixel ▶: rows of 1, 3, 5, 7, 7, 5, 3, 1 pixels */
+  clip-path: polygon(
+    0 0,
+    14.3% 0,
+    14.3% 12.5%,
+    42.9% 12.5%,
+    42.9% 25%,
+    71.4% 25%,
+    71.4% 37.5%,
+    100% 37.5%,
+    100% 62.5%,
+    71.4% 62.5%,
+    71.4% 75%,
+    42.9% 75%,
+    42.9% 87.5%,
+    14.3% 87.5%,
+    14.3% 100%,
+    0 100%
+  );
+}
+
+body.slideshow-stopped .photo-toggle::after {
+  display: none;
+}
+
+/* Stopped: the key lights up in the day colour */
+body.slideshow-stopped .photo-toggle {
+  color: var(--card-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .photo-toggle:hover {
+    color: #fff;
+    scale: 1.25;
+  }
+
+  body.slideshow-stopped .photo-toggle:hover {
+    color: var(--card-color);
+  }
+}
+
+.photo-toggle:active {
+  scale: 0.85;
+  transition-duration: var(--dur-press);
+}
+
+.photo-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.photo-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: color-mix(in srgb, var(--card-color) 35%, #000);
+  cursor: pointer;
+  transition:
+    width 320ms var(--ease-spring),
+    background-color var(--dur-hover) var(--ease-out);
+}
+
+.photo-dot.is-current {
+  width: 28px;
+}
+
+.photo-dot.is-current::after {
+  position: absolute;
+  inset: 0;
+  background: var(--card-color);
+  content: "";
+  scale: 0 1;
+  transform-origin: 0 50%;
+  animation: photo-dot-fill 5s steps(14, end) 400ms forwards;
+}
+
+/* Stopped with the key: progress frozen and dimmed, no blinking */
+body.slideshow-stopped .photo-dot.is-current::after {
+  animation-play-state: paused;
+  opacity: 0.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .photo-dot:not(.is-current):hover {
+    background: var(--card-color);
+  }
+}
+
+.photo-dot:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@keyframes photo-dot-fill {
+  to {
+    scale: 1 1;
+  }
+}
+
+.card:hover .img-box img {
+  transform: scale(1.05);
+}
+
+/* Aura / Stats Widget */
+.stats-bar {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  background: rgb(0 0 0 / 35%);
+  border: 2px solid var(--line-soft);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  font-family: var(--font-meme);
+  font-size: 0.55rem;
+  flex: 1;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-meme);
+  color: var(--popup-color, var(--day-color));
+  font-size: 0.85rem;
+  line-height: 1.3;
+  margin-top: 8px;
+}

@@ -1,0 +1,72 @@
+/* The shared arcade key, reset and page basics (tokens: tokens.css) */
+
+/*
+ * Arcade key: solid fill with a hard, darker offset shadow.
+ * Every clickable element shares the same physics: it lifts 2px towards
+ * the light on hover (shadow grows) and is pushed into its shadow on
+ * press. The individual `translate` property is used so it composes
+ * with other transforms (rotations, active-state scale).
+ */
+.slide-close,
+.nav-btn,
+.sound-btn,
+.map-day-marker {
+  --key-color: var(--popup-color, var(--day-color));
+  --key-shadow: color-mix(in srgb, var(--key-color) 35%, #000);
+
+  border: 2px solid #000;
+  border-radius: var(--radius-sm);
+  background-color: var(--key-color);
+  color: #000;
+  box-shadow: 3px 3px 0 var(--key-shadow);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    translate var(--dur-hover) var(--ease-out),
+    scale 0.4s var(--ease-spring),
+    box-shadow var(--dur-hover) var(--ease-out),
+    filter var(--dur-hover) var(--ease-out),
+    background-color 0.3s var(--ease-out),
+    outline-offset var(--dur-hover) var(--ease-out);
+}
+
+.map-day-marker {
+  --key-color: var(--marker-color, var(--neon-cyan));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .slide-close:hover,
+  .nav-btn:hover,
+  .sound-btn:hover,
+  .map-day-marker:hover {
+    translate: -2px -2px;
+    box-shadow: 5px 5px 0 var(--key-shadow);
+    filter: brightness(1.12) saturate(1.1);
+  }
+}
+
+.slide-close:active,
+.nav-btn:active,
+.sound-btn:active,
+.map-day-marker:active {
+  translate: 2px 2px;
+  box-shadow: 1px 1px 0 var(--key-shadow);
+  filter: brightness(0.94);
+  transition-duration: var(--dur-press);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg);
+  color: #fff;
+  font-family: var(--font-crt);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}

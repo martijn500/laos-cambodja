@@ -3,62 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LAOS & CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥</title>
-    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png" />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
-      rel="stylesheet"
+    <title>LAOS &amp; CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥</title>
+    <meta
+      name="description"
+      content="Reisdagboek van 18 dagen door Thailand, Laos en Cambodja: een kaart met per dag foto's, cartoons en een tijdlijn."
     />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
-      integrity="sha256-Q8HYhrX98KrE5xNb1vhLgj2fSCg6ZIASZl+b5SwBOJ8="
-      crossorigin=""
+    <link rel="canonical" href="https://martijn500.github.io/laos-cambodja/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta
+      property="og:title"
+      content="Laos &amp; Cambodja: the brainrot expedition"
     />
-    <link rel="stylesheet" href="css/base.css" />
-    <link rel="stylesheet" href="css/map.css" />
-    <link rel="stylesheet" href="css/boot.css" />
-    <link rel="stylesheet" href="css/slide.css" />
-    <link rel="stylesheet" href="css/controls.css" />
-    <!--
-      Fetch every module at once instead of one import level at a time.
-      Keep in sync with js/ (a test checks this).
-    -->
-    <link rel="modulepreload" href="js/main.js" />
-    <link rel="modulepreload" href="js/audio.js" />
-    <link rel="modulepreload" href="js/boot.js" />
-    <link rel="modulepreload" href="js/data/itinerary.js" />
-    <link rel="modulepreload" href="js/data/photos.js" />
-    <link rel="modulepreload" href="js/data/themes.js" />
-    <link rel="modulepreload" href="js/deck.js" />
-    <link rel="modulepreload" href="js/input.js" />
-    <link rel="modulepreload" href="js/map/beam.js" />
-    <link rel="modulepreload" href="js/map/map.js" />
-    <link rel="modulepreload" href="js/map/markers.js" />
-    <link rel="modulepreload" href="js/map/popup.js" />
-    <link rel="modulepreload" href="js/router.js" />
-    <link rel="modulepreload" href="js/slides/build.js" />
-    <link rel="modulepreload" href="js/slides/gallery.js" />
-    <link rel="modulepreload" href="js/state.js" />
-    <link rel="modulepreload" href="js/timeline.js" />
-    <link rel="modulepreload" href="js/utils/color.js" />
-    <link rel="modulepreload" href="js/utils/dom.js" />
-    <!--
-      Day routes (/dag-8) arrive via 404.html, which writes this page with
-      document.write; stylesheets don't block painting then. Keep the page
-      hidden until the script runs: scripts do wait for the stylesheets above.
-    -->
-    <style>
-      html {
-        background: #09090b;
-      }
-      body:not(.is-styled) {
-        visibility: hidden;
-      }
-    </style>
+    <meta
+      property="og:description"
+      content="Reisdagboek van 18 dagen door Thailand, Laos en Cambodja: een kaart met per dag foto's, cartoons en een tijdlijn."
+    />
+    <meta
+      property="og:url"
+      content="https://martijn500.github.io/laos-cambodja/"
+    />
+    <meta
+      property="og:image"
+      content="https://martijn500.github.io/laos-cambodja/img/slides/01/01.webp"
+    />
+    <meta name="theme-color" content="#09090b" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+    <script type="module" src="/src/main.ts"></script>
   </head>
   <body class="is-booting">
     <div class="boot-loader" role="status" aria-live="polite">
@@ -143,7 +116,7 @@
       >
     </div>
     <div class="deck"></div>
-    <!-- One day card; js/slides/build.js fills a copy for every stop -->
+    <!-- One day card; src/slides/build.js fills a copy for every stop -->
     <template id="slide-template">
       <div class="slide">
         <div class="card">
@@ -167,12 +140,5 @@
         </div>
       </div>
     </template>
-
-    <script
-      src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"
-      integrity="sha256-FSX5cSI9gfFp8EnxzlAIPm8WQ6prDqBxZlOlUNLVf8I="
-      crossorigin=""
-    ></script>
-    <script type="module" src="js/main.js"></script>
   </body>
 </html>

@@ -1,15 +1,9 @@
 {
-  // Type-checks the plain JavaScript (JSDoc types), no build output.
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "target": "es2023",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "lib": ["es2023", "dom", "dom.iterable"],
-    "strict": false,
-    "skipLibCheck": true
-  },
-  "include": ["js/**/*.js", "js/**/*.d.ts"]
+  // Entry point for editors and tsc -b: browser code and Node code are
+  // checked separately, each with its own globals
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

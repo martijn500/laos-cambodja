@@ -1,0 +1,21 @@
+/*
+ * Entry stylesheet. Cascade layers decide which rules win, not the
+ * import order or selector specificity across layers: anything in a
+ * later layer beats anything in an earlier one.
+ *
+ *   vendor      MapLibre's own styles and the fonts
+ *   tokens      custom properties only
+ *   base        reset, page basics, the shared arcade key
+ *   components  map, boot loader, day card, controls
+ */
+@layer vendor, tokens, base, components;
+
+@import "maplibre-gl/dist/maplibre-gl.css" layer(vendor);
+@import "@fontsource/press-start-2p/400.css" layer(vendor);
+@import "@fontsource/vt323/400.css" layer(vendor);
+@import "./tokens.css" layer(tokens);
+@import "./base.css" layer(base);
+@import "./map.css" layer(components);
+@import "./boot.css" layer(components);
+@import "./slide.css" layer(components);
+@import "./controls.css" layer(components);
