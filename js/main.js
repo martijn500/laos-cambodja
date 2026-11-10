@@ -10,10 +10,6 @@ import { onDayChange } from "./state.js";
 import { buildSlides } from "./slides/build.js";
 import { buildTimeline } from "./timeline.js";
 
-// Scripts run only after the stylesheets above them have loaded: from here
-// on the page can be shown (see the inline <style> in index.html).
-document.body.classList.add("is-styled");
-
 // The map starts loading first; its load handler opens the day popup.
 initMap();
 buildSlides();

@@ -1,20 +1,14 @@
 import { setDay, state } from "./state.js";
 import { itinerary, tripDayNumbers } from "./data/itinerary.js";
 
-export const appBasePath = (() => {
-  const basePath = new URL(document.baseURI).pathname;
-  if (document.querySelector("base"))
-    return basePath.endsWith("/") ? basePath : `${basePath}/`;
-  if (basePath.endsWith("/index.html"))
-    return basePath.slice(0, -"index.html".length);
-  return basePath.endsWith("/") ? basePath : "/";
-})();
+// "/laos-cambodja/" (vite.config.js); every day has its own page dag-N.html
+export const appBasePath = import.meta.env.BASE_URL;
 
 // Day from the /dag-N path, so the map can start at the right place
 export function dayFromPath() {
   const dayRoute = window.location.pathname
     .slice(appBasePath.length)
-    .match(/^dag-(\d+)\/?$/);
+    .match(/^dag-(\d+)(?:\.html)?\/?$/);
   return dayRoute ? Number(dayRoute[1]) : 1;
 }
 
@@ -46,10 +40,7 @@ export function applyInitialRoute() {
 export function initRouter() {
   window.addEventListener("popstate", (event) => {
     document.body.classList.remove("popup-closed");
-    const dayRoute = window.location.pathname
-      .slice(appBasePath.length)
-      .match(/^dag-(\d+)\/?$/);
-    const day = dayRoute ? Number(dayRoute[1]) : 1;
+    const day = dayFromPath();
     // History entries remember the exact stop, so a side quest comes back
     // as the side quest and not as its day
     const stateIndex = event.state?.tripIndex;

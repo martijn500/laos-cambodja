@@ -1,3 +1,4 @@
+import { Popup } from "maplibre-gl";
 import { state } from "../state.js";
 import { finishBooting } from "../boot.js";
 import { itinerary, tripDayNumbers } from "../data/itinerary.js";
@@ -103,9 +104,8 @@ export function openRequestedMapPopup() {
   slide.getAnimations().forEach((animation) => animation.cancel());
   slide.classList.add("trip-popup-slide");
 
-  const popup = new maplibregl.Popup({
+  const popup = new Popup({
     anchor: "bottom",
-    autoPan: false,
     closeButton: false,
     closeOnClick: false,
     closeOnMove: false,
@@ -113,12 +113,12 @@ export function openRequestedMapPopup() {
     maxWidth: "none",
     offset: state.requestedPopupOffset,
   })
-    .setLngLat([
-      ...(dayMarker?.coordinates ?? [
+    .setLngLat(
+      dayMarker?.coordinates ?? [
         stop.location.coordinates[1],
         stop.location.coordinates[0],
-      ]),
-    ])
+      ],
+    )
     .setDOMContent(slide)
     .addTo(state.tripMap);
   const popupElement = popup.getElement();

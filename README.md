@@ -2,30 +2,37 @@
 
 Reisdagboek van de reis door Laos en Cambodja: een kaart met per dag een kaartje dat uit zijn marker springt, met foto's, cartoons en een tijdlijn.
 
-Statische site zonder build-stap: `index.html` laadt de CSS uit `css/` en het script `js/main.js` als ES-module.
+Gebouwd met [Vite](https://vite.dev): `npm run build` maakt `dist/` met per dag een eigen pagina (`dag-8.html`, bereikbaar als `/dag-8`) met titel en linkpreview van die dag. De site draait op GitHub Pages onder `/laos-cambodja/`.
 
 ## Aan de slag
 
 ```sh
-npm install
+nvm use                           # Node 24, zie .nvmrc
+npm ci
 npx playwright install chromium   # eenmalig, voor de tests
-npm run dev                       # http://localhost:3000
+npm run dev                       # opent http://localhost:5173/laos-cambodja/
 ```
 
-| Script              | Wat het doet                                            |
-| ------------------- | ------------------------------------------------------- |
-| `npm run dev`       | Lokale server (ook `/dag-8` werkt, via `404.html`)      |
-| `npm run images`    | Zet originele foto's en cartoons om naar WebP           |
-| `npm test`          | Playwright-tests op desktop en mobiel                   |
-| `npm run lint`      | ESLint                                                  |
-| `npm run typecheck` | Typecontrole van de JSDoc-types (geen TypeScript nodig) |
-| `npm run format`    | Prettier                                                |
-| `npm run check`     | Lint, typecontrole en tests in één keer                 |
+`npm run dev` herlaadt automatisch: CSS-wijzigingen verschijnen zonder herladen, wijzigingen in JS of HTML herladen de pagina.
+
+| Script              | Wat het doet                                      |
+| ------------------- | ------------------------------------------------- |
+| `npm run dev`       | Ontwikkelserver met hot reload                    |
+| `npm run build`     | Productiebuild in `dist/`                         |
+| `npm run preview`   | Serveert `dist/` zoals GitHub Pages (poort 4173)  |
+| `npm run images`    | Zet originele foto's en cartoons om naar WebP     |
+| `npm test`          | Bouwt en test met Playwright op desktop en mobiel |
+| `npm run lint`      | ESLint                                            |
+| `npm run typecheck` | Typecontrole                                      |
+| `npm run format`    | Prettier                                          |
+| `npm run check`     | Lint, typecontrole en tests in één keer           |
+
+Nieuwe packages worden pas geïnstalleerd als ze een week oud zijn (`.npmrc`), als bescherming tegen gekaapte releases.
 
 ## Indeling
 
 ```
-css/            base, map, boot, slide, controls (geladen in deze volgorde)
+css/            main.css importeert MapLibre, de fonts en base, map, boot, slide, controls
 js/
   main.js       opstartvolgorde
   state.js      gedeelde staat + setDay() / "daychange"
@@ -38,6 +45,7 @@ js/
   boot.js       loader en voorladen van de eerste foto's
   input.js      toetsenbord en swipe
   audio.js      8-bit geluidjes
+public/         favicons en 404.html, ongewijzigd naar dist/
 img/
   slides/<dag>/ foto's per dag (01.webp, 02.webp…), gemaakt door npm run images
   cartoons/     cartoon per dag (08.webp, side quest 08-s1.webp), gemaakt door npm run images

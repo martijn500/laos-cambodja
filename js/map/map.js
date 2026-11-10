@@ -1,3 +1,7 @@
+import { Map as MapLibreMap, setWorkerUrl } from "maplibre-gl";
+// MapLibre looks for its worker next to its own file; after bundling that
+// file is gone, so let Vite bundle the worker and pass its URL
+import mapWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { state } from "../state.js";
 import { finishBooting, initialImagesReady } from "../boot.js";
 import { itinerary, tripDayNumbers } from "../data/itinerary.js";
@@ -90,13 +94,15 @@ export function showMapLocation(stop, { instant = false } = {}) {
 }
 
 export function initMap() {
-  if (window.maplibregl) {
+  setWorkerUrl(mapWorkerUrl);
+  // Throws without WebGL 2; the days still work without the map
+  try {
     const initialStop =
       itinerary.find(
         (stop) => tripDayNumbers.get(stop.date) === dayFromPath(),
       ) ?? itinerary[0];
     const initialLocation = initialStop.location;
-    state.tripMap = new maplibregl.Map({
+    state.tripMap = new MapLibreMap({
       attributionControl: false,
       boxZoom: false,
       center: [initialLocation.coordinates[1], initialLocation.coordinates[0]],
@@ -156,8 +162,10 @@ export function initMap() {
         }
       });
     });
-  } else {
-    mapStatusEl.textContent = "Kaartbibliotheek kon niet laden";
+  } catch (error) {
+    console.error(error);
+    state.tripMap = null;
+    mapStatusEl.textContent = "Kaart kan niet laden in deze browser";
     // After the rest of this script has picked and shown the right day
     queueMicrotask(() => initialImagesReady.then(finishBooting));
   }

@@ -15,7 +15,7 @@ export const PHOTO_BARS = 6;
 export const galleries = new WeakMap();
 
 export function slidePhotoSrc(stop, number) {
-  return `img/slides/${caricatureNames.get(stop)}/${String(number).padStart(2, "0")}.webp`;
+  return `${import.meta.env.BASE_URL}img/slides/${caricatureNames.get(stop)}/${String(number).padStart(2, "0")}.webp`;
 }
 
 export function galleryFor(slide) {

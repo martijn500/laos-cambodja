@@ -1,3 +1,4 @@
+import { Marker } from "maplibre-gl";
 import { state } from "../state.js";
 import { itinerary, tripDayNumbers } from "../data/itinerary.js";
 import { goToSlide } from "../deck.js";
@@ -79,7 +80,7 @@ export function addMinimapMarkers() {
     markerElement.append(markerButton);
 
     const horizontalOffset = (coordinateIndex - (coordinateCount - 1) / 2) * 28;
-    new maplibregl.Marker({
+    new Marker({
       anchor: "center",
       element: markerElement,
       offset: [horizontalOffset, 0],

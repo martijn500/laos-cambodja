@@ -1,13 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Serves the site like GitHub Pages: unknown paths such as /dag-8 get
-// 404.html, which loads index.html for that day.
+// Tests the production build, served under the same base path as on
+// GitHub Pages. Use relative URLs in tests: page.goto("dag-8").
 export default defineConfig({
   testDir: "tests",
   fullyParallel: true,
   reporter: "list",
   use: {
-    baseURL: "http://localhost:4173",
+    baseURL: "http://localhost:4173/laos-cambodja/",
     trace: "retain-on-failure",
   },
   projects: [
@@ -21,8 +21,8 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "npx serve . -l 4173 --no-request-logging",
-    url: "http://localhost:4173",
+    command: "npm run build && npm run preview",
+    url: "http://localhost:4173/laos-cambodja/",
     reuseExistingServer: !process.env.CI,
   },
 });

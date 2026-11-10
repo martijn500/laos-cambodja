@@ -48,7 +48,7 @@ test("opens the day from the URL as a popup, without showing other days first", 
     };
     requestAnimationFrame(loop);
   });
-  await page.goto("/dag-8");
+  await page.goto("dag-8");
   await waitForBoot(page);
   await expect(popupTitle(page)).toHaveText("Luang Prabang: oude stad");
   await page.waitForTimeout(500);
@@ -63,7 +63,7 @@ test("falls back to the plain slide when the map library can't load", async ({
 }) => {
   const errors = trackErrors(page);
   await page.route(/unpkg\.com/, (route) => route.abort());
-  await page.goto("/dag-12");
+  await page.goto("dag-12");
   await waitForBoot(page);
   await expect(page.locator(".slide.active h2")).toHaveText(
     "Trein naar Vientiane",
@@ -73,7 +73,7 @@ test("falls back to the plain slide when the map library can't load", async ({
 
 test("next / previous change the day and the URL", async ({ page }) => {
   const errors = trackErrors(page);
-  await page.goto("/dag-8");
+  await page.goto("dag-8");
   await waitForBoot(page);
   await page.getByRole("button", { name: "Volgende pagina" }).click();
   await expect(popupTitle(page)).toHaveText(/NAGINI BAR/);
@@ -94,7 +94,7 @@ test("next / previous change the day and the URL", async ({ page }) => {
 
 test("closing the popup and reopening it from its marker", async ({ page }) => {
   const errors = trackErrors(page);
-  await page.goto("/dag-6");
+  await page.goto("dag-6");
   await waitForBoot(page);
   await page.locator(".trip-popup-slide .slide-close").click();
   await expect(page.locator("body")).toHaveClass(/popup-closed/);
@@ -109,7 +109,7 @@ test("keyboard: few Tab stops, arrows move through days", async ({
 }, testInfo) => {
   test.skip(isMobile(testInfo), "keyboard only");
   const errors = trackErrors(page);
-  await page.goto("/dag-8");
+  await page.goto("dag-8");
   await waitForBoot(page);
 
   const stops = [];
@@ -156,7 +156,7 @@ test("photo gallery: finds all photos, switches and can be stopped", async ({
   page,
 }) => {
   const errors = trackErrors(page);
-  await page.goto("/dag-14");
+  await page.goto("dag-14");
   await waitForBoot(page);
   const slide = page.locator(".trip-popup-slide");
   await expect(slide.locator(".photo-dot")).toHaveCount(4);
@@ -178,7 +178,7 @@ test("photo gallery: finds all photos, switches and can be stopped", async ({
 
 test("photos come from the day's folder", async ({ page }) => {
   const errors = trackErrors(page);
-  await page.goto("/dag-2");
+  await page.goto("dag-2");
   await waitForBoot(page);
   await expect(
     page.locator(".trip-popup-slide .slide-photo.is-current"),
@@ -188,7 +188,7 @@ test("photos come from the day's folder", async ({ page }) => {
 
 test("timeline shows one card per stop", async ({ page }, testInfo) => {
   test.skip(isMobile(testInfo), "timeline is hidden on mobile");
-  await page.goto("/");
+  await page.goto("./");
   await waitForBoot(page);
   await expect(page.locator(".page-indicator")).toHaveCount(21);
   await expect(page.locator(".page-indicator[aria-current]")).toHaveCount(1);

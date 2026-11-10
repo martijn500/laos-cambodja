@@ -9,7 +9,8 @@
     "moduleResolution": "bundler",
     "lib": ["es2023", "dom", "dom.iterable"],
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"]
   },
-  "include": ["js/**/*.js", "js/**/*.d.ts"]
+  "include": ["js/**/*.js"]
 }

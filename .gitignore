@@ -4,3 +4,4 @@ test-results/
 playwright-report/
 img/slides-src/
 img/cartoons-src/
+dist/
