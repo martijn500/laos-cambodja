@@ -23,6 +23,7 @@ body.map-popup-transition .deck {
  * growing out of its map marker. Only if the map can't load does the
  * plain deck slide show as a fallback.
  */
+
 /* opacity, not visibility: .slide.active sets visibility: visible and
    would punch through an inherited hidden */
 body.is-booting .deck {
@@ -79,7 +80,7 @@ body:not(.is-booting) .boot-loader {
   height: 60px;
   color: var(--day-color);
   filter: drop-shadow(4px 4px 0 color-mix(in srgb, var(--day-color) 35%, #000));
-  shape-rendering: crispEdges;
+  shape-rendering: crispedges;
   transform-origin: 50% 100%;
   animation: boot-hop 900ms var(--ease-out) infinite;
 }
@@ -108,42 +109,55 @@ body:not(.is-booting) .boot-loader {
 .boot-bar span:nth-child(6n + 1) {
   --c: var(--neon-pink);
 }
+
 .boot-bar span:nth-child(6n + 2) {
   --c: var(--neon-orange);
 }
+
 .boot-bar span:nth-child(6n + 3) {
   --c: var(--neon-yellow);
 }
+
 .boot-bar span:nth-child(6n + 4) {
   --c: var(--neon-green);
 }
+
 .boot-bar span:nth-child(6n + 5) {
   --c: var(--neon-cyan);
 }
+
 .boot-bar span:nth-child(6n + 6) {
   --c: var(--neon-purple);
 }
+
 .boot-bar span:nth-child(1) {
   animation-delay: 0ms;
 }
+
 .boot-bar span:nth-child(2) {
   animation-delay: 100ms;
 }
+
 .boot-bar span:nth-child(3) {
   animation-delay: 200ms;
 }
+
 .boot-bar span:nth-child(4) {
   animation-delay: 300ms;
 }
+
 .boot-bar span:nth-child(5) {
   animation-delay: 400ms;
 }
+
 .boot-bar span:nth-child(6) {
   animation-delay: 500ms;
 }
+
 .boot-bar span:nth-child(7) {
   animation-delay: 600ms;
 }
+
 .boot-bar span:nth-child(8) {
   animation-delay: 700ms;
 }
@@ -179,13 +193,16 @@ body:not(.is-booting) .boot-loader {
     translate: 0 0;
     scale: 1.08 0.9;
   }
+
   12% {
     scale: 1;
   }
+
   45% {
     translate: 0 -16px;
     scale: 0.96 1.06;
   }
+
   80% {
     translate: 0 0;
     scale: 1;
@@ -198,10 +215,12 @@ body:not(.is-booting) .boot-loader {
     scale: 1.1 1;
     opacity: 1;
   }
+
   45% {
     scale: 0.55 1;
     opacity: 0.45;
   }
+
   80% {
     scale: 1 1;
     opacity: 1;
@@ -213,10 +232,12 @@ body:not(.is-booting) .boot-loader {
     opacity: 1;
     translate: 0 -3px;
   }
+
   25% {
     opacity: 0.55;
     translate: 0 0;
   }
+
   50%,
   100% {
     opacity: 0.15;
@@ -228,6 +249,7 @@ body:not(.is-booting) .boot-loader {
   from {
     width: 0;
   }
+
   to {
     width: 3ch;
   }

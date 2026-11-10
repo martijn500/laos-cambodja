@@ -20,6 +20,7 @@
   40% {
     scale: 0.9;
   }
+
   75% {
     scale: 1.06;
   }
@@ -133,6 +134,7 @@
   --timeline-half-gap: 6px;
   --timeline-item-width: 176px;
   --timeline-half-item-width: 88px;
+
   position: relative;
   display: flex;
   align-items: flex-start;
@@ -150,6 +152,7 @@
 
 .page-indicator {
   --indicator-color: var(--neon-cyan);
+
   position: relative;
   display: block;
   flex: 0 0 var(--timeline-item-width);
@@ -187,7 +190,7 @@
   inset: 0;
   display: block;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgb(255 255 255 / 8%);
 }
 
 .timeline-thumb-wrap::after {
@@ -195,10 +198,10 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(8, 8, 14, 0.5),
-    rgba(8, 8, 14, 0.2) 28%,
-    rgba(8, 8, 14, 0.85) 56%,
-    rgba(8, 8, 14, 0.96)
+    rgb(8 8 14 / 50%),
+    rgb(8 8 14 / 20%) 28%,
+    rgb(8 8 14 / 85%) 56%,
+    rgb(8 8 14 / 96%)
   );
   content: "";
 }
@@ -225,7 +228,7 @@
   min-height: 17px;
   padding: 1px 5px;
   border-radius: var(--radius-sm);
-  background: rgba(0, 0, 0, 0.75);
+  background: rgb(0 0 0 / 75%);
 }
 
 .timeline-date-badge {
@@ -292,11 +295,6 @@
     var(--indicator-color),
     var(--next-indicator-color, var(--indicator-color))
   );
-  -webkit-mask: repeating-linear-gradient(
-    90deg,
-    #000 0 4px,
-    transparent 4px 8px
-  );
   mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
   pointer-events: none;
 }
@@ -308,11 +306,6 @@
   z-index: 0;
   width: 50vw;
   height: 2px;
-  -webkit-mask: repeating-linear-gradient(
-    90deg,
-    #000 0 4px,
-    transparent 4px 8px
-  );
   mask: repeating-linear-gradient(90deg, #000 0 4px, transparent 4px 8px);
   content: "";
   pointer-events: none;
@@ -414,18 +407,16 @@
   width: 0;
   height: 0;
   border-block: 6px solid transparent;
-  border-left: 8px solid currentColor;
+  border-left: 8px solid currentcolor;
   font-size: 0;
   transform: translateX(1px);
+
+  /* Arrows nudge in the direction they will take you */
+  transition: translate var(--dur-hover) var(--ease-spring);
 }
 
 .nav-btn-prev .nav-arrow {
   transform: rotate(180deg) translateX(1px);
-}
-
-/* Arrows nudge in the direction they will take you */
-.nav-arrow {
-  transition: translate var(--dur-hover) var(--ease-spring);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -463,11 +454,8 @@
 }
 
 .progress-text {
-  overflow: hidden;
-}
-
-.progress-text {
   display: flex;
+  overflow: hidden;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -489,7 +477,7 @@
   line-height: 1;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   :root {
     --timeline-height: 56px;
   }

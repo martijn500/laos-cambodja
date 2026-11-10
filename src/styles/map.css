@@ -20,15 +20,11 @@
   background:
     linear-gradient(
       180deg,
-      rgba(7, 9, 14, 0.12),
-      rgba(7, 9, 14, 0.02) 45%,
-      rgba(7, 9, 14, 0.24)
+      rgb(7 9 14 / 12%),
+      rgb(7 9 14 / 2%) 45%,
+      rgb(7 9 14 / 24%)
     ),
-    radial-gradient(
-      ellipse at center,
-      transparent 18%,
-      rgba(7, 9, 14, 0.1) 100%
-    );
+    radial-gradient(ellipse at center, transparent 18%, rgb(7 9 14 / 10%) 100%);
   pointer-events: none;
 }
 
@@ -66,7 +62,7 @@
 
 /* Pixel "stack" of bars between marker and card; colours set from JS */
 .map-popup-beam-bars rect {
-  shape-rendering: crispEdges;
+  shape-rendering: crispedges;
 }
 
 .map-background .maplibregl-canvas:focus {
@@ -97,10 +93,10 @@
   right: 10px;
   bottom: calc(var(--timeline-height) + 6px);
   z-index: 5;
-  color: rgba(30, 32, 44, 0.55);
+  color: rgb(30 32 44 / 55%);
   font-size: 0.8rem;
   line-height: 1;
-  text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 3px rgb(255 255 255 / 80%);
   white-space: nowrap;
 }
 
@@ -111,7 +107,7 @@
 
 .map-attribution a:hover,
 .map-attribution a:focus-visible {
-  color: rgba(30, 32, 44, 0.9);
+  color: rgb(30 32 44 / 90%);
   text-decoration: underline;
 }
 
@@ -202,6 +198,7 @@
     transform: scale(0.7);
     opacity: 0.9;
   }
+
   100% {
     transform: scale(1.65);
     opacity: 0;
