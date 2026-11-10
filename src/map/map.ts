@@ -94,7 +94,29 @@ export function showMapLocation(stop: Stop, { instant = false } = {}): void {
   }
 }
 
+/**
+ * The CSP (build/csp.ts) enforces Trusted Types: a plain string may not
+ * become a script URL. MapLibre starts its worker from a string, so the
+ * default policy lets exactly that one URL through and nothing else.
+ */
+function allowMapWorker(): void {
+  const { trustedTypes } = window as {
+    trustedTypes?: {
+      createPolicy(
+        name: string,
+        rules: { createScriptURL(url: string): string | null },
+      ): unknown;
+    };
+  };
+  const workerUrl = new URL(mapWorkerUrl, document.baseURI).href;
+  trustedTypes?.createPolicy("default", {
+    createScriptURL: (url) =>
+      new URL(url, document.baseURI).href === workerUrl ? url : null,
+  });
+}
+
 export function initMap(): void {
+  allowMapWorker();
   setWorkerUrl(mapWorkerUrl);
   const initialStop =
     itinerary.find((stop) => stop.day === dayFromPath()) ?? currentStop();

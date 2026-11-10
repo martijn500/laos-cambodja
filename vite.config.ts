@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { contentSecurityPolicy } from "./build/csp.ts";
 import { dayPages } from "./build/day-pages.ts";
 import { photoManifest } from "./build/photo-manifest.ts";
 import { staticDirs } from "./build/static-dirs.ts";
@@ -20,9 +21,13 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1100,
+    // Never inline fonts as data: URIs (the CSP allows fonts from our own
+    // origin only, and browsers that use .woff2 never need the .woff)
+    assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),
   },
   plugins: [
     photoManifest(),
+    contentSecurityPolicy(),
     dayPages({ siteOrigin: SITE_ORIGIN, base: BASE }),
     staticDirs(["img/slides", "img/cartoons"]),
   ],

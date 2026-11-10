@@ -41,7 +41,7 @@ Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Action
 
 ```
 index.html      de pagina; bij de build ook dag-N.html per dag
-build/          Vite-plugins: dagpagina's, foto-manifest + controle, img/ kopiëren
+build/          Vite-plugins: dagpagina's, foto-manifest + controle, CSP, img/ kopiëren
 src/
   main.ts       opstartvolgorde
   styles/       main.css zet alles in cascade layers; tokens.css heeft alle kleuren, fonts en timings

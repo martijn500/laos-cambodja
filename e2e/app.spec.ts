@@ -9,10 +9,19 @@ declare global {
 
 const isMobile = (testInfo: TestInfo) => testInfo.project.name === "mobile";
 
-// Collects uncaught errors; every test ends by asserting there were none
+// Collects uncaught errors and Content-Security-Policy violations (the
+// browser only logs those); every test ends by asserting there were none
 function trackErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (
+      message.type() === "error" &&
+      /Content Security Policy|Trusted(Script|HTML)/.test(message.text())
+    ) {
+      errors.push(message.text());
+    }
+  });
   return errors;
 }
 
