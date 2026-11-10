@@ -38,7 +38,8 @@ Eenmalig in de repo-instellingen: **Settings → Pages → Source: GitHub Action
 ## Indeling
 
 ```
-index.html      de pagina; vite.config.ts maakt er bij de build dag-N.html van
+index.html      de pagina; bij de build ook dag-N.html per dag
+build/          Vite-plugins: dagpagina's, foto-manifest + controle, img/ kopiëren
 src/
   main.ts       opstartvolgorde
   styles/       main.css zet alles in cascade layers; tokens.css heeft alle kleuren, fonts en timings
@@ -61,3 +62,5 @@ img/
 ```
 
 Een dag heet `08`, een side quest op die dag `08-s1`. Die naam wordt gebruikt voor de fotomap en de cartoon.
+
+De build (en `npm run dev`) controleert de reisdata: elke stop moet foto's en een cartoon hebben, de foto's moeten doorlopend genummerd zijn en elke fotomap moet bij een stop horen. Klopt iets niet, dan stopt de build met een lijst van wat er mist.

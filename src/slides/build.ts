@@ -3,7 +3,7 @@ import { itinerary } from "../data/itinerary.ts";
 import { stopThemes } from "../data/themes.ts";
 import { closeSlidePopup } from "../deck.ts";
 import { requireElement } from "../utils/dom.ts";
-import { createGallery, galleryFor, slidePhotoSrc } from "./gallery.ts";
+import { createGallery, slidePhotoSrc } from "./gallery.ts";
 
 export const deck = requireElement(".deck");
 
@@ -33,14 +33,6 @@ export function buildSlides(): void {
     slideImage.className = "slide-photo is-current";
     slideImage.dataset.src = slidePhotoSrc(stop, 1);
     slideImage.alt = `Sfeerfoto 1 van ${stop.place}`;
-    slideImage.addEventListener(
-      "error",
-      () => {
-        const gallery = galleryFor(slide);
-        if (gallery) gallery.done = true;
-      },
-      { once: true },
-    );
     createGallery(slide, stop, slideImage);
     slide.classList.toggle("active", idx === state.current);
     tag.textContent = `${stop.date} · ${stop.flags}`;

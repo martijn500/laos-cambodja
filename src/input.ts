@@ -30,7 +30,7 @@ export function initInput(): void {
         const slide = photoDots.closest<HTMLElement>(".slide");
         const gallery = slide && galleryFor(slide);
         if (!gallery) return;
-        const count = gallery.images.length;
+        const count = gallery.count;
         const next =
           (gallery.index + (e.key === "ArrowRight" ? 1 : count - 1)) % count;
         e.preventDefault();

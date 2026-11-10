@@ -1,3 +1,4 @@
+import { photoCounts } from "virtual:photo-manifest";
 import { state } from "../state.ts";
 import { playBeep } from "../audio.ts";
 import type { Stop } from "../data/itinerary.ts";
@@ -9,10 +10,11 @@ import {
 
 /*
  * Photo gallery per slide. Photos live in img/slides/<slide>/NN.webp
- * (see scripts/optimize-images.sh); the app finds them by loading 01,
- * 02, 03… until one is missing. They play one after another: the
- * current pixel in the indicator fills up (CSS animation) and its end
- * starts the next photo with an arcade bar wipe in the day colour.
+ * (see scripts/optimize-images.sh); how many there are comes from the
+ * build (build/photo-manifest.ts). Photos 2+ only load once the slide is
+ * on screen. They play one after another: the current pixel in the
+ * indicator fills up (CSS animation) and its end starts the next photo
+ * with an arcade bar wipe in the day colour.
  */
 export const PHOTO_BARS = 6;
 
@@ -23,12 +25,12 @@ export interface Gallery {
   bars: HTMLElement;
   controls: HTMLElement;
   dots: HTMLElement;
+  /** photo 1 from the start; the others once the slide is first shown */
   images: HTMLImageElement[];
+  /** how many photos this slide has */
+  count: number;
   /** the photo on screen */
   index: number;
-  /** every photo of this slide has been found */
-  done: boolean;
-  probing: boolean;
   animating: boolean;
 }
 
@@ -58,7 +60,9 @@ export function createGallery(
   controls.className = "photo-controls";
   controls.setAttribute("role", "group");
   controls.setAttribute("aria-label", `Foto's van ${stop.place}`);
-  controls.hidden = true;
+  const count = photoCounts[stop.slug] ?? 1;
+  // A single photo needs no dots or pause button
+  controls.hidden = count < 2;
   const toggle = document.createElement("button");
   toggle.type = "button";
   toggle.className = "photo-toggle";
@@ -76,13 +80,13 @@ export function createGallery(
     controls,
     dots,
     images: [firstImage],
+    count,
     index: 0,
-    done: false,
-    probing: false,
     animating: false,
   };
   galleries.set(slide, gallery);
-  addPhotoDot(gallery, 0);
+  for (let i = 0; i < count; i++) addPhotoDot(gallery, i);
+  syncPhotoDots(gallery);
 }
 
 export function addPhotoDot(gallery: Gallery, index: number): void {
@@ -95,8 +99,6 @@ export function addPhotoDot(gallery: Gallery, index: number): void {
     if (event.animationName === "photo-dot-fill") advanceGallery(gallery);
   });
   gallery.dots.append(dot);
-  gallery.controls.hidden = gallery.images.length < 2;
-  syncPhotoDots(gallery);
 }
 
 // One switch for every slideshow (WCAG 2.2.2: moving content can be
@@ -140,27 +142,21 @@ export function syncPhotoDots(gallery: Gallery): void {
   }
 }
 
-// Find 02, 03… one after another, only for a slide that is on screen
-export function probeGallery(gallery: Gallery): void {
-  if (gallery.done || gallery.probing) return;
-  gallery.probing = true;
-  const number = gallery.images.length + 1;
-  const image = new Image();
-  image.className = "slide-photo";
-  image.alt = `Sfeerfoto ${number} van ${gallery.stop.place}`;
-  image.decoding = "async";
-  image.onload = () => {
-    gallery.probing = false;
+// Photos 2+ start loading the first time their slide is on screen
+function loadRemainingPhotos(gallery: Gallery): void {
+  for (
+    let number = gallery.images.length + 1;
+    number <= gallery.count;
+    number++
+  ) {
+    const image = new Image();
+    image.className = "slide-photo";
+    image.alt = `Sfeerfoto ${number} van ${gallery.stop.place}`;
+    image.decoding = "async";
+    image.src = slidePhotoSrc(gallery.stop, number);
     gallery.box.insertBefore(image, gallery.bars);
     gallery.images.push(image);
-    addPhotoDot(gallery, gallery.images.length - 1);
-    probeGallery(gallery);
-  };
-  image.onerror = () => {
-    gallery.probing = false;
-    gallery.done = true;
-  };
-  image.src = slidePhotoSrc(gallery.stop, number);
+  }
 }
 
 export function visibleGallerySlide(): HTMLElement | null {
@@ -176,7 +172,7 @@ export function resetGallery(slide: HTMLElement): void {
   gallery.bars.getAnimations({ subtree: true }).forEach((a) => a.cancel());
   gallery.animating = false;
   setCurrentPhoto(gallery, 0);
-  probeGallery(gallery);
+  loadRemainingPhotos(gallery);
 }
 
 export function setCurrentPhoto(gallery: Gallery, index: number): void {
@@ -188,13 +184,13 @@ export function setCurrentPhoto(gallery: Gallery, index: number): void {
 }
 
 export function advanceGallery(gallery: Gallery): void {
-  if (reducedMotionQuery.matches || gallery.images.length < 2) return;
+  if (reducedMotionQuery.matches || gallery.count < 2) return;
   if (document.body.classList.contains("slideshow-stopped")) return;
   if (visibleGallerySlide() !== gallery.slide) return;
-  void showPhoto(gallery, (gallery.index + 1) % gallery.images.length);
+  void showPhoto(gallery, (gallery.index + 1) % gallery.count);
 }
 
-/** A cancelled animation rejects `finished`; that is expected here */
+/** A cancelled animation or an undecodable photo rejects; nothing to do */
 function ignoreCancel(): void {
   // nothing to do: the next transition takes over
 }
@@ -203,12 +199,15 @@ export async function showPhoto(
   gallery: Gallery,
   index: number,
 ): Promise<void> {
-  if (index === gallery.index || gallery.animating) return;
+  const image = gallery.images[index];
+  if (index === gallery.index || gallery.animating || !image) return;
   if (reducedMotionQuery.matches) {
     setCurrentPhoto(gallery, index);
     return;
   }
   gallery.animating = true;
+  // Photos 2+ may still be loading: don't wipe to a blank box
+  await image.decode().catch(ignoreCancel);
   const bars = [...gallery.bars.querySelectorAll("span")];
   const step = 38;
   // Cover: bars shoot in from the left in chunky steps, top to bottom
