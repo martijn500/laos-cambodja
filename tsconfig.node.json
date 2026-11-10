@@ -1,9 +1,10 @@
 {
   // Code that runs in Node: tests, vite.config.ts, playwright.config.ts
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "lib": ["es2023", "dom"],
-    "types": ["node"]
+    "types": ["node"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo"
   },
   "include": ["tests", "*.ts"]
 }

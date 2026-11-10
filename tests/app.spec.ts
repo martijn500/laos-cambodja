@@ -37,19 +37,21 @@ test("opens the day from the URL as a popup, without showing other days first", 
         let element: HTMLElement | null = h2;
         let opacity = 1;
         let hidden = false;
-        while (element && element.nodeType === 1) {
+        while (element) {
           const style = getComputedStyle(element);
           if (style.visibility === "hidden" || style.display === "none")
             hidden = true;
           opacity *= Number(style.opacity);
           element = element.parentElement;
         }
-        if (!hidden && opacity > 0.05) return h2.textContent?.trim() ?? null;
+        if (!hidden && opacity > 0.05) return h2.textContent.trim();
       }
       return null;
     };
     const loop = () => {
-      const title = document.body ? visibleTitle() : null;
+      // Init scripts run before <body> exists, whatever the types say
+      const body = document.body as HTMLElement | null;
+      const title = body ? visibleTitle() : null;
       if (title && window.__seen.at(-1) !== title) window.__seen.push(title);
       requestAnimationFrame(loop);
     };
@@ -126,10 +128,10 @@ test("keyboard: few Tab stops, arrows move through days", async ({
       await page.evaluate(() => {
         const element = document.activeElement;
         return (
-          element?.getAttribute("aria-label") ||
-          element?.textContent?.trim() ||
+          element?.getAttribute("aria-label") ??
+          element?.textContent ??
           ""
-        );
+        ).trim();
       }),
     );
   }

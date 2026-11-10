@@ -6,9 +6,9 @@ export const appBasePath = import.meta.env.BASE_URL;
 
 /** Travel day from the /dag-N path; 1 on the home page */
 export function dayFromPath(): number {
-  const dayRoute = window.location.pathname
-    .slice(appBasePath.length)
-    .match(/^dag-(\d+)(?:\.html)?\/?$/);
+  const dayRoute = /^dag-(\d+)(?:\.html)?\/?$/.exec(
+    window.location.pathname.slice(appBasePath.length),
+  );
   return dayRoute ? Number(dayRoute[1]) : 1;
 }
 

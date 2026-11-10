@@ -90,7 +90,7 @@ export function addPhotoDot(gallery: Gallery, index: number): void {
   dot.type = "button";
   dot.className = "photo-dot";
   dot.setAttribute("aria-label", `Foto ${index + 1} van ${gallery.stop.place}`);
-  dot.addEventListener("click", () => showPhoto(gallery, index));
+  dot.addEventListener("click", () => void showPhoto(gallery, index));
   dot.addEventListener("animationend", (event) => {
     if (event.animationName === "photo-dot-fill") advanceGallery(gallery);
   });
@@ -191,7 +191,12 @@ export function advanceGallery(gallery: Gallery): void {
   if (reducedMotionQuery.matches || gallery.images.length < 2) return;
   if (document.body.classList.contains("slideshow-stopped")) return;
   if (visibleGallerySlide() !== gallery.slide) return;
-  showPhoto(gallery, (gallery.index + 1) % gallery.images.length);
+  void showPhoto(gallery, (gallery.index + 1) % gallery.images.length);
+}
+
+/** A cancelled animation rejects `finished`; that is expected here */
+function ignoreCancel(): void {
+  // nothing to do: the next transition takes over
 }
 
 export async function showPhoto(
@@ -221,7 +226,9 @@ export async function showPhoto(
       },
     ),
   );
-  await cover.at(-1)?.finished.catch(() => {});
+  await cover.at(-1)?.finished.catch(ignoreCancel);
+  // resetGallery() may have stopped this transition while we waited
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!gallery.animating) return;
   setCurrentPhoto(gallery, index);
   gallery.images[index]?.animate(
@@ -244,7 +251,7 @@ export async function showPhoto(
     ),
   );
   // The top bar leaves last
-  await reveal[0]?.finished.catch(() => {});
+  await reveal[0]?.finished.catch(ignoreCancel);
   cover.concat(reveal).forEach((a) => a.cancel());
   gallery.animating = false;
 }

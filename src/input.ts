@@ -35,7 +35,7 @@ export function initInput(): void {
           (gallery.index + (e.key === "ArrowRight" ? 1 : count - 1)) % count;
         e.preventDefault();
         e.stopPropagation();
-        showPhoto(gallery, next);
+        void showPhoto(gallery, next);
         const dot = photoDots.children[next];
         if (dot instanceof HTMLElement) dot.focus({ preventScroll: true });
         return;

@@ -1,28 +1,9 @@
 {
-  // Browser code in src/. tsconfig.node.json covers the tests and configs.
-  // Type-check only: Vite strips the types when it builds, Node 24 when
-  // it runs the config and tests. Only erasable syntax (no enums,
-  // namespaces or parameter properties), so both can just drop types.
-  "compilerOptions": {
-    "noEmit": true,
-    "target": "es2023",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "erasableSyntaxOnly": true,
-    "isolatedModules": true,
-    "lib": ["es2023", "dom", "dom.iterable"],
-    "types": ["vite/client"],
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"]
+  // Entry point for editors and tsc -b: browser code and Node code are
+  // checked separately, each with its own globals
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }

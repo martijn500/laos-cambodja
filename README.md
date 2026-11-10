@@ -22,7 +22,7 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 | `npm run preview`   | Serveert `dist/` zoals GitHub Pages (poort 4173)  |
 | `npm run images`    | Zet originele foto's en cartoons om naar WebP     |
 | `npm test`          | Bouwt en test met Playwright op desktop en mobiel |
-| `npm run lint`      | ESLint                                            |
+| `npm run lint`      | ESLint met typescript-eslint (strict, type-aware) |
 | `npm run typecheck` | TypeScript (strict), browser- en Node-code apart  |
 | `npm run format`    | Prettier                                          |
 | `npm run check`     | Lint, typecontrole en tests in één keer           |

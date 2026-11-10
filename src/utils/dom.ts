@@ -6,6 +6,8 @@ export const reducedMotionQuery = window.matchMedia(
  * querySelector that fails loudly: a missing element is a bug in
  * index.html or the template, not something to handle at every call.
  */
+// Like querySelector<T>, the caller states which element type it expects
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function requireElement<T extends Element = HTMLElement>(
   selector: string,
   root: ParentNode = document,
@@ -21,6 +23,8 @@ export function restartAnimationClass(
   className: string,
 ): void {
   element.classList.remove(className);
+  // Reading a layout property forces the reflow
+  // eslint-disable-next-line @typescript-eslint/no-meaningless-void-operator
   void element.offsetWidth;
   element.classList.add(className);
 }
