@@ -39,10 +39,6 @@ export function buildTimeline(): void {
     if (stop.sideQuest) {
       button.classList.add("side-quest");
     }
-    button.setAttribute(
-      "aria-label",
-      `${stop.date}, ${stop.flags}, ${stop.title}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep} Open ${stop.title}.`,
-    );
     button.title = `${stop.date} · ${stop.flags} · ${stop.icon} ${stop.iconLabel} · ${stop.title} — ${stop.detail} ${stop.sleep}`;
 
     image.className = "timeline-thumb";
@@ -62,7 +58,9 @@ export function buildTimeline(): void {
       ? "SIDE QUEST"
       : stop.date.replace(/^[^·]+·\s*/, "");
     dateBadge.setAttribute("aria-hidden", "true");
-    thumbnail.append(image, dateBadge, meta);
+    // Spaces between the parts, so their text doesn't run together
+    // ("519 FEB") when it is read as one string
+    thumbnail.append(image, dateBadge, " ", meta);
     stopTitle.className = "timeline-title";
     stopTitle.textContent = stop.title.replace(/^SIDE QUEST:\s*/i, "");
     copy.className = "timeline-copy";
@@ -79,8 +77,23 @@ export function buildTimeline(): void {
       dateNumber.setAttribute("aria-hidden", "true");
     }
 
-    card.append(thumbnail, copy);
-    button.append(connector, node, dateNumber, card);
+    // The name starts with exactly what the card shows ("5 19 FEB 🇱🇦
+    // Gibbon Experience: dag 2"), so a voice-control user can say what
+    // they see (WCAG 2.5.3); the details follow
+    const visibleText = [
+      dateNumber.textContent,
+      dateBadge.textContent,
+      flags.textContent,
+      stopTitle.textContent,
+    ]
+      .filter(Boolean)
+      .join(" ");
+    button.setAttribute(
+      "aria-label",
+      `Dag ${visibleText}. ${stop.iconLabel}. ${stop.detail} ${stop.sleep}`,
+    );
+    card.append(thumbnail, " ", copy);
+    button.append(connector, node, dateNumber, " ", card);
     button.dataset.index = String(idx);
     pageIndicatorsEl.append(button);
     return button;
