@@ -16,7 +16,7 @@ npm run images     # originelen in img/*-src/ → WebP
 ## Git en commits
 
 - **Nooit op `main` committen of pushen.** Begin elke taak met een nieuwe branch vanaf de actuele `origin/main` (`git fetch`, dan `git switch -c <type>/<onderwerp> origin/main`).
-- **Controleer vóór elke commit dat je branch nog niet gemerged is** (`git branch -r --merged origin/main`). Een commit op een gemergede branch komt nooit op `main`; dit is in dit project twee keer misgegaan.
+- **Nooit committen op een gemergede branch**: zo'n commit komt nooit op `main` (drie keer misgegaan). De hook `.claude/hooks/block-merged-branch.sh` houdt `git commit` en `git push` tegen op `main` en op een branch waarvan de PR gemerged of gesloten is. Werk je zonder Claude Code, controleer het dan zelf met `gh pr view --json state`.
 - **Commit in logische stappen**, elk groen op `npm run check`, zodat elke commit los terug te draaien is. Liever tien kleine commits dan één grote.
 - **Conventional Commits** in het Engels: `type: wat er verandert`, met in de body waarom en hoe het is gecontroleerd. Types: `feat fix perf refactor style test docs build ci chore security revert`.
 - Werk bij in dezelfde PR: `CHANGELOG.md` (sectie Onuitgebracht), een ADR bij een keuze met alternatieven, `gotchas.md` bij een nieuwe valkuil. Zie de skill `commit-workflow`.

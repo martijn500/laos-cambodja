@@ -12,7 +12,7 @@ git fetch origin
 git switch -c <type>/<onderwerp> origin/main   # bv. fix/popup-snel-klikken
 ```
 
-Werk je verder op een bestaande branch, controleer dan eerst dat hij **niet al gemerged is**:
+In Claude Code houdt de hook `.claude/hooks/block-merged-branch.sh` een commit of push op `main` of op een gemergede/gesloten PR-branch tegen. Wordt je commit geweigerd met "is al gemerged", ga dan naar de stappen hieronder. Zonder Claude Code (of zonder `gh`), of om het vooraf te weten, controleer je zelf of de branch **niet al gemerged is**:
 
 ```sh
 git branch -r --merged origin/main | grep "origin/$(git branch --show-current)$" && echo "GEMERGED: nieuwe branch maken"

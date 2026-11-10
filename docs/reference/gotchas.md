@@ -51,4 +51,5 @@ Niet-voor-de-hand-liggende feiten die een nieuwe ontwikkelaar of AI-agent fout z
 - **Playwright-browsers** worden niet automatisch geïnstalleerd (`ignore-scripts`): `npx playwright install chromium`.
 - **Swift werkt niet op deze Mac** (compiler 6.3 tegenover SDK 6.4); gebruik voor beeldbewerking `cwebp`/`sips` of Chromium via Playwright.
 - **Pushen naar `main` kan niet**: de ruleset op GitHub staat alleen PR's toe, en de Claude-instellingen verbieden het ook. Werk via een branch en een PR.
+- **"PreToolUse:Bash hook error: … is al gemerged"**: je zit op een branch waarvan de PR al gemerged of gesloten is. Nieuwe branch vanaf `origin/main`, `git cherry-pick` je commits (skill `commit-workflow`). De hook gebruikt `gh`; zonder `gh` of netwerk laat hij alles door. Hookscripts draaien onder de `bash` 3.2 van macOS: geen `${var,,}` of andere Bash 4-syntax.
 - **"This branch is out-of-date" bij een PR**: de ruleset eist dat de branch `main` bevat. Klik "Update branch" of `gh pr update-branch <nr>` (een merge, geen force-push); CI draait dan opnieuw. Gebeurt na elke merge van een andere PR.
