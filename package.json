@@ -30,5 +30,8 @@
     "@fontsource/press-start-2p": "^5.3.0",
     "@fontsource/vt323": "^5.3.0",
     "maplibre-gl": "^6.16.0"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }
