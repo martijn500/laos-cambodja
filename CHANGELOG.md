@@ -11,6 +11,10 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 - Ruleset op `main`: alleen via een pull request met groene CI, branch bijgewerkt met `main` (`a7cd0a3`).
 - Hook die `git commit` en `git push` tegenhoudt op `main` en op branches waarvan de PR al gemerged of gesloten is (`49523bd`).
 
+### Opgelost
+
+- De merged-branch-hook beoordeelde commando's in andere repo's (`cd ~/ander-project && git commit`) alsof ze in deze repo draaiden; hij volgt nu `cd` en `git -C` en bemoeit zich alleen met deze repo.
+
 ## 2026-11-10 Kennisbank en betrouwbare tests
 
 Pull requests [#4](https://github.com/martijn500/laos-cambodja/pull/4) en [#5](https://github.com/martijn500/laos-cambodja/pull/5).

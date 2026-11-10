@@ -7,8 +7,29 @@ input=$(cat)
 command=$(jq -r '.tool_input.command // ""' <<<"$input")
 cwd=$(jq -r '.cwd // "."' <<<"$input")
 
-pattern='(^|[[:space:];&|(])git[[:space:]]+(commit|push)([[:space:]]|$)'
+pattern='(^|[[:space:];&|(])git([[:space:]]+-C[[:space:]]+[^[:space:]]+)?[[:space:]]+(commit|push)([[:space:]]|$)'
 [[ $command =~ $pattern ]] || exit 0
+
+# The command may run git somewhere else than the session:
+# "cd <dir> && git commit" or "git -C <dir> commit"
+target=$cwd
+git_dir_pattern='git[[:space:]]+-C[[:space:]]+([^;&|[:space:]]+)'
+cd_pattern='(^|[;&|(])[[:space:]]*cd[[:space:]]+([^;&|[:space:]]+)'
+if [[ $command =~ $git_dir_pattern ]]; then
+  target=${BASH_REMATCH[1]}
+elif [[ $command =~ $cd_pattern ]]; then
+  target=${BASH_REMATCH[2]}
+fi
+target=${target//[\"\']/}
+target=${target/#\~/$HOME}
+[[ $target == /* ]] || target="$cwd/$target"
+
+# These rules are for this project's repo only; a commit in another repo
+# (another project's main, for instance) is not ours to judge
+project=$(git -C "${CLAUDE_PROJECT_DIR:-$cwd}" rev-parse --show-toplevel 2>/dev/null)
+repo=$(git -C "$target" rev-parse --show-toplevel 2>/dev/null)
+[[ -n $repo && $repo == "$project" ]] || exit 0
+cwd=$target
 
 deny() {
   jq -n --arg reason "$1" '{hookSpecificOutput: {hookEventName: "PreToolUse",
