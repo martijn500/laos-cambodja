@@ -8,7 +8,11 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 
 ### Toegevoegd
 
-- Kennisbank in `docs/`, afspraken in `AGENTS.md` en skills in `.claude/skills/` (zie [ADR 0012](docs/decisions/0012-agents-md-skills-en-kennisbank.md)).
+- Deze changelog (`a2b85f9`).
+- Kennisbank in `docs/`: beslissingen (MADR), valkuilen en bronnen (`5f15ca7`).
+- `AGENTS.md` met de afspraken die altijd gelden (`b7b12e3`).
+- Skills in `.claude/skills/`: committen, controleren, een dag toevoegen, dependencies bijwerken (`7c3cd96`). Waarom deze opzet: [ADR 0012](docs/decisions/0012-agents-md-skills-en-kennisbank.md).
+- `npm run compare`: screenshots van voor en na een wijziging pixel voor pixel vergelijken (`f158438`).
 
 ## [2026-11-10] Modernisering
 
