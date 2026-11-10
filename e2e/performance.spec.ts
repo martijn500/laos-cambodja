@@ -1,9 +1,9 @@
-import { test, expect, type Page, type Request } from "@playwright/test";
+import { test, expect, type Page, type Request } from "./fixtures.ts";
 
 /*
  * Performance budget: fails when a change makes the first visit to a day
- * noticeably heavier or slower. Only our own files count; map tiles come
- * from OpenFreeMap. Sizes are what goes over the wire (the preview server
+ * noticeably heavier or slower. Only our own files count; the map style
+ * is a local stub (fixtures.ts). Sizes are what goes over the wire (the preview server
  * compresses like GitHub Pages does). Raise a budget on purpose, in the
  * same commit as the change that needs it.
  */
@@ -16,8 +16,10 @@ const BUDGET_KB = {
   total: 1400, // 1145
 } as const;
 
-const LCP_BUDGET_MS = 2500; // "good" Core Web Vitals threshold
-const CLS_BUDGET = 0.1; // idem
+// Same limit as "good" LCP, applied to the moment the day card is shown
+// (performance mark in src/boot.ts): LCP itself misses the card
+const CARD_SHOWN_BUDGET_MS = 2500;
+const CLS_BUDGET = 0.1; // "good" Core Web Vitals threshold
 
 type Kind = keyof typeof BUDGET_KB;
 
@@ -82,15 +84,10 @@ test("first visit to a day stays within the transfer budget", async ({
   }
 });
 
-test("largest paint and layout shift stay within Core Web Vitals", async ({
-  page,
-}) => {
+test("the day card shows fast and nothing shifts", async ({ page }) => {
   await page.addInitScript(() => {
-    const vitals = { lcp: 0, cls: 0 };
+    const vitals = { cls: 0 };
     Object.assign(window, { __vitals: vitals });
-    new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) vitals.lcp = entry.startTime;
-    }).observe({ type: "largest-contentful-paint", buffered: true });
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries() as (PerformanceEntry & {
         value: number;
@@ -103,15 +100,18 @@ test("largest paint and layout shift stay within Core Web Vitals", async ({
   await page.goto("dag-8");
   await expect(page.locator(".trip-popup-slide h2")).toBeVisible();
   await page.waitForTimeout(1500);
-  const vitals = await page.evaluate(
-    () =>
-      (window as unknown as { __vitals: { lcp: number; cls: number } })
-        .__vitals,
-  );
+  const vitals = await page.evaluate(() => ({
+    cardShown:
+      performance.getEntriesByName("day-card-shown")[0]?.startTime ?? null,
+    cls: (window as unknown as { __vitals: { cls: number } }).__vitals.cls,
+  }));
   test.info().annotations.push({
     type: "vitals",
     description: JSON.stringify(vitals),
   });
-  expect(vitals.lcp, "LCP in ms").toBeLessThanOrEqual(LCP_BUDGET_MS);
+  expect(vitals.cardShown, "day card shown at (ms)").not.toBeNull();
+  expect(vitals.cardShown ?? Infinity).toBeLessThanOrEqual(
+    CARD_SHOWN_BUDGET_MS,
+  );
   expect(vitals.cls, "CLS").toBeLessThanOrEqual(CLS_BUDGET);
 });

@@ -7,6 +7,10 @@ updates:
     # Wait before proposing a new release, like min-release-age in .npmrc
     cooldown:
       default-days: 7
+    ignore:
+      # Types must match the Node version we run on (.nvmrc: 24)
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       dev-dependencies:
         dependency-type: development
