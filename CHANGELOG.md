@@ -10,6 +10,13 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 
 - Ruleset op `main`: alleen via een pull request met groene CI, branch bijgewerkt met `main` (`a7cd0a3`).
 - Hook die `git commit` en `git push` tegenhoudt op `main` en op branches waarvan de PR al gemerged of gesloten is (`49523bd`).
+
+## 2026-11-10 Kennisbank en betrouwbare tests
+
+Pull requests [#4](https://github.com/martijn500/laos-cambodja/pull/4) en [#5](https://github.com/martijn500/laos-cambodja/pull/5).
+
+### Toegevoegd
+
 - Deze changelog (`a2b85f9`).
 - Kennisbank in `docs/`: beslissingen (MADR), valkuilen en bronnen (`5f15ca7`).
 - `AGENTS.md` met de afspraken die altijd gelden (`b7b12e3`).
@@ -82,5 +89,5 @@ Pull request [#2](https://github.com/martijn500/laos-cambodja/pull/2). Achtergro
 
 Ontstaan van het reisdagboek: kaart, dagkaarten, tijdlijn, fotogalerij, cartoons en 8-bit-geluid. Zie `git log 64c1943` en eerder; deze commits volgden nog geen vaste opmaak. Laatste stappen vóór de modernisering: ES-modules (`955370c`), aparte CSS-bestanden (`ac9cb50`), Playwright, ESLint en Prettier (`7e35137`), de cartoon als site-icoon (`76597c7`).
 
-[Onuitgebracht]: https://github.com/martijn500/laos-cambodja/compare/72b837e...HEAD
+[Onuitgebracht]: https://github.com/martijn500/laos-cambodja/compare/5db5dd8...HEAD
 [2026-11-10]: https://github.com/martijn500/laos-cambodja/pull/2
