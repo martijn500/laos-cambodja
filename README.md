@@ -46,6 +46,13 @@ Commit-berichten volgen [Conventional Commits](https://www.conventionalcommits.o
 
 Elke pagina heeft `<meta name="version" content="<commit> <buildtijd>">`, zodat je in de paginabron van de live site ziet welke commit er draait.
 
+## Documentatie en afspraken
+
+- [`AGENTS.md`](AGENTS.md): de afspraken die altijd gelden, voor mensen en AI-agents
+- [`.claude/skills/`](.claude/skills/): stappenplannen per taak (committen, controleren, een dag toevoegen, dependencies bijwerken)
+- [`docs/`](docs/README.md): waarom het zo gebouwd is (beslissingen), valkuilen en bronnen
+- [`CHANGELOG.md`](CHANGELOG.md): wat er veranderd is
+
 ## Indeling
 
 ```
