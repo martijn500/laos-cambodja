@@ -31,6 +31,8 @@ npm run dev                       # opent http://localhost:5173/laos-cambodja/
 
 Nieuwe packages worden pas geïnstalleerd als ze een week oud zijn (`.npmrc`), als bescherming tegen gekaapte releases.
 
+Er staan twee TypeScript-versies in `package.json`: `@typescript/native` is TypeScript 7 en doet de typecontrole (`tsc`); `typescript` wijst naar TypeScript 6, alleen omdat typescript-eslint TypeScript 7 nog niet ondersteunt. Zodra dat wel zo is, kan die alias weg.
+
 ## Deployen
 
 Elke push naar `main` draait `.github/workflows/ci.yml`: lint, typecontrole, build en tests. Slaagt alles, dan gaat `dist/` naar GitHub Pages. Pull requests krijgen dezelfde controles, zonder deploy.
@@ -52,7 +54,7 @@ src/
   main.ts       opstartvolgorde
   styles/       main.css zet alles in cascade layers; tokens.css heeft alle kleuren, fonts en timings
   state.ts      gedeelde staat, currentStop(), setDay() / "daychange"
-  data/         reisdagen, kleuren per bestemming
+  data/         reisdagen, kleuren per bestemming, controle van de reisdata (validate.ts)
   router.ts     /dag-N in de URL
   deck.ts       huidige dag tonen, vorige / volgende
   timeline.ts   tijdlijnkaarten
@@ -62,6 +64,7 @@ src/
   input.ts      toetsenbord en swipe
   audio.ts      8-bit geluidjes
 public/         favicons en 404.html, ongewijzigd naar dist/
+scripts/        afbeeldingen omzetten, commit-berichten controleren
 e2e/            Playwright-tests: desktop en mobiel, toegankelijkheid (axe), prestatiebudget
 img/
   slides/<dag>/ foto's per dag (01.webp, 02.webp…) en thumb.webp, gemaakt door npm run images
