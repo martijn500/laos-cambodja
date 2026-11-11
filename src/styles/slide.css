@@ -373,9 +373,54 @@ body.popup-closed .deck {
     font-size: 1.15rem;
   }
 
+  /*
+   * No room below the quote on a phone, so the stats become a badge on
+   * the photo, above the gallery dots. The day number is dropped: the
+   * navigation bar and the map marker already show it.
+   */
   .slide .card .stats-bar {
     grid-column: 1 / -1;
-    grid-row: 6;
+    grid-row: 3;
+    place-self: end start;
+    z-index: 2;
+    max-width: 62%;
+    margin: 0 0 34px 8px;
+    pointer-events: none;
+  }
+
+  /* One photo: no gallery dots, so the badge takes their place */
+  .slide .card:has(.photo-controls[hidden]) .stats-bar {
+    margin-bottom: 8px;
+  }
+
+  .slide .card .stat-item:first-child {
+    display: none;
+  }
+
+  /* The label stays in the accessibility tree; only the 🛏 shows */
+  .slide .card .stat-item {
+    display: flex;
+    flex: 0 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: 3px;
+    padding: 5px 7px;
+    border: 0;
+    background: rgb(0 0 0 / 72%);
+    font-size: 0;
+    text-align: left;
+  }
+
+  .slide .card .stat-item::before {
+    font-size: 0.7rem;
+    content: "🛏" / "";
+  }
+
+  .slide .card .stat-value {
+    margin-top: 0;
+    font-size: 0.55rem;
+    line-height: 1.4;
+    text-transform: uppercase;
   }
 
   .slide-caricature {
