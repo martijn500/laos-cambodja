@@ -19,6 +19,7 @@ npm run images     # originelen in img/*-src/ → WebP
 - **Nooit committen op een gemergede branch**: zo'n commit komt nooit op `main` (drie keer misgegaan). De hook `.claude/hooks/block-merged-branch.sh` houdt `git commit` en `git push` tegen op `main` en op een branch waarvan de PR gemerged of gesloten is. Werk je zonder Claude Code, controleer het dan zelf met `gh pr view --json state`.
 - **Commit in logische stappen**, elk groen op `npm run check`, zodat elke commit los terug te draaien is. Liever tien kleine commits dan één grote.
 - **Conventional Commits** in het Engels: `type: wat er verandert`, met in de body waarom en hoe het is gecontroleerd. Types: `feat fix perf refactor style test docs build ci chore security revert`.
+- **Is een wijziging af en groen, commit dan zelf en open de PR**, zonder het eerst te vragen. Geef in de chat de link naar de PR en een keuze "mergen of eerst bekijken"; merge alleen als de gebruiker daarvoor kiest.
 - Werk bij in dezelfde PR: `CHANGELOG.md` (sectie Onuitgebracht), een ADR bij een keuze met alternatieven, `gotchas.md` bij een nieuwe valkuil. Zie de skill `commit-workflow`.
 
 ## Code
