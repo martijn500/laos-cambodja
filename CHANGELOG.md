@@ -6,6 +6,10 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 
 ## [Onuitgebracht]
 
+### Gewijzigd
+
+- CI installeert alleen de headless Chromium die de tests gebruiken, niet ook de volledige Chrome: per run 191 MiB minder downloaden.
+
 ### Toegevoegd
 
 - Ruleset op `main`: alleen via een pull request met groene CI, branch bijgewerkt met `main` (`a7cd0a3`).

@@ -32,7 +32,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
-      - run: npx playwright install --with-deps chromium
+      # Tests run headless, which uses chrome-headless-shell only; skipping
+      # the full Chrome for Testing build saves a 191 MiB download per run
+      - run: npx playwright install --with-deps --only-shell chromium
       # Builds dist/ (playwright.config.js) and tests that build
       - run: npm test
         env:
