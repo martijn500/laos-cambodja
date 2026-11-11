@@ -14,6 +14,8 @@ Bijwerken: zie de skill [`.claude/skills/commit-workflow`](.claude/skills/commit
 ### Opgelost
 
 - De merged-branch-hook beoordeelde commando's in andere repo's (`cd ~/ander-project && git commit`) alsof ze in deze repo draaiden; hij volgt nu `cd` en `git -C` en bemoeit zich alleen met deze repo.
+- Op mobiel vielen de blokjes Reisdag en Overnachting onder de dagkaart weg. De overnachting staat nu als label op de foto; het dagnummer stond er al in de navigatiebalk (`6a2f4ce`).
+- Tussen ongeveer 430 en 600 pixels breed stonden de titel boven en het slaaplabel onder de foto, omdat de cartoon hoger werd dan de foto (`0ac78ed`).
 
 ## 2026-11-10 Kennisbank en betrouwbare tests
 
