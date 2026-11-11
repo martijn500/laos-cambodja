@@ -59,7 +59,7 @@ gh pr create --fill --base main
 
 `gh` moet ingelogd zijn (`gh auth status`; anders laat de gebruiker `gh auth login` zelf draaien, dat gaat via de browser). Zet in de beschrijving wat er verandert, hoe het gecontroleerd is, en wat de gebruiker nog moet doen.
 
-Dit doe je zonder het eerst te vragen zodra de wijziging af en groen is. Geef daarna in de chat de PR-link en laat de gebruiker kiezen tussen "mergen" en "eerst bekijken" (bij een agent: een vraag met die twee knoppen). Kiest de gebruiker mergen: wacht op groene CI (`gh pr checks <nr> --watch`) en merge met `gh pr merge <nr> --merge --delete-branch`.
+Dit doe je zonder het eerst te vragen zodra de wijziging af en groen is. Geef daarna in de chat de PR-link en laat de gebruiker kiezen tussen "mergen" en "eerst bekijken" (bij een agent: een vraag met die twee knoppen). Zet de link als markdown-link in een gewoon chatbericht vóór die vraag: in het keuzevenster is een link niet aanklikbaar. Kiest de gebruiker mergen: wacht op groene CI (`gh pr checks <nr> --watch`) en merge met `gh pr merge <nr> --merge --delete-branch`.
 
 Kan de PR niet gemerged worden omdat hij achterloopt op `main` (de ruleset eist dat), dan `gh pr update-branch <nr>` en CI opnieuw afwachten (`gh pr checks <nr> --watch`).
 
