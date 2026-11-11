@@ -319,7 +319,10 @@ body.popup-closed .deck {
     overflow-y: auto;
   }
 
+  /* The photo sets the height of its row; title, cartoon and badge sit on it */
   .slide .card {
+    --photo-height: clamp(180px, 32vh, 260px);
+
     position: relative;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -437,6 +440,15 @@ body.popup-closed .deck {
     margin: 0;
   }
 
+  /* Between ~430px and 600px wide the cartoon would outgrow the photo and
+     stretch the row, pushing the title above and the badge below it */
+  .slide-caricature img {
+    width: auto;
+    max-width: 100%;
+    max-height: var(--photo-height);
+    margin-left: auto;
+  }
+
   .slide-caricature.align-top {
     top: auto;
     align-self: start;
@@ -449,7 +461,7 @@ body.popup-closed .deck {
     inset: auto;
     z-index: 1;
     width: 100%;
-    height: clamp(180px, 32vh, 260px);
+    height: var(--photo-height);
     margin-bottom: 0;
     border: 0;
     border-radius: var(--radius);
