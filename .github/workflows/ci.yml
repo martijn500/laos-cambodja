@@ -1,0 +1,61 @@
+# Checks every pull request and push: installs the app's private packages,
+# builds this trip and runs the smoke tests. A push to main that passes is
+# deployed to GitHub Pages (deploy.yml). Actions are pinned to a commit SHA
+# (with the version as a comment); Dependabot keeps them up to date.
+#
+# The packages need PACKAGES_TOKEN (a classic token with only
+# read:packages). Pull requests from forks get no secrets, so they can't
+# install the packages: on purpose, the code stays private.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@martijn500"
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm test
+        env:
+          CI: true
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: check
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

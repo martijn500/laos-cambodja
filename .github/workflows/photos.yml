@@ -1,0 +1,67 @@
+# "Foto's ophalen": puts photos uploaded to the Drive folder on the site.
+# Every 15 minutes it compares the folder with what is live (a hash of
+# the Drive file ids, img/uploads/drive-fingerprint.txt) and deploys only
+# when something was added or removed. Run it by hand (Actions → Foto's
+# ophalen → Run workflow, also in the GitHub app) to skip the wait; that
+# always deploys. See README.md.
+name: Foto's ophalen
+
+on:
+  schedule:
+    # GitHub may start scheduled runs some minutes late
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # The Drive secrets, without recording a deployment every 15 minutes
+    environment:
+      name: github-pages
+      deployment: false
+    outputs:
+      changed: ${{ steps.compare.outputs.changed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@martijn500"
+      # The Drive CLI is in the private package @martijn500/uploads
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+      - id: compare
+        env:
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+          # The Pages URL follows the repo's name (also after a rename)
+          LIVE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/img/uploads/drive-fingerprint.txt
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          now=$(npx trip-fetch-uploads --fingerprint)
+          live=$(curl --silent --fail "$LIVE" || true)
+          if [[ "$MANUAL" == "true" || "$now" != "$live" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Nieuwe of verwijderde foto's: bouwen"
+          else
+            echo "Niets veranderd in de map"
+          fi
+
+  deploy:
+    needs: changed
+    if: needs.changed.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
