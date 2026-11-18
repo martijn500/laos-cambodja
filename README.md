@@ -1,6 +1,6 @@
 # Reisdagboek Laos & Cambodja
 
-Een kaart met per dag foto's, cartoons en een tijdlijn: <https://martijn500.github.io/reisdagboek-laos-cambodja/>
+Een kaart met per dag foto's, cartoons en een tijdlijn: <https://martijn500.github.io/laos-cambodja/>
 
 Deze repo bevat alleen de reis. De app en de build komen uit privé-packages op GitHub Packages.
 

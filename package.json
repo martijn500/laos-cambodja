@@ -12,8 +12,8 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@martijn500/uploads": "0.1.0",
-    "@martijn500/vite-plugin": "0.1.0",
+    "@martijn500/uploads": "0.1.1",
+    "@martijn500/vite-plugin": "0.1.1",
     "vite": "^8.3.5"
   },
   "devDependencies": {
@@ -22,5 +22,8 @@
   },
   "engines": {
     "node": ">=24"
+  },
+  "overrides": {
+    "maplibre-gl": "6.16.0"
   }
 }

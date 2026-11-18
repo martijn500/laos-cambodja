@@ -6,7 +6,7 @@ import { defineTrip } from "@martijn500/vite-plugin";
  * how to add or change a day.
  */
 export default defineTrip({
-  site: { origin: "https://martijn500.github.io", base: "/reisdagboek-laos-cambodja/" },
+  site: { origin: "https://martijn500.github.io", base: "/laos-cambodja/" },
   name: "Laos & Cambodja",
   title: { main: "LAOS & CAMBODJA", sub: "THE BRAINROT EXPEDITION" },
   documentTitle: "LAOS & CAMBODJA: THE BRAINROT EXPEDITION 🚀🔥",
