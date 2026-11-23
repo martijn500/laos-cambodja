@@ -20,6 +20,24 @@ export default defineTrip({
   period: "15 FEB — 4 MRT 2027",
   // Flight from Amsterdam, Dutch winter time (CET, UTC+1)
   departure: "2027-02-15T14:20:00+01:00",
+  // The end page's credits: PLAYER 1, PLAYER 2, then these roles
+  players: ["Martijn", "Malou"],
+  credits: [
+    { role: "LEVEL DESIGN", names: ["Martijn", "Malou"] },
+    { role: "PHOTOGRAPHY", names: ["Martijn", "Malou"] },
+    {
+      role: "UI/UX DESIGN",
+      names: [
+        { name: "Martijn van der Wijst", url: "https://martijnvanderwijst.nl/" },
+      ],
+    },
+    {
+      role: "SFX",
+      names: [
+        { name: "Martijn van der Wijst", url: "https://martijnvanderwijst.nl/" },
+      ],
+    },
+  ],
   // One colour per destination; neighbouring destinations must differ
   themes: {
     amsterdam: "var(--neon-pink)",
