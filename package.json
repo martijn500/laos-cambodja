@@ -12,8 +12,8 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@martijn500/uploads": "0.1.1",
-    "@martijn500/vite-plugin": "0.1.1",
+    "@martijn500/uploads": "0.2.0",
+    "@martijn500/vite-plugin": "0.2.0",
     "vite": "^8.3.5"
   },
   "devDependencies": {
