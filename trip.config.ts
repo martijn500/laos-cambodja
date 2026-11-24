@@ -16,7 +16,7 @@ export default defineTrip({
   shareImageAlt:
     "Arcade-startscherm: cartoon van de twee reizigers boven de titel Laos & Cambodja, the brainrot expedition",
   logoAlt: "Cartoon van de twee reizigers voor een gouden tempel",
-  mapLabel: "Minimap met de reisdagen in Laos en Cambodja",
+  mapLabel: "Kaart met de route door Laos en Cambodja",
   period: "15 FEB — 4 MRT 2027",
   // Flight from Amsterdam, Dutch winter time (CET, UTC+1)
   departure: "2027-02-15T14:20:00+01:00",
