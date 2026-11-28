@@ -13,6 +13,8 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: LOCAL,
+    // The app follows the browser's language; these tests read Dutch
+    locale: "nl-NL",
     trace: "retain-on-failure",
   },
   projects: [
